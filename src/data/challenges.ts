@@ -165,34 +165,117 @@ export const LANGUAGE_CHALLENGES: LanguageChallenges = {
 
 // Challenge generation functions
 function generatePythonChallenges(): Challenge[] {
-  const categories = [
-    "Basics", "Variables", "Data Types", "Operators", "Control Flow",
-    "Functions", "Lists", "Dictionaries", "Strings", "File I/O",
-    "Error Handling", "Classes", "Modules", "Web Scraping", "Data Science",
-    "Machine Learning", "Flask/Django", "APIs", "Databases", "Testing"
+  const realChallenges = [
+    // Basics (1-40)
+    {
+      id: 1,
+      title: "Print Hello World",
+      description: "Learn the fundamental print statement in Python",
+      instructions: "Write a program that prints 'Hello, World!' to the console.",
+      starterCode: "# Print Hello, World! to the console\n",
+      expectedOutput: "Hello, World!",
+      hints: [
+        "Use the print() function",
+        "Put the text in quotes",
+        "Python is case-sensitive"
+      ],
+      difficulty: "Easy" as const,
+      category: "Basics",
+      concepts: ["print", "strings"]
+    },
+    {
+      id: 2,
+      title: "Variables and Assignment",
+      description: "Learn how to store values in variables",
+      instructions: "Create a variable 'name' with your name and print it.",
+      starterCode: "# Create a variable called 'name' and assign your name to it\n# Then print it\n",
+      expectedOutput: "Your Name",
+      hints: [
+        "Use the = operator for assignment",
+        "Variable names should be lowercase",
+        "Strings need quotes"
+      ],
+      difficulty: "Easy" as const,
+      category: "Variables",
+      concepts: ["variables", "assignment", "strings"]
+    },
+    {
+      id: 3,
+      title: "Basic Math Operations",
+      description: "Perform arithmetic calculations",
+      instructions: "Calculate 15 + 25 and print the result.",
+      starterCode: "# Calculate 15 + 25 and print the result\n",
+      expectedOutput: "40",
+      hints: [
+        "Use the + operator",
+        "You can print expressions directly",
+        "No quotes needed for numbers"
+      ],
+      difficulty: "Easy" as const,
+      category: "Basics",
+      concepts: ["arithmetic", "operators"]
+    },
+    {
+      id: 4,
+      title: "String Concatenation",
+      description: "Join strings together",
+      instructions: "Create two variables: first_name and last_name. Print them together with a space.",
+      starterCode: "# Create first_name and last_name variables\n# Print them together with a space\n",
+      expectedOutput: "John Doe",
+      hints: [
+        "Use + to join strings",
+        "Don't forget the space between names",
+        "You can assign any names you like"
+      ],
+      difficulty: "Easy" as const,
+      category: "Strings",
+      concepts: ["string concatenation", "variables"]
+    },
+    {
+      id: 5,
+      title: "User Input",
+      description: "Get input from the user",
+      instructions: "Ask the user for their age using input() and print a greeting.",
+      starterCode: "# Ask for user's age and print a greeting\n",
+      expectedOutput: "Hello! You are 25 years old.",
+      hints: [
+        "Use input() function",
+        "Store the result in a variable",
+        "Use string concatenation or f-strings"
+      ],
+      difficulty: "Easy" as const,
+      category: "Input/Output",
+      concepts: ["input", "strings", "user interaction"]
+    }
   ];
   
-  const challenges: Challenge[] = [];
-  let id = 1;
+  // Generate remaining challenges programmatically
+  const categories = [
+    "Control Flow", "Functions", "Lists", "Dictionaries", "Loops",
+    "Conditionals", "String Methods", "File I/O", "Error Handling", 
+    "Classes", "Modules", "List Comprehensions", "Lambda Functions",
+    "Decorators", "Generators", "Context Managers", "Regular Expressions",
+    "JSON", "APIs", "Testing"
+  ];
+  
+  const challenges: Challenge[] = [...realChallenges];
+  let id = realChallenges.length + 1;
   
   categories.forEach((category, categoryIndex) => {
-    const challengesPerCategory = 40; // 800 total / 20 categories
+    const challengesPerCategory = Math.floor((800 - realChallenges.length) / categories.length);
     
     for (let i = 0; i < challengesPerCategory; i++) {
-      const difficulty = i < 15 ? "Easy" : i < 30 ? "Medium" : "Hard";
+      const difficulty = i < challengesPerCategory * 0.4 ? "Easy" : 
+                        i < challengesPerCategory * 0.7 ? "Medium" : "Hard";
       
       challenges.push({
         id: id++,
-        title: `${category} Challenge ${i + 1}`,
+        title: getChallengeTitle(category, i + 1),
         description: `Master ${category.toLowerCase()} concepts in Python`,
-        instructions: `Complete this ${category.toLowerCase()} challenge to advance your Python skills`,
-        starterCode: `# ${category} Challenge ${i + 1}\n# Write your solution here\n`,
+        instructions: getChallengeInstructions(category, i + 1),
+        starterCode: getChallengeStarterCode(category, i + 1),
         expectedOutput: `Expected output for ${category.toLowerCase()} challenge`,
-        hints: [
-          `Focus on ${category.toLowerCase()} concepts`,
-          "Read the problem carefully",
-          "Test with different inputs"
-        ],
+        hints: getChallengeHints(category),
         difficulty,
         category,
         concepts: [category.toLowerCase()]
@@ -201,6 +284,98 @@ function generatePythonChallenges(): Challenge[] {
   });
   
   return challenges;
+}
+
+function getChallengeTitle(category: string, num: number): string {
+  const titles: { [key: string]: string[] } = {
+    "Control Flow": ["If-Else Basics", "Nested Conditions", "Multiple Conditions", "Ternary Operator"],
+    "Functions": ["Define Function", "Function Parameters", "Return Values", "Default Parameters"],
+    "Lists": ["Create Lists", "List Indexing", "List Methods", "List Slicing"],
+    "Dictionaries": ["Create Dictionary", "Access Values", "Dictionary Methods", "Nested Dictionaries"],
+    "Loops": ["For Loop Basics", "While Loop", "Loop with Range", "Nested Loops"],
+    "Conditionals": ["Boolean Logic", "Complex Conditions", "Switch Alternative", "Guard Clauses"]
+  };
+  
+  const categoryTitles = titles[category] || [`${category} Challenge`];
+  return categoryTitles[num % categoryTitles.length] || `${category} Challenge ${num}`;
+}
+
+function getChallengeInstructions(category: string, num: number): string {
+  const instructions: { [key: string]: string[] } = {
+    "Control Flow": [
+      "Write an if-else statement to check if a number is positive or negative",
+      "Create nested if statements to categorize ages (child, adult, senior)",
+      "Use elif to create a grade calculator (A, B, C, D, F)",
+      "Implement a simple ternary-like operation"
+    ],
+    "Functions": [
+      "Create a function that greets a person by name",
+      "Write a function that adds two numbers",
+      "Create a function that returns the square of a number",
+      "Write a function with default parameter values"
+    ],
+    "Lists": [
+      "Create a list of your favorite colors and print it",
+      "Access the first and last elements of a list",
+      "Add and remove items from a list",
+      "Use list slicing to get sublists"
+    ]
+  };
+  
+  const categoryInstructions = instructions[category] || [`Complete this ${category.toLowerCase()} challenge`];
+  return categoryInstructions[num % categoryInstructions.length] || `Complete this ${category.toLowerCase()} challenge`;
+}
+
+function getChallengeStarterCode(category: string, num: number): string {
+  const starterCodes: { [key: string]: string[] } = {
+    "Control Flow": [
+      "# Check if a number is positive or negative\nnumber = 10\n# Write your if-else statement here\n",
+      "# Categorize ages\nage = 25\n# Write nested if statements here\n",
+      "# Grade calculator\nscore = 85\n# Use elif statements here\n"
+    ],
+    "Functions": [
+      "# Define a greeting function\ndef greet(name):\n    # Write your code here\n    pass\n\n# Call the function\n",
+      "# Function to add two numbers\ndef add_numbers(a, b):\n    # Write your code here\n    pass\n"
+    ],
+    "Lists": [
+      "# Create a list of favorite colors\ncolors = []\n# Add your colors here\n",
+      "# Work with list indexing\nfruits = ['apple', 'banana', 'orange']\n# Access elements here\n"
+    ]
+  };
+  
+  const categoryCodes = starterCodes[category] || [`# ${category} Challenge ${num}\n# Write your solution here\n`];
+  return categoryCodes[num % categoryCodes.length] || `# ${category} Challenge ${num}\n# Write your solution here\n`;
+}
+
+function getChallengeHints(category: string): string[] {
+  const hints: { [key: string]: string[] } = {
+    "Control Flow": [
+      "Use if, elif, and else keywords",
+      "Remember the colon (:) after conditions",
+      "Indentation is crucial in Python"
+    ],
+    "Functions": [
+      "Use the 'def' keyword to define functions",
+      "Don't forget the colon after function definition",
+      "Use 'return' to send values back"
+    ],
+    "Lists": [
+      "Lists use square brackets []",
+      "Index starts at 0",
+      "Use append() to add items"
+    ],
+    "Loops": [
+      "Use 'for' for known iterations",
+      "Use 'while' for condition-based loops",
+      "Remember proper indentation"
+    ]
+  };
+  
+  return hints[category] || [
+    `Focus on ${category.toLowerCase()} concepts`,
+    "Read the problem carefully",
+    "Test with different inputs"
+  ];
 }
 
 function generateJavaScriptChallenges(): Challenge[] {
