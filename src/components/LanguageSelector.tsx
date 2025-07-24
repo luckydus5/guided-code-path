@@ -2,66 +2,9 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Code, Zap, Star } from "lucide-react";
+import { PROGRAMMING_LANGUAGES, type Language } from "@/data/languages";
 
-interface Language {
-  id: string;
-  name: string;
-  icon: string;
-  description: string;
-  difficulty: "Beginner" | "Intermediate" | "Advanced";
-  color: string;
-}
-
-const languages: Language[] = [
-  {
-    id: "python",
-    name: "Python",
-    icon: "🐍",
-    description: "Perfect for beginners. Learn with simple syntax and powerful features.",
-    difficulty: "Beginner",
-    color: "from-green-400 to-blue-500"
-  },
-  {
-    id: "javascript",
-    name: "JavaScript",
-    icon: "🟨",
-    description: "Build web applications and learn modern programming concepts.",
-    difficulty: "Beginner",
-    color: "from-yellow-400 to-orange-500"
-  },
-  {
-    id: "cpp",
-    name: "C++",
-    icon: "⚡",
-    description: "Master system programming and performance optimization.",
-    difficulty: "Advanced",
-    color: "from-blue-400 to-purple-600"
-  },
-  {
-    id: "java",
-    name: "Java",
-    icon: "☕",
-    description: "Enterprise-level programming with object-oriented design.",
-    difficulty: "Intermediate",
-    color: "from-red-400 to-pink-500"
-  },
-  {
-    id: "go",
-    name: "Go",
-    icon: "🔵",
-    description: "Modern systems programming with simplicity and performance.",
-    difficulty: "Intermediate",
-    color: "from-cyan-400 to-blue-500"
-  },
-  {
-    id: "rust",
-    name: "Rust",
-    icon: "🦀",
-    description: "Memory-safe systems programming for the future.",
-    difficulty: "Advanced",
-    color: "from-orange-400 to-red-500"
-  }
-];
+const languages = PROGRAMMING_LANGUAGES;
 
 interface LanguageSelectorProps {
   onSelect: (language: Language) => void;
