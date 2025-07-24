@@ -65,6 +65,197 @@ const pythonChallenges: Challenge[] = [
       "Use print() to display the variable value"
     ],
     difficulty: "Easy"
+  },
+  {
+    id: 3,
+    title: "String Manipulation",
+    description: "Learn to work with text data and string methods.",
+    instructions: "Create a variable 'name' with your name, then print 'Hello, [name]!' where [name] is replaced with the variable.",
+    starterCode: "# Create a variable 'name' with your name\n# Print a greeting using the name variable\n",
+    expectedOutput: "Hello, Alice!",
+    hints: [
+      "Use string concatenation with + operator",
+      "Or use f-strings: f'Hello, {name}!'",
+      "Remember to include the exclamation mark"
+    ],
+    difficulty: "Easy"
+  },
+  {
+    id: 4,
+    title: "Basic Math Operations",
+    description: "Practice arithmetic operations and calculations.",
+    instructions: "Calculate the area of a rectangle with width 5 and height 3, then print the result.",
+    starterCode: "# Define width and height variables\n# Calculate area\n# Print the result\n",
+    expectedOutput: "15",
+    hints: [
+      "Area = width × height",
+      "Use the * operator for multiplication",
+      "Store the result in a variable before printing"
+    ],
+    difficulty: "Easy"
+  },
+  {
+    id: 5,
+    title: "Conditional Statements",
+    description: "Learn to make decisions in your code using if statements.",
+    instructions: "Write a program that checks if a number is positive, negative, or zero. Use the number 10.",
+    starterCode: "number = 10\n# Write your if-elif-else statement here\n",
+    expectedOutput: "Positive",
+    hints: [
+      "Use if, elif, and else statements",
+      "Check if number > 0 for positive",
+      "Check if number < 0 for negative",
+      "Otherwise it's zero"
+    ],
+    difficulty: "Medium"
+  },
+  {
+    id: 6,
+    title: "Lists and Indexing",
+    description: "Learn to store multiple values in lists and access them.",
+    instructions: "Create a list of fruits ['apple', 'banana', 'orange'] and print the second fruit.",
+    starterCode: "# Create a list of fruits\n# Print the second fruit (remember indexing starts at 0)\n",
+    expectedOutput: "banana",
+    hints: [
+      "Lists are created with square brackets []",
+      "Indexing starts at 0, so second item is index 1",
+      "Use fruits[1] to access the second item"
+    ],
+    difficulty: "Medium"
+  },
+  {
+    id: 7,
+    title: "For Loops",
+    description: "Learn to repeat actions using for loops.",
+    instructions: "Write a for loop that prints numbers from 1 to 5.",
+    starterCode: "# Write a for loop to print numbers 1 to 5\n",
+    expectedOutput: "1\n2\n3\n4\n5",
+    hints: [
+      "Use range(1, 6) to get numbers 1 to 5",
+      "for i in range(1, 6): print(i)",
+      "Range end is exclusive, so use 6 to include 5"
+    ],
+    difficulty: "Medium"
+  },
+  {
+    id: 8,
+    title: "Functions",
+    description: "Learn to create reusable code with functions.",
+    instructions: "Define a function called 'greet' that takes a name parameter and returns 'Hello, [name]!'. Then call it with 'Python'.",
+    starterCode: "# Define the greet function\n# Call the function with 'Python' and print the result\n",
+    expectedOutput: "Hello, Python!",
+    hints: [
+      "Use def to define a function",
+      "Functions can take parameters in parentheses",
+      "Use return to send back a value",
+      "Call the function: greet('Python')"
+    ],
+    difficulty: "Medium"
+  },
+  {
+    id: 9,
+    title: "Dictionary Basics",
+    description: "Learn to store key-value pairs using dictionaries.",
+    instructions: "Create a dictionary with person info: name='John', age=30, city='New York'. Print the person's age.",
+    starterCode: "# Create a dictionary with person information\n# Print the age value\n",
+    expectedOutput: "30",
+    hints: [
+      "Dictionaries use curly braces {}",
+      "Format: {'key': 'value'}",
+      "Access values with person['age']",
+      "Keys are strings, so use quotes"
+    ],
+    difficulty: "Medium"
+  },
+  {
+    id: 10,
+    title: "List Comprehension",
+    description: "Learn the Pythonic way to create lists efficiently.",
+    instructions: "Create a list of squares for numbers 1 to 5 using list comprehension, then print it.",
+    starterCode: "# Create a list of squares using list comprehension\n# Print the result\n",
+    expectedOutput: "[1, 4, 9, 16, 25]",
+    hints: [
+      "List comprehension: [expression for item in iterable]",
+      "Use [x**2 for x in range(1, 6)]",
+      "** is the exponentiation operator",
+      "Print the entire list"
+    ],
+    difficulty: "Hard"
+  },
+  {
+    id: 11,
+    title: "Error Handling",
+    description: "Learn to handle errors gracefully with try-except blocks.",
+    instructions: "Write code that tries to convert '123' to an integer and prints it. Handle any potential errors.",
+    starterCode: "# Try to convert '123' to integer\n# Handle any exceptions that might occur\n",
+    expectedOutput: "123",
+    hints: [
+      "Use try-except blocks",
+      "int() converts strings to integers",
+      "Catch ValueError for invalid conversions",
+      "Print the converted number if successful"
+    ],
+    difficulty: "Hard"
+  },
+  {
+    id: 12,
+    title: "File Operations",
+    description: "Learn to work with files for data persistence.",
+    instructions: "Write code that would create a file and write 'Hello, File!' to it. Then print a success message.",
+    starterCode: "# Simulate file writing (print success message)\n",
+    expectedOutput: "File created successfully!",
+    hints: [
+      "For this exercise, just print the success message",
+      "In real Python: with open('file.txt', 'w') as f:",
+      "Use f.write() to write content",
+      "Always close files or use 'with' statement"
+    ],
+    difficulty: "Hard"
+  },
+  {
+    id: 13,
+    title: "Class and Objects",
+    description: "Learn object-oriented programming with classes.",
+    instructions: "Define a class 'Car' with attributes make and model. Create an instance and print the make.",
+    starterCode: "# Define the Car class\n# Create an instance\n# Print the make\n",
+    expectedOutput: "Toyota",
+    hints: [
+      "Use class keyword to define a class",
+      "Define __init__ method for initialization",
+      "self.make = make to set attributes",
+      "Create instance: my_car = Car('Toyota', 'Camry')"
+    ],
+    difficulty: "Hard"
+  },
+  {
+    id: 14,
+    title: "Lambda Functions",
+    description: "Learn to create anonymous functions with lambda.",
+    instructions: "Create a lambda function that doubles a number, then use it to double the number 7.",
+    starterCode: "# Create a lambda function to double a number\n# Use it to double 7 and print the result\n",
+    expectedOutput: "14",
+    hints: [
+      "Lambda syntax: lambda parameter: expression",
+      "double = lambda x: x * 2",
+      "Call it like a regular function: double(7)",
+      "Print the result"
+    ],
+    difficulty: "Hard"
+  },
+  {
+    id: 15,
+    title: "Advanced Challenge",
+    description: "Combine multiple concepts in a real-world scenario.",
+    instructions: "Create a function that takes a list of numbers and returns a new list with only even numbers doubled. Test with [1, 2, 3, 4, 5, 6].",
+    starterCode: "# Define function to process the list\n# Test with the given list\n# Print the result\n",
+    expectedOutput: "[4, 8, 12]",
+    hints: [
+      "Use list comprehension with condition",
+      "Check if number % 2 == 0 for even numbers",
+      "Multiply even numbers by 2",
+      "[x * 2 for x in numbers if x % 2 == 0]"
+    ],
+    difficulty: "Hard"
   }
 ];
 
