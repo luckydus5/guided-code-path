@@ -379,14 +379,295 @@ function getChallengeHints(category: string): string[] {
 }
 
 function generateJavaScriptChallenges(): Challenge[] {
-  const categories = [
-    "Basics", "Variables", "Functions", "Arrays", "Objects", "DOM",
-    "Events", "Async/Await", "Promises", "ES6+", "React", "Node.js",
-    "Express", "APIs", "Testing", "TypeScript", "Webpack", "Progressive Web Apps",
-    "Performance", "Security"
+  const realChallenges = [
+    // Basics (1-10)
+    {
+      id: 1,
+      title: "Console Hello World",
+      description: "Learn the fundamental console.log() function in JavaScript",
+      instructions: "Write a program that logs 'Hello, JavaScript!' to the console.",
+      starterCode: "// Log 'Hello, JavaScript!' to the console\n",
+      expectedOutput: "Hello, JavaScript!",
+      hints: [
+        "Use console.log() function",
+        "Put the text in quotes",
+        "End statements with semicolons"
+      ],
+      difficulty: "Easy" as const,
+      category: "Basics",
+      concepts: ["console.log", "strings"]
+    },
+    {
+      id: 2,
+      title: "Variables with Let and Const",
+      description: "Learn modern JavaScript variable declarations",
+      instructions: "Create a variable 'userName' with value 'CodeLearner' and log it.",
+      starterCode: "// Use let or const to declare a variable\n// Then log it to console\n",
+      expectedOutput: "CodeLearner",
+      hints: [
+        "Use let for variables that change",
+        "Use const for constants",
+        "Use camelCase for variable names"
+      ],
+      difficulty: "Easy" as const,
+      category: "Variables",
+      concepts: ["let", "const", "variables"]
+    },
+    {
+      id: 3,
+      title: "String Template Literals",
+      description: "Learn modern string interpolation with template literals",
+      instructions: "Create variables for firstName and lastName, then use template literals to log 'Hello, [firstName] [lastName]!'",
+      starterCode: "// Create firstName and lastName variables\n// Use template literals with ${} syntax\n",
+      expectedOutput: "Hello, John Doe!",
+      hints: [
+        "Use backticks `` for template literals",
+        "Use ${variable} syntax for interpolation",
+        "Template literals allow multi-line strings"
+      ],
+      difficulty: "Easy" as const,
+      category: "Strings",
+      concepts: ["template literals", "string interpolation"]
+    },
+    {
+      id: 4,
+      title: "Arrow Functions",
+      description: "Learn modern arrow function syntax",
+      instructions: "Create an arrow function called 'greet' that takes a name parameter and returns 'Hello, [name]!'",
+      starterCode: "// Create an arrow function called greet\n// It should take a name parameter\n// Return a greeting message\n",
+      expectedOutput: "Hello, World!",
+      hints: [
+        "Arrow functions use => syntax",
+        "const greet = (name) => {}",
+        "Use return statement or implicit return"
+      ],
+      difficulty: "Medium" as const,
+      category: "Functions",
+      concepts: ["arrow functions", "parameters", "return"]
+    },
+    {
+      id: 5,
+      title: "Array Methods - Map",
+      description: "Transform arrays using the map method",
+      instructions: "Use the map method to square all numbers in the array [1, 2, 3, 4, 5]",
+      starterCode: "const numbers = [1, 2, 3, 4, 5];\n// Use map to square each number\n",
+      expectedOutput: "[1, 4, 9, 16, 25]",
+      hints: [
+        "map() creates a new array",
+        "Use arrow function: x => x * x",
+        "map() doesn't modify original array"
+      ],
+      difficulty: "Medium" as const,
+      category: "Arrays",
+      concepts: ["array methods", "map", "arrow functions"]
+    },
+    {
+      id: 6,
+      title: "Object Destructuring",
+      description: "Extract values from objects using destructuring",
+      instructions: "Create an object with name and age properties, then use destructuring to extract them into separate variables",
+      starterCode: "// Create a person object\n// Use destructuring to extract name and age\n",
+      expectedOutput: "Name: John, Age: 25",
+      hints: [
+        "Use { name, age } = object syntax",
+        "Destructuring extracts properties",
+        "Variable names must match property names"
+      ],
+      difficulty: "Medium" as const,
+      category: "Objects",
+      concepts: ["destructuring", "objects", "ES6"]
+    },
+    {
+      id: 7,
+      title: "Async/Await Basic",
+      description: "Learn asynchronous programming with async/await",
+      instructions: "Create an async function that waits 1 second and then returns 'Task completed!'",
+      starterCode: "// Create an async function\n// Use setTimeout with Promise for delay\n// Return a message after 1 second\n",
+      expectedOutput: "Task completed!",
+      hints: [
+        "Use async keyword before function",
+        "Use await with Promise",
+        "setTimeout can be wrapped in Promise"
+      ],
+      difficulty: "Hard" as const,
+      category: "Async",
+      concepts: ["async/await", "promises", "asynchronous"]
+    },
+    {
+      id: 8,
+      title: "DOM Manipulation",
+      description: "Learn to manipulate HTML elements with JavaScript",
+      instructions: "Create code that would change the text content of an element with id 'demo' to 'Hello, DOM!'",
+      starterCode: "// Select element by id\n// Change its text content\n",
+      expectedOutput: "Element text changed to: Hello, DOM!",
+      hints: [
+        "Use document.getElementById()",
+        "Use textContent property",
+        "DOM manipulation changes webpage"
+      ],
+      difficulty: "Medium" as const,
+      category: "DOM",
+      concepts: ["DOM", "getElementById", "textContent"]
+    },
+    {
+      id: 9,
+      title: "Event Listeners",
+      description: "Handle user interactions with event listeners",
+      instructions: "Add a click event listener to a button that logs 'Button clicked!' when pressed",
+      starterCode: "// Assume there's a button element\n// Add click event listener\n// Log message when clicked\n",
+      expectedOutput: "Button clicked!",
+      hints: [
+        "Use addEventListener() method",
+        "First parameter is event type: 'click'",
+        "Second parameter is callback function"
+      ],
+      difficulty: "Medium" as const,
+      category: "Events",
+      concepts: ["events", "addEventListener", "callbacks"]
+    },
+    {
+      id: 10,
+      title: "Fetch API",
+      description: "Make HTTP requests using the Fetch API",
+      instructions: "Use fetch to get data from a placeholder API and log the response",
+      starterCode: "// Use fetch to make HTTP request\n// Handle the response with .then()\n// Log the result\n",
+      expectedOutput: "Data fetched successfully",
+      hints: [
+        "fetch() returns a Promise",
+        "Use .then() to handle response",
+        "Use .json() to parse JSON data"
+      ],
+      difficulty: "Hard" as const,
+      category: "APIs",
+      concepts: ["fetch", "promises", "HTTP", "APIs"]
+    }
   ];
   
-  return generateChallengesForLanguage("JavaScript", categories);
+  // Generate remaining challenges programmatically
+  const categories = [
+    "Advanced Functions", "Closures", "Prototypes", "Classes", "Modules",
+    "Error Handling", "Regular Expressions", "JSON", "Local Storage", "Cookies",
+    "Animation", "Canvas", "WebGL", "Service Workers", "Web Components",
+    "Node.js", "Express", "MongoDB", "React Basics", "State Management"
+  ];
+  
+  const challenges: Challenge[] = [...realChallenges];
+  let id = realChallenges.length + 1;
+  
+  categories.forEach((category, categoryIndex) => {
+    const challengesPerCategory = Math.floor((800 - realChallenges.length) / categories.length);
+    
+    for (let i = 0; i < challengesPerCategory; i++) {
+      const difficulty = i < challengesPerCategory * 0.4 ? "Easy" : 
+                        i < challengesPerCategory * 0.7 ? "Medium" : "Hard";
+      
+      challenges.push({
+        id: id++,
+        title: getJSChallengeTitle(category, i + 1),
+        description: `Master ${category.toLowerCase()} concepts in JavaScript`,
+        instructions: getJSChallengeInstructions(category, i + 1),
+        starterCode: getJSChallengeStarterCode(category, i + 1),
+        expectedOutput: `Expected output for ${category.toLowerCase()} challenge`,
+        hints: getJSChallengeHints(category),
+        difficulty,
+        category,
+        concepts: [category.toLowerCase()]
+      });
+    }
+  });
+  
+  return challenges;
+}
+
+function getJSChallengeTitle(category: string, num: number): string {
+  const titles: { [key: string]: string[] } = {
+    "Advanced Functions": ["Higher Order Functions", "Function Composition", "Currying", "Memoization"],
+    "Closures": ["Basic Closure", "Data Privacy", "Function Factory", "Module Pattern"],
+    "Classes": ["Class Declaration", "Constructor", "Methods", "Inheritance"],
+    "Modules": ["Export/Import", "Default Exports", "Named Exports", "Dynamic Imports"],
+    "Error Handling": ["Try-Catch", "Custom Errors", "Promise Errors", "Async Error Handling"]
+  };
+  
+  const categoryTitles = titles[category] || [`${category} Challenge`];
+  return categoryTitles[num % categoryTitles.length] || `${category} Challenge ${num}`;
+}
+
+function getJSChallengeInstructions(category: string, num: number): string {
+  const instructions: { [key: string]: string[] } = {
+    "Advanced Functions": [
+      "Create a function that takes another function as a parameter",
+      "Write a function that returns another function",
+      "Implement a curried function for addition",
+      "Create a memoization function for expensive calculations"
+    ],
+    "Closures": [
+      "Create a function that remembers its environment",
+      "Implement a counter using closure for data privacy",
+      "Build a function factory that creates specialized functions",
+      "Use closure to create a module pattern"
+    ],
+    "Classes": [
+      "Define a class with constructor and methods",
+      "Create a class that extends another class",
+      "Implement static methods in a class",
+      "Use getter and setter methods"
+    ]
+  };
+  
+  const categoryInstructions = instructions[category] || [`Complete this ${category.toLowerCase()} challenge`];
+  return categoryInstructions[num % categoryInstructions.length] || `Complete this ${category.toLowerCase()} challenge`;
+}
+
+function getJSChallengeStarterCode(category: string, num: number): string {
+  const starterCodes: { [key: string]: string[] } = {
+    "Advanced Functions": [
+      "// Create a higher order function\nfunction createMultiplier(factor) {\n  // Return a function that multiplies by factor\n}",
+      "// Function composition\nconst add = x => y => x + y;\n// Create composed functions\n",
+      "// Currying example\nconst curry = (fn) => {\n  // Implement currying\n};"
+    ],
+    "Closures": [
+      "// Basic closure\nfunction outerFunction(x) {\n  // Return inner function that uses x\n}",
+      "// Counter with closure\nfunction createCounter() {\n  // Private variable\n  // Return object with methods\n}"
+    ],
+    "Classes": [
+      "// Define a class\nclass Person {\n  constructor(name) {\n    // Initialize properties\n  }\n}",
+      "// Class inheritance\nclass Student extends Person {\n  // Add student-specific methods\n}"
+    ]
+  };
+  
+  const categoryCodes = starterCodes[category] || [`// ${category} Challenge ${num}\n// Write your solution here\n`];
+  return categoryCodes[num % categoryCodes.length] || `// ${category} Challenge ${num}\n// Write your solution here\n`;
+}
+
+function getJSChallengeHints(category: string): string[] {
+  const hints: { [key: string]: string[] } = {
+    "Advanced Functions": [
+      "Functions are first-class objects in JavaScript",
+      "Higher-order functions accept or return functions",
+      "Use arrow functions for cleaner syntax"
+    ],
+    "Closures": [
+      "Inner functions have access to outer scope",
+      "Closures preserve variable values",
+      "Useful for data privacy and encapsulation"
+    ],
+    "Classes": [
+      "Classes are syntactic sugar over prototypes",
+      "Use 'this' to refer to instance properties",
+      "super() calls parent class constructor"
+    ],
+    "Modules": [
+      "Use export to expose functionality",
+      "Use import to bring in dependencies",
+      "Default exports don't need curly braces"
+    ]
+  };
+  
+  return hints[category] || [
+    `Focus on ${category.toLowerCase()} concepts`,
+    "Read the problem carefully",
+    "Test with different inputs"
+  ];
 }
 
 function generateJavaChallenges(): Challenge[] {

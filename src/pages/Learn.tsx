@@ -189,25 +189,51 @@ export default function Learn() {
     const challenge = currentChallenge;
     const normalizedCode = code.toLowerCase().replace(/\s+/g, ' ').trim();
     
-    // More sophisticated checking based on challenge content
-    if (challenge.title.includes("Hello World")) {
-      return normalizedCode.includes("hello") && normalizedCode.includes("world");
+    // Enhanced checking based on challenge content and language
+    if (language === 'javascript') {
+      if (challenge.title.includes("Hello World")) {
+        return normalizedCode.includes("console.log") && normalizedCode.includes("hello");
+      }
+      if (challenge.title.includes("Variables")) {
+        return (normalizedCode.includes("let") || normalizedCode.includes("const")) && normalizedCode.includes("=");
+      }
+      if (challenge.title.includes("Template Literals")) {
+        return normalizedCode.includes("`") && normalizedCode.includes("${");
+      }
+      if (challenge.title.includes("Arrow Functions")) {
+        return normalizedCode.includes("=>") && normalizedCode.includes("greet");
+      }
+      if (challenge.title.includes("Map")) {
+        return normalizedCode.includes("map") && normalizedCode.includes("=>");
+      }
+      if (challenge.title.includes("Destructuring")) {
+        return normalizedCode.includes("{") && normalizedCode.includes("}") && normalizedCode.includes("=");
+      }
     }
-    if (challenge.title.includes("Variables")) {
-      return normalizedCode.includes("=") && (normalizedCode.includes("age") || normalizedCode.includes("name"));
+    
+    // Python checks
+    if (language === 'python') {
+      if (challenge.title.includes("Hello World")) {
+        return normalizedCode.includes("print") && normalizedCode.includes("hello");
+      }
+      if (challenge.title.includes("Variables")) {
+        return normalizedCode.includes("=") && (normalizedCode.includes("name") || normalizedCode.includes("age"));
+      }
     }
+    
+    // Generic checks for other concepts
     if (challenge.title.includes("Loop")) {
       return normalizedCode.includes("for") || normalizedCode.includes("while");
     }
     if (challenge.title.includes("Function")) {
-      return normalizedCode.includes("def") || normalizedCode.includes("function");
+      return normalizedCode.includes("def") || normalizedCode.includes("function") || normalizedCode.includes("=>");
     }
     if (challenge.title.includes("Array") || challenge.title.includes("List")) {
       return normalizedCode.includes("[") && normalizedCode.includes("]");
     }
     
-    // Default simple check
-    return code.length > 10; // Basic effort check
+    // Basic effort check - ensure some meaningful code was written
+    return code.length > 15 && code.trim() !== challenge.starterCode.trim();
   };
 
   const resetChallenge = () => {
