@@ -48,7 +48,7 @@ export default function Learn() {
   const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
   const [userCode, setUserCode] = useState("");
   const [isRunning, setIsRunning] = useState(false);
-  const [testResult, setTestResult] = useState<{ success: boolean; output: string; message: string } | null>(null);
+  const [testResult, setTestResult] = useState<{ success: boolean; output: string; message: string; actualOutput?: string } | null>(null);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [timeSpent, setTimeSpent] = useState(0);
   
@@ -99,11 +99,12 @@ export default function Learn() {
     
     setTimeout(() => {
       const trimmedCode = userCode.trim();
-      const isCorrect = checkSolution(trimmedCode);
+      const { isCorrect, actualOutput } = checkSolution(trimmedCode);
       
       setTestResult({
         success: isCorrect,
-        output: isCorrect ? currentChallenge.expectedOutput : "No output or incorrect output",
+        output: currentChallenge.expectedOutput,
+        actualOutput: actualOutput,
         message: isCorrect 
           ? "Excellent! Your solution is correct!" 
           : "Not quite right. Check the hints and try again."
@@ -111,7 +112,7 @@ export default function Learn() {
       
       setIsRunning(false);
       
-      if (isCorrect && startTime) {
+        if (isCorrect && startTime) {
         const timeSpentOnChallenge = Date.now() - startTime.getTime();
         
         // Update progress
@@ -185,55 +186,71 @@ export default function Learn() {
     }, 1500);
   };
 
-  const checkSolution = (code: string): boolean => {
+  const checkSolution = (code: string): { isCorrect: boolean; actualOutput: string } => {
     const challenge = currentChallenge;
     const normalizedCode = code.toLowerCase().replace(/\s+/g, ' ').trim();
     
-    // Enhanced checking based on challenge content and language
-    if (language === 'javascript') {
-      if (challenge.title.includes("Hello World")) {
-        return normalizedCode.includes("console.log") && normalizedCode.includes("hello");
-      }
-      if (challenge.title.includes("Variables")) {
-        return (normalizedCode.includes("let") || normalizedCode.includes("const")) && normalizedCode.includes("=");
-      }
-      if (challenge.title.includes("Template Literals")) {
-        return normalizedCode.includes("`") && normalizedCode.includes("${");
-      }
-      if (challenge.title.includes("Arrow Functions")) {
-        return normalizedCode.includes("=>") && normalizedCode.includes("greet");
-      }
-      if (challenge.title.includes("Map")) {
-        return normalizedCode.includes("map") && normalizedCode.includes("=>");
-      }
-      if (challenge.title.includes("Destructuring")) {
-        return normalizedCode.includes("{") && normalizedCode.includes("}") && normalizedCode.includes("=");
-      }
+    // Simulate code execution to get output
+    let actualOutput = "";
+    let isCorrect = false;
+    
+    // Prevent empty or unchanged code from being correct
+    if (code.trim() === "" || code.trim() === challenge.starterCode.trim()) {
+      return { isCorrect: false, actualOutput: "No output - code is empty or unchanged" };
     }
     
-    // Python checks
-    if (language === 'python') {
-      if (challenge.title.includes("Hello World")) {
-        return normalizedCode.includes("print") && normalizedCode.includes("hello");
+    try {
+      // Language-specific validation with strict checks
+      if (language === 'python') {
+        if (challenge.title.includes("Hello World")) {
+          isCorrect = normalizedCode.includes("print(") && 
+                     (normalizedCode.includes("hello world") || normalizedCode.includes("'hello world'") || normalizedCode.includes('"hello world"'));
+          actualOutput = isCorrect ? "Hello World" : "No output or wrong text";
+        } else if (challenge.title.includes("Variables")) {
+          const hasValidVariable = normalizedCode.includes("=") && 
+                                 (normalizedCode.includes("name") && normalizedCode.includes("print"));
+          isCorrect = hasValidVariable;
+          actualOutput = isCorrect ? "Variable declared and printed" : "Missing variable declaration or print statement";
+        } else if (challenge.title.includes("Addition")) {
+          isCorrect = normalizedCode.includes("+") && normalizedCode.includes("print");
+          actualOutput = isCorrect ? "Sum calculated" : "Missing addition or print";
+        } else if (challenge.title.includes("Loop")) {
+          isCorrect = normalizedCode.includes("for") && normalizedCode.includes("range") && normalizedCode.includes("print");
+          actualOutput = isCorrect ? "Loop executed" : "Missing proper for loop with range";
+        } else if (challenge.title.includes("Function")) {
+          isCorrect = normalizedCode.includes("def ") && normalizedCode.includes("return");
+          actualOutput = isCorrect ? "Function defined" : "Missing function definition or return statement";
+        }
+      } else if (language === 'javascript') {
+        if (challenge.title.includes("Hello World")) {
+          isCorrect = normalizedCode.includes("console.log(") && 
+                     (normalizedCode.includes("hello world") || normalizedCode.includes("'hello world'") || normalizedCode.includes('"hello world"'));
+          actualOutput = isCorrect ? "Hello World" : "No output or wrong text";
+        } else if (challenge.title.includes("Variables")) {
+          isCorrect = (normalizedCode.includes("let ") || normalizedCode.includes("const ")) && 
+                     normalizedCode.includes("=") && normalizedCode.includes("console.log");
+          actualOutput = isCorrect ? "Variable declared and logged" : "Missing variable declaration or console.log";
+        } else if (challenge.title.includes("Arrow Functions")) {
+          isCorrect = normalizedCode.includes("=>") && normalizedCode.includes("const ");
+          actualOutput = isCorrect ? "Arrow function defined" : "Missing arrow function syntax";
+        } else if (challenge.title.includes("Template Literals")) {
+          isCorrect = normalizedCode.includes("`") && normalizedCode.includes("${");
+          actualOutput = isCorrect ? "Template literal used" : "Missing template literal syntax";
+        }
       }
-      if (challenge.title.includes("Variables")) {
-        return normalizedCode.includes("=") && (normalizedCode.includes("name") || normalizedCode.includes("age"));
+      
+      // If no specific check matched, return false
+      if (actualOutput === "") {
+        actualOutput = "Challenge type not recognized or incomplete code";
+        isCorrect = false;
       }
+      
+    } catch (error) {
+      actualOutput = "Error in code execution";
+      isCorrect = false;
     }
     
-    // Generic checks for other concepts
-    if (challenge.title.includes("Loop")) {
-      return normalizedCode.includes("for") || normalizedCode.includes("while");
-    }
-    if (challenge.title.includes("Function")) {
-      return normalizedCode.includes("def") || normalizedCode.includes("function") || normalizedCode.includes("=>");
-    }
-    if (challenge.title.includes("Array") || challenge.title.includes("List")) {
-      return normalizedCode.includes("[") && normalizedCode.includes("]");
-    }
-    
-    // Basic effort check - ensure some meaningful code was written
-    return code.length > 15 && code.trim() !== challenge.starterCode.trim();
+    return { isCorrect, actualOutput };
   };
 
   const resetChallenge = () => {
@@ -410,11 +427,44 @@ export default function Learn() {
                     </div>
                   </div>
 
-                  <CodeEditor 
-                    value={userCode}
-                    onChange={setUserCode}
-                    language={language || 'python'}
-                  />
+                  <div className="space-y-4">
+                    <CodeEditor 
+                      value={userCode}
+                      onChange={setUserCode}
+                      language={language || 'python'}
+                    />
+                    
+                    {/* Code Output Window */}
+                    {testResult && (
+                      <div className="border-t border-border pt-4">
+                        <h4 className="font-medium mb-2 flex items-center gap-2">
+                          <div className={`h-2 w-2 rounded-full ${testResult.success ? 'bg-success' : 'bg-destructive'}`} />
+                          Output
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">Expected Output:</p>
+                            <div className="p-2 bg-muted/30 rounded font-mono text-sm">
+                              {testResult.output}
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">Your Output:</p>
+                            <div className={`p-2 rounded font-mono text-sm ${
+                              testResult.success ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
+                            }`}>
+                              {testResult.actualOutput}
+                            </div>
+                          </div>
+                        </div>
+                        <div className={`mt-3 p-2 rounded text-sm ${
+                          testResult.success ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
+                        }`}>
+                          {testResult.message}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </Card>
 
                 {/* Learning Resources */}
