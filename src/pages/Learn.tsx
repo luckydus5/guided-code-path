@@ -200,8 +200,11 @@ export default function Learn() {
     }
     
     try {
-      // Language-specific validation with strict checks
+      // Language-specific validation with strict checks (case-insensitive)
       if (language === 'python') {
+        // Get expected output in lowercase for comparison
+        const expectedOutput = challenge.expectedOutput?.toLowerCase() || "";
+        
         if (challenge.title.includes("Hello World")) {
           isCorrect = normalizedCode.includes("print(") && 
                      (normalizedCode.includes("hello world") || normalizedCode.includes("'hello world'") || normalizedCode.includes('"hello world"'));
@@ -220,8 +223,22 @@ export default function Learn() {
         } else if (challenge.title.includes("Function")) {
           isCorrect = normalizedCode.includes("def ") && normalizedCode.includes("return");
           actualOutput = isCorrect ? "Function defined" : "Missing function definition or return statement";
+        } else {
+          // Generic validation: check if normalized code produces expected output
+          if (expectedOutput && normalizedCode.includes("print(")) {
+            // Extract what's being printed and compare case-insensitively
+            const printMatch = normalizedCode.match(/print\((.*?)\)/);
+            if (printMatch) {
+              const printedValue = printMatch[1].replace(/['"]/g, '').toLowerCase();
+              isCorrect = expectedOutput.includes(printedValue) || printedValue.includes(expectedOutput);
+              actualOutput = isCorrect ? challenge.expectedOutput : `Expected: ${challenge.expectedOutput}`;
+            }
+          }
         }
       } else if (language === 'javascript') {
+        // Get expected output in lowercase for comparison
+        const expectedOutput = challenge.expectedOutput?.toLowerCase() || "";
+        
         if (challenge.title.includes("Hello World")) {
           isCorrect = normalizedCode.includes("console.log(") && 
                      (normalizedCode.includes("hello world") || normalizedCode.includes("'hello world'") || normalizedCode.includes('"hello world"'));
@@ -236,6 +253,17 @@ export default function Learn() {
         } else if (challenge.title.includes("Template Literals")) {
           isCorrect = normalizedCode.includes("`") && normalizedCode.includes("${");
           actualOutput = isCorrect ? "Template literal used" : "Missing template literal syntax";
+        } else {
+          // Generic validation: check if normalized code produces expected output
+          if (expectedOutput && normalizedCode.includes("console.log(")) {
+            // Extract what's being logged and compare case-insensitively
+            const logMatch = normalizedCode.match(/console\.log\((.*?)\)/);
+            if (logMatch) {
+              const loggedValue = logMatch[1].replace(/['"]/g, '').toLowerCase();
+              isCorrect = expectedOutput.includes(loggedValue) || loggedValue.includes(expectedOutput);
+              actualOutput = isCorrect ? challenge.expectedOutput : `Expected: ${challenge.expectedOutput}`;
+            }
+          }
         }
       }
       
