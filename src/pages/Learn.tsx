@@ -79,7 +79,7 @@ export default function Learn() {
       title: "Project Started!",
       description: "Opening project environment...",
     });
-    // Here you would typically navigate to a project environment
+    navigate(`/learn/${language}/project/${projectId}`);
   };
 
   return (
