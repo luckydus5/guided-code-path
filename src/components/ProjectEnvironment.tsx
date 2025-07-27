@@ -15,10 +15,13 @@ import {
   Lightbulb,
   Target,
   Code2,
-  Terminal
+  Terminal,
+  Trophy
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import CodeEditor from "./CodeEditor";
+import { supabase } from "@/integrations/supabase/client";
+import MultiLanguageCodeEditor from "./MultiLanguageCodeEditor";
+import LearningResources from "./LearningResources";
 import { getProjectsByLanguage } from "@/data/projects";
 
 export default function ProjectEnvironment() {
@@ -26,14 +29,22 @@ export default function ProjectEnvironment() {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const [code, setCode] = useState("");
+  const [codeFiles, setCodeFiles] = useState<any>({});
   const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [startTime] = useState(Date.now());
+  const [resetCount, setResetCount] = useState(0);
 
   const projects = getProjectsByLanguage(language || 'python');
   const project = projects.find(p => p.id === parseInt(projectId || '1'));
+  
+  // Determine if this is a multi-language project
+  const isWebProject = project?.technologies.some(tech => 
+    ['HTML', 'CSS', 'JavaScript'].includes(tech)
+  );
+  const projectLanguages = isWebProject ? ['html', 'css', 'js'] : [language || 'python'];
 
   // Sample project steps for the environment
   const projectSteps = [
@@ -100,7 +111,7 @@ Good testing practices lead to robust applications.`
 
   useEffect(() => {
     if (projectSteps[currentStep]) {
-      setCode(projectSteps[currentStep].code);
+      setCodeFiles(projectSteps[currentStep].code);
     }
   }, [currentStep]);
 
@@ -114,15 +125,38 @@ Good testing practices lead to robust applications.`
         // Mock output based on the code
         let result = "Code executed successfully!\n\n";
         
-        if (code.includes("print")) {
-          const printMatches = code.match(/print\([^)]*\)/g);
-          if (printMatches) {
-            printMatches.forEach(match => {
-              const content = match.match(/print\(["']([^"']*)["']\)/);
-              if (content) {
-                result += content[1] + "\n";
-              }
-            });
+        // Handle different file types
+        if (isWebProject) {
+          result += "🌐 Web Project Output:\n";
+          if (codeFiles.html) result += "✓ HTML structure loaded\n";
+          if (codeFiles.css) result += "✓ CSS styles applied\n";
+          if (codeFiles.js) result += "✓ JavaScript functionality active\n";
+          
+          // Check for console.log statements
+          if (codeFiles.js?.includes("console.log")) {
+            const logMatches = codeFiles.js.match(/console\.log\([^)]*\)/g);
+            if (logMatches) {
+              logMatches.forEach(match => {
+                const content = match.match(/console\.log\(["']([^"']*)["']\)/);
+                if (content) {
+                  result += `Console: ${content[1]}\n`;
+                }
+              });
+            }
+          }
+        } else {
+          // Handle Python or other single-language projects
+          const code = codeFiles[language || 'python'] || '';
+          if (code.includes("print")) {
+            const printMatches = code.match(/print\([^)]*\)/g);
+            if (printMatches) {
+              printMatches.forEach(match => {
+                const content = match.match(/print\(["']([^"']*)["']\)/);
+                if (content) {
+                  result += content[1] + "\n";
+                }
+              });
+            }
           }
         }
         
@@ -140,13 +174,141 @@ Good testing practices lead to robust applications.`
     }, 2000);
   };
 
-  const completeStep = () => {
+  const completeStep = async () => {
     if (!completedSteps.includes(currentStep)) {
       setCompletedSteps(prev => [...prev, currentStep]);
       toast({
         title: "Step completed!",
         description: `Great job completing step ${currentStep + 1}!`,
       });
+      
+      // If this is the last step, complete the project
+      if (currentStep === projectSteps.length - 1) {
+        await completeProject();
+      }
+    }
+  };
+
+  const completeProject = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to save your progress.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+      const skillsLearned = [
+        ...project?.technologies || [],
+        `${language} programming`,
+        'Problem solving',
+        'Code debugging'
+      ];
+
+      const { data, error } = await supabase
+        .from('project_completions')
+        .insert({
+          user_id: user.id,
+          project_id: projectId,
+          language: language || 'python',
+          final_code: codeFiles,
+          time_spent_seconds: timeSpent,
+          difficulty: project?.difficulty || 'beginner',
+          skills_learned: skillsLearned
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Check for badge achievements
+      await checkBadgeAchievements(data.id, timeSpent);
+
+      toast({
+        title: "🎉 Project Completed!",
+        description: "Congratulations! Redirecting to your completion dashboard...",
+      });
+
+      // Redirect to preview dashboard
+      setTimeout(() => {
+        navigate(`/learn/${language}/project/${projectId}/preview`);
+      }, 2000);
+
+    } catch (error) {
+      console.error('Error completing project:', error);
+      toast({
+        title: "Error saving completion",
+        description: "Your project is complete, but we couldn't save it. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const checkBadgeAchievements = async (completionId: string, timeSpent: number) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Check for various badge criteria
+      const badges = [];
+
+      // First project badge
+      const { count: projectCount } = await supabase
+        .from('project_completions')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+
+      if (projectCount === 1) {
+        badges.push('First Steps');
+      }
+
+      // Speed coder badge (completed in under 2 hours)
+      if (timeSpent < 7200) {
+        badges.push('Speed Coder');
+      }
+
+      // Perfectionist badge (no resets)
+      if (resetCount === 0) {
+        badges.push('Perfectionist');
+      }
+
+      // Web Master badge (for web projects)
+      if (isWebProject) {
+        const { count: webProjectCount } = await supabase
+          .from('project_completions')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .in('language', ['html', 'css', 'javascript']);
+
+        if (webProjectCount >= 3) {
+          badges.push('Web Master');
+        }
+      }
+
+      // Award badges
+      for (const badgeName of badges) {
+        const { data: badge } = await supabase
+          .from('project_badges')
+          .select('id')
+          .eq('name', badgeName)
+          .single();
+
+        if (badge) {
+          await supabase
+            .from('user_project_badges')
+            .insert({
+              user_id: user.id,
+              badge_id: badge.id,
+              project_completion_id: completionId
+            });
+        }
+      }
+    } catch (error) {
+      console.error('Error checking badges:', error);
     }
   };
 
@@ -227,19 +389,23 @@ Good testing practices lead to robust applications.`
       </div>
 
       <div className="container mx-auto px-6 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-140px)]">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-140px)]">
           {/* Instructions Panel */}
           <div className="lg:col-span-1">
             <Card className="h-full flex flex-col">
               <Tabs defaultValue="instructions" className="flex-1 flex flex-col">
-                <TabsList className="grid w-full grid-cols-2 m-4 mb-0">
+                <TabsList className="grid w-full grid-cols-3 m-4 mb-0 text-xs">
                   <TabsTrigger value="instructions">
-                    <BookOpen className="h-4 w-4 mr-2" />
-                    Instructions
+                    <BookOpen className="h-4 w-4 mr-1" />
+                    Guide
                   </TabsTrigger>
                   <TabsTrigger value="hints">
-                    <Lightbulb className="h-4 w-4 mr-2" />
+                    <Lightbulb className="h-4 w-4 mr-1" />
                     Hints
+                  </TabsTrigger>
+                  <TabsTrigger value="resources">
+                    <Target className="h-4 w-4 mr-1" />
+                    Learn
                   </TabsTrigger>
                 </TabsList>
 
@@ -280,7 +446,10 @@ Good testing practices lead to robust applications.`
                       <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                         <h4 className="font-medium text-blue-900 dark:text-blue-100">Getting Started</h4>
                         <p className="text-sm text-blue-700 dark:text-blue-300">
-                          Read the code comments carefully - they guide you through what to implement.
+                          {isWebProject 
+                            ? "Use the tabs to switch between HTML, CSS, and JavaScript files as you build your web project."
+                            : "Read the code comments carefully - they guide you through what to implement."
+                          }
                         </p>
                       </div>
                       <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-3">
@@ -295,8 +464,25 @@ Good testing practices lead to robust applications.`
                           Write clean, readable code with meaningful variable names and comments.
                         </p>
                       </div>
+                      {isWebProject && (
+                        <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-lg p-3">
+                          <h4 className="font-medium text-orange-900 dark:text-orange-100">Web Development</h4>
+                          <p className="text-sm text-orange-700 dark:text-orange-300">
+                            Start with HTML structure, add CSS styling, then JavaScript functionality.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
+                </TabsContent>
+
+                <TabsContent value="resources" className="flex-1 p-0">
+                  <LearningResources
+                    projectTitle={project?.title || ''}
+                    language={language || 'python'}
+                    difficulty={project?.difficulty || 'beginner'}
+                    technologies={project?.technologies || []}
+                  />
                 </TabsContent>
               </Tabs>
 
@@ -356,7 +542,7 @@ Good testing practices lead to robust applications.`
           </div>
 
           {/* Code Editor and Output */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-3 space-y-4">
             {/* Code Editor */}
             <Card className="flex-1">
               <div className="p-4 border-b border-border flex items-center justify-between">
@@ -365,21 +551,32 @@ Good testing practices lead to robust applications.`
                   Code Editor
                 </h3>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => setCode(projectSteps[currentStep].code)}>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => {
+                      setCodeFiles(projectSteps[currentStep].code);
+                      setResetCount(prev => prev + 1);
+                    }}
+                  >
                     <RefreshCw className="h-4 w-4 mr-2" />
                     Reset
                   </Button>
-                  <Button size="sm" onClick={runCode} disabled={isRunning}>
-                    <Play className="h-4 w-4 mr-2" />
-                    {isRunning ? 'Running...' : 'Run Code'}
-                  </Button>
+                  {currentStep === projectSteps.length - 1 && completedSteps.includes(currentStep) && (
+                    <Button size="sm" onClick={completeProject} className="bg-gradient-primary">
+                      <Trophy className="h-4 w-4 mr-2" />
+                      Complete Project
+                    </Button>
+                  )}
                 </div>
               </div>
-              <div className="h-64">
-                <CodeEditor 
-                  value={code}
-                  onChange={setCode}
-                  language={language || 'python'}
+              <div className="h-80">
+                <MultiLanguageCodeEditor
+                  languages={projectLanguages}
+                  initialCode={codeFiles}
+                  onCodeChange={setCodeFiles}
+                  onRun={runCode}
+                  isRunning={isRunning}
                 />
               </div>
             </Card>

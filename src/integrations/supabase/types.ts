@@ -155,6 +155,87 @@ export type Database = {
         }
         Relationships: []
       }
+      project_badges: {
+        Row: {
+          color: string
+          created_at: string
+          criteria: Json | null
+          description: string
+          icon: string
+          id: string
+          name: string
+        }
+        Insert: {
+          color: string
+          created_at?: string
+          criteria?: Json | null
+          description: string
+          icon: string
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          criteria?: Json | null
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      project_completions: {
+        Row: {
+          completed_at: string
+          created_at: string
+          deployment_url: string | null
+          difficulty: string | null
+          final_code: Json | null
+          github_repo_url: string | null
+          id: string
+          language: string
+          notes: string | null
+          project_id: string
+          skills_learned: string[] | null
+          time_spent_seconds: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          created_at?: string
+          deployment_url?: string | null
+          difficulty?: string | null
+          final_code?: Json | null
+          github_repo_url?: string | null
+          id?: string
+          language: string
+          notes?: string | null
+          project_id: string
+          skills_learned?: string[] | null
+          time_spent_seconds?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          created_at?: string
+          deployment_url?: string | null
+          difficulty?: string | null
+          final_code?: Json | null
+          github_repo_url?: string | null
+          id?: string
+          language?: string
+          notes?: string | null
+          project_id?: string
+          skills_learned?: string[] | null
+          time_spent_seconds?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_achievements: {
         Row: {
           achievement_id: string
@@ -224,6 +305,45 @@ export type Database = {
             columns: ["lesson_id"]
             isOneToOne: false
             referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_project_badges: {
+        Row: {
+          badge_id: string
+          earned_at: string
+          id: string
+          project_completion_id: string
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          earned_at?: string
+          id?: string
+          project_completion_id: string
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          earned_at?: string
+          id?: string
+          project_completion_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_project_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "project_badges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_project_badges_project_completion_id_fkey"
+            columns: ["project_completion_id"]
+            isOneToOne: false
+            referencedRelation: "project_completions"
             referencedColumns: ["id"]
           },
         ]
