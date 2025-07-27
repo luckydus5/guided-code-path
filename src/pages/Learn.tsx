@@ -121,6 +121,82 @@ export default function Learn() {
   const masteryScore = currentLanguageProgress.masteryScore || 
     Math.round((overallProgress * 0.7) + (currentLanguageProgress.skillsEarned?.length || 0) * 2);
 
+  // Comprehensive learning resources for each language
+  const getLanguageLearningResources = (language: string) => {
+    const resourcesByLanguage = {
+      html: [
+        { type: "video", title: "HTML5 Semantic Elements Masterclass", url: "#", duration: "45 min", difficulty: "Beginner" },
+        { type: "article", title: "Building Accessible Web Forms", url: "#", duration: "20 min", difficulty: "Beginner" },
+        { type: "documentation", title: "HTML5 API Reference Guide", url: "#", duration: "30 min", difficulty: "Intermediate" },
+        { type: "video", title: "SEO-Optimized HTML Structure", url: "#", duration: "35 min", difficulty: "Intermediate" },
+        { type: "article", title: "Progressive Web App HTML Foundation", url: "#", duration: "25 min", difficulty: "Advanced" },
+        { type: "video", title: "HTML Performance Optimization", url: "#", duration: "40 min", difficulty: "Advanced" }
+      ],
+      css: [
+        { type: "video", title: "CSS Flexbox Complete Course", url: "#", duration: "50 min", difficulty: "Beginner" },
+        { type: "article", title: "CSS Grid Layout Fundamentals", url: "#", duration: "30 min", difficulty: "Beginner" },
+        { type: "documentation", title: "CSS Custom Properties Guide", url: "#", duration: "20 min", difficulty: "Intermediate" },
+        { type: "video", title: "Advanced CSS Animations", url: "#", duration: "45 min", difficulty: "Intermediate" },
+        { type: "article", title: "CSS Architecture & Methodologies", url: "#", duration: "35 min", difficulty: "Advanced" },
+        { type: "video", title: "CSS-in-JS and Modern Styling", url: "#", duration: "40 min", difficulty: "Advanced" }
+      ],
+      javascript: [
+        { type: "video", title: "JavaScript ES6+ Features Deep Dive", url: "#", duration: "60 min", difficulty: "Beginner" },
+        { type: "article", title: "DOM Manipulation & Event Handling", url: "#", duration: "25 min", difficulty: "Beginner" },
+        { type: "documentation", title: "Async JavaScript & Promises", url: "#", duration: "30 min", difficulty: "Intermediate" },
+        { type: "video", title: "JavaScript Design Patterns", url: "#", duration: "55 min", difficulty: "Intermediate" },
+        { type: "article", title: "Performance Optimization Techniques", url: "#", duration: "40 min", difficulty: "Advanced" },
+        { type: "video", title: "Node.js & Server-Side JavaScript", url: "#", duration: "65 min", difficulty: "Advanced" }
+      ],
+      python: [
+        { type: "video", title: "Python Data Structures & Algorithms", url: "#", duration: "70 min", difficulty: "Beginner" },
+        { type: "article", title: "Object-Oriented Programming in Python", url: "#", duration: "35 min", difficulty: "Beginner" },
+        { type: "documentation", title: "Python Standard Library Overview", url: "#", duration: "25 min", difficulty: "Intermediate" },
+        { type: "video", title: "Web Development with Flask/Django", url: "#", duration: "80 min", difficulty: "Intermediate" },
+        { type: "article", title: "Machine Learning with Python", url: "#", duration: "45 min", difficulty: "Advanced" },
+        { type: "video", title: "Python Performance & Optimization", url: "#", duration: "50 min", difficulty: "Advanced" }
+      ],
+      java: [
+        { type: "video", title: "Java Fundamentals & OOP Concepts", url: "#", duration: "75 min", difficulty: "Beginner" },
+        { type: "article", title: "Java Collections Framework", url: "#", duration: "40 min", difficulty: "Beginner" },
+        { type: "documentation", title: "Spring Framework Essentials", url: "#", duration: "50 min", difficulty: "Intermediate" },
+        { type: "video", title: "Java Concurrency & Multithreading", url: "#", duration: "60 min", difficulty: "Intermediate" },
+        { type: "article", title: "Microservices with Spring Boot", url: "#", duration: "55 min", difficulty: "Advanced" },
+        { type: "video", title: "Java Performance Tuning", url: "#", duration: "45 min", difficulty: "Advanced" }
+      ]
+    };
+
+    return resourcesByLanguage[language as keyof typeof resourcesByLanguage] || resourcesByLanguage.python;
+  };
+
+  // Learning resources for each project
+  const getProjectLearningResources = (projectId: number, language: string) => {
+    const projectSpecificResources = {
+      html: [
+        { type: "article", title: "HTML Semantic Elements for This Project", url: "#", duration: "10 min" },
+        { type: "video", title: "Building Responsive Layouts", url: "#", duration: "15 min" },
+        { type: "documentation", title: "HTML5 Best Practices", url: "#", duration: "8 min" }
+      ],
+      css: [
+        { type: "article", title: "CSS Flexbox for This Project", url: "#", duration: "12 min" },
+        { type: "video", title: "CSS Grid Layout Tutorial", url: "#", duration: "20 min" },
+        { type: "documentation", title: "CSS Animations for This Project", url: "#", duration: "15 min" }
+      ],
+      javascript: [
+        { type: "article", title: "JavaScript Features for This Project", url: "#", duration: "15 min" },
+        { type: "video", title: "DOM Manipulation for This Project", url: "#", duration: "18 min" },
+        { type: "documentation", title: "Async Patterns for This Project", url: "#", duration: "12 min" }
+      ],
+      python: [
+        { type: "article", title: "Python Libraries for This Project", url: "#", duration: "12 min" },
+        { type: "video", title: "OOP Concepts for This Project", url: "#", duration: "25 min" },
+        { type: "documentation", title: "Python Best Practices", url: "#", duration: "10 min" }
+      ]
+    };
+
+    return projectSpecificResources[language as keyof typeof projectSpecificResources] || [];
+  };
+
   // Calculate current step based on progress (10 total steps)
   const getCurrentStep = () => {
     if (overallProgress <= 10) return 1;
@@ -137,42 +213,6 @@ export default function Learn() {
 
   const currentStep = getCurrentStep();
   const totalSteps = 10;
-
-  // Learning resources for each project
-  const getProjectLearningResources = (projectId: number, language: string) => {
-    const resourcesByLanguage = {
-      html: {
-        resources: [
-          { type: "article", title: "HTML Semantic Elements Guide", url: "#", duration: "10 min" },
-          { type: "video", title: "Building Responsive Layouts", url: "#", duration: "15 min" },
-          { type: "documentation", title: "HTML5 Best Practices", url: "#", duration: "8 min" }
-        ]
-      },
-      css: {
-        resources: [
-          { type: "article", title: "CSS Flexbox Complete Guide", url: "#", duration: "12 min" },
-          { type: "video", title: "CSS Grid Layout Tutorial", url: "#", duration: "20 min" },
-          { type: "documentation", title: "CSS Animations & Transitions", url: "#", duration: "15 min" }
-        ]
-      },
-      javascript: {
-        resources: [
-          { type: "article", title: "JavaScript ES6+ Features", url: "#", duration: "15 min" },
-          { type: "video", title: "DOM Manipulation Basics", url: "#", duration: "18 min" },
-          { type: "documentation", title: "Async/Await Pattern", url: "#", duration: "12 min" }
-        ]
-      },
-      python: {
-        resources: [
-          { type: "article", title: "Python Data Structures", url: "#", duration: "12 min" },
-          { type: "video", title: "Object-Oriented Programming", url: "#", duration: "25 min" },
-          { type: "documentation", title: "Python Libraries Overview", url: "#", duration: "10 min" }
-        ]
-      }
-    };
-
-    return resourcesByLanguage[language as keyof typeof resourcesByLanguage]?.resources || [];
-  };
 
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
   const [showLearningResources, setShowLearningResources] = useState(false);
@@ -298,7 +338,7 @@ export default function Learn() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {getProjectLearningResources(1, language || 'python').map((resource, index) => (
+                {getLanguageLearningResources(language || 'python').map((resource, index) => (
                   <Card key={index} className="p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer">
                     <div className="flex items-start gap-3 mb-4">
                       <div className="p-2 rounded-lg bg-primary/10">
@@ -313,6 +353,12 @@ export default function Learn() {
                             {resource.duration}
                           </Badge>
                         </div>
+                        <Badge 
+                          variant={resource.difficulty === 'Beginner' ? 'default' : resource.difficulty === 'Intermediate' ? 'secondary' : 'destructive'} 
+                          className="text-xs"
+                        >
+                          {resource.difficulty}
+                        </Badge>
                       </div>
                     </div>
                     
@@ -459,6 +505,7 @@ export default function Learn() {
               </div>
             </div>
           </TabsContent>
+
 
           <TabsContent value="capstones" className="space-y-8">
             <div>
