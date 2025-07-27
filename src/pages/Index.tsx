@@ -77,9 +77,40 @@ const Index = () => {
 
       if (data) {
         setProfile(data);
+      } else {
+        // Create a new profile if it doesn't exist
+        await createProfile(userId);
       }
     } catch (error) {
       console.error('Error:', error);
+    }
+  };
+
+  const createProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert({
+          user_id: userId,
+          username: `user_${userId.slice(0, 8)}`,
+          display_name: 'New Learner',
+          xp: 0,
+          level: 1,
+          streak: 0
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating profile:', error);
+        return;
+      }
+
+      if (data) {
+        setProfile(data);
+      }
+    } catch (error) {
+      console.error('Error creating profile:', error);
     }
   };
 
