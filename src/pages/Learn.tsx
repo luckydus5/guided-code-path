@@ -8,27 +8,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Code, 
   Play, 
-  CheckCircle, 
-  XCircle, 
-  Lightbulb, 
   ArrowLeft,
   Trophy,
   BookOpen,
-  Target,
   Star,
-  Zap,
-  Brain,
-  Award,
   TrendingUp,
   Clock,
-  ChevronRight,
-  Lock,
-  RotateCcw
+  FolderOpen,
+  Rocket,
+  Crown,
+  GitBranch,
+  Award,
+  Target,
+  Zap
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LANGUAGE_CHALLENGES } from "@/data/challenges";
-import ChallengePanel from "@/components/ChallengePanel";
-import CodeEditor from "@/components/CodeEditor";
+import { HANDS_ON_PROJECTS, getProjectsByLanguage } from "@/data/projects";
 
 interface UserProgress {
   [language: string]: {
@@ -37,6 +33,7 @@ interface UserProgress {
     totalTimeSpent: number;
     skillLevel: "Beginner" | "Intermediate" | "Advanced" | "Expert";
     achievements: string[];
+    completedProjects: number[];
   };
 }
 
@@ -45,13 +42,6 @@ export default function Learn() {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
-  const [userCode, setUserCode] = useState("");
-  const [isRunning, setIsRunning] = useState(false);
-  const [testResult, setTestResult] = useState<{ success: boolean; output: string; message: string; actualOutput?: string } | null>(null);
-  const [startTime, setStartTime] = useState<Date | null>(null);
-  const [timeSpent, setTimeSpent] = useState(0);
-  
   // Load user progress from localStorage
   const [userProgress, setUserProgress] = useState<UserProgress>(() => {
     const saved = localStorage.getItem('codelearning-progress');
@@ -59,257 +49,42 @@ export default function Learn() {
   });
 
   const languageChallenges = LANGUAGE_CHALLENGES[language || 'python'] || LANGUAGE_CHALLENGES.python;
-  const currentChallenge = languageChallenges[currentChallengeIndex];
   
   const currentLanguageProgress = userProgress[language || 'python'] || {
     completedChallenges: [],
     currentChallenge: 0,
     totalTimeSpent: 0,
     skillLevel: "Beginner" as const,
-    achievements: []
+    achievements: [],
+    completedProjects: []
   };
 
-  const progress = (currentLanguageProgress.completedChallenges.length / languageChallenges.length) * 100;
+  const languageProjects = getProjectsByLanguage(language || 'python');
+  const beginnerProjects = languageProjects.filter(p => p.difficulty === 'Beginner');
+  const intermediateProjects = languageProjects.filter(p => p.difficulty === 'Intermediate');
+  const advancedProjects = languageProjects.filter(p => p.difficulty === 'Advanced');
 
-  useEffect(() => {
-    if (currentChallenge) {
-      setUserCode(currentChallenge.starterCode);
-      setStartTime(new Date());
-    }
-  }, [currentChallenge]);
+  // Calculate overall progress including projects
+  const totalLessons = languageChallenges.length;
+  const completedLessons = currentLanguageProgress.completedChallenges.length;
+  const totalProjects = languageProjects.length;
+  const completedProjects = currentLanguageProgress.completedProjects?.length || 0;
+  
+  const overallProgress = Math.round(
+    ((completedLessons / totalLessons) * 0.4 + (completedProjects / totalProjects) * 0.6) * 100
+  );
 
-  useEffect(() => {
-    // Set current challenge to the first uncompleted one
-    const firstIncomplete = languageChallenges.findIndex(
-      (_, index) => !currentLanguageProgress.completedChallenges.includes(index)
-    );
-    if (firstIncomplete !== -1) {
-      setCurrentChallengeIndex(firstIncomplete);
-    }
-  }, [language, currentLanguageProgress.completedChallenges]);
-
-  // Save progress to localStorage
-  const saveProgress = (newProgress: UserProgress) => {
-    localStorage.setItem('codelearning-progress', JSON.stringify(newProgress));
-    setUserProgress(newProgress);
-  };
-
-  const runCode = async () => {
-    setIsRunning(true);
-    
-    setTimeout(() => {
-      const trimmedCode = userCode.trim();
-      const { isCorrect, actualOutput } = checkSolution(trimmedCode);
-      
-      setTestResult({
-        success: isCorrect,
-        output: currentChallenge.expectedOutput,
-        actualOutput: actualOutput,
-        message: isCorrect 
-          ? "Excellent! Your solution is correct!" 
-          : "Not quite right. Check the hints and try again."
-      });
-      
-      setIsRunning(false);
-      
-        if (isCorrect && startTime) {
-        const timeSpentOnChallenge = Date.now() - startTime.getTime();
-        
-        // Update progress
-        const newProgress = { ...userProgress };
-        const langKey = language || 'python';
-        
-        if (!newProgress[langKey]) {
-          newProgress[langKey] = {
-            completedChallenges: [],
-            currentChallenge: 0,
-            totalTimeSpent: 0,
-            skillLevel: "Beginner",
-            achievements: []
-          };
-        }
-        
-        // Mark challenge as completed
-        if (!newProgress[langKey].completedChallenges.includes(currentChallengeIndex)) {
-          newProgress[langKey].completedChallenges.push(currentChallengeIndex);
-          newProgress[langKey].totalTimeSpent += timeSpentOnChallenge;
-          
-          // Check for achievements
-          const completedCount = newProgress[langKey].completedChallenges.length;
-          const newAchievements = [];
-          
-          if (completedCount === 1 && !newProgress[langKey].achievements.includes("First Steps")) {
-            newAchievements.push("First Steps");
-          }
-          if (completedCount === 10 && !newProgress[langKey].achievements.includes("Getting Started")) {
-            newAchievements.push("Getting Started");
-          }
-          if (completedCount === 50 && !newProgress[langKey].achievements.includes("Dedicated Learner")) {
-            newAchievements.push("Dedicated Learner");
-          }
-          
-          newProgress[langKey].achievements.push(...newAchievements);
-          
-          // Update skill level
-          if (completedCount >= 200) newProgress[langKey].skillLevel = "Expert";
-          else if (completedCount >= 100) newProgress[langKey].skillLevel = "Advanced";
-          else if (completedCount >= 50) newProgress[langKey].skillLevel = "Intermediate";
-          
-          saveProgress(newProgress);
-          
-          if (newAchievements.length > 0) {
-            toast({
-              title: "🏆 Achievement Unlocked!",
-              description: newAchievements.join(", "),
-            });
-          }
-        }
-        
-        toast({
-          title: "Challenge Completed!",
-          description: "Great job! Keep up the excellent work.",
-        });
-        
-        // Move to next challenge after a short delay
-        setTimeout(() => {
-          const nextIncomplete = languageChallenges.findIndex(
-            (_, index) => index > currentChallengeIndex && 
-            !newProgress[langKey].completedChallenges.includes(index)
-          );
-          
-          if (nextIncomplete !== -1) {
-            setCurrentChallengeIndex(nextIncomplete);
-            setTestResult(null);
-          }
-        }, 2000);
-      }
-    }, 1500);
-  };
-
-  const checkSolution = (code: string): { isCorrect: boolean; actualOutput: string } => {
-    const challenge = currentChallenge;
-    const normalizedCode = code.toLowerCase().replace(/\s+/g, ' ').trim();
-    
-    // Simulate code execution to get output
-    let actualOutput = "";
-    let isCorrect = false;
-    
-    // Prevent empty or unchanged code from being correct
-    if (code.trim() === "" || code.trim() === challenge.starterCode.trim()) {
-      return { isCorrect: false, actualOutput: "No output - code is empty or unchanged" };
-    }
-    
-    try {
-      // Language-specific validation with strict checks (case-insensitive)
-      if (language === 'python') {
-        // Get expected output in lowercase for comparison
-        const expectedOutput = challenge.expectedOutput?.toLowerCase() || "";
-        
-        if (challenge.title.includes("Hello World")) {
-          isCorrect = normalizedCode.includes("print(") && 
-                     (normalizedCode.includes("hello world") || normalizedCode.includes("'hello world'") || normalizedCode.includes('"hello world"'));
-          actualOutput = isCorrect ? "Hello World" : "No output or wrong text";
-        } else if (challenge.title.includes("Variables")) {
-          const hasValidVariable = normalizedCode.includes("=") && 
-                                 (normalizedCode.includes("name") && normalizedCode.includes("print"));
-          isCorrect = hasValidVariable;
-          actualOutput = isCorrect ? "Variable declared and printed" : "Missing variable declaration or print statement";
-        } else if (challenge.title.includes("Addition")) {
-          isCorrect = normalizedCode.includes("+") && normalizedCode.includes("print");
-          actualOutput = isCorrect ? "Sum calculated" : "Missing addition or print";
-        } else if (challenge.title.includes("Loop")) {
-          isCorrect = normalizedCode.includes("for") && normalizedCode.includes("range") && normalizedCode.includes("print");
-          actualOutput = isCorrect ? "Loop executed" : "Missing proper for loop with range";
-        } else if (challenge.title.includes("Function")) {
-          isCorrect = normalizedCode.includes("def ") && normalizedCode.includes("return");
-          actualOutput = isCorrect ? "Function defined" : "Missing function definition or return statement";
-        } else {
-          // Generic validation: check if normalized code produces expected output
-          if (expectedOutput && normalizedCode.includes("print(")) {
-            // Extract what's being printed and compare case-insensitively
-            const printMatch = normalizedCode.match(/print\((.*?)\)/);
-            if (printMatch) {
-              const printedValue = printMatch[1].replace(/['"]/g, '').toLowerCase();
-              isCorrect = expectedOutput.includes(printedValue) || printedValue.includes(expectedOutput);
-              actualOutput = isCorrect ? challenge.expectedOutput : `Expected: ${challenge.expectedOutput}`;
-            }
-          }
-        }
-      } else if (language === 'javascript') {
-        // Get expected output in lowercase for comparison
-        const expectedOutput = challenge.expectedOutput?.toLowerCase() || "";
-        
-        if (challenge.title.includes("Hello World")) {
-          isCorrect = normalizedCode.includes("console.log(") && 
-                     (normalizedCode.includes("hello world") || normalizedCode.includes("'hello world'") || normalizedCode.includes('"hello world"'));
-          actualOutput = isCorrect ? "Hello World" : "No output or wrong text";
-        } else if (challenge.title.includes("Variables")) {
-          isCorrect = (normalizedCode.includes("let ") || normalizedCode.includes("const ")) && 
-                     normalizedCode.includes("=") && normalizedCode.includes("console.log");
-          actualOutput = isCorrect ? "Variable declared and logged" : "Missing variable declaration or console.log";
-        } else if (challenge.title.includes("Arrow Functions")) {
-          isCorrect = normalizedCode.includes("=>") && normalizedCode.includes("const ");
-          actualOutput = isCorrect ? "Arrow function defined" : "Missing arrow function syntax";
-        } else if (challenge.title.includes("Template Literals")) {
-          isCorrect = normalizedCode.includes("`") && normalizedCode.includes("${");
-          actualOutput = isCorrect ? "Template literal used" : "Missing template literal syntax";
-        } else {
-          // Generic validation: check if normalized code produces expected output
-          if (expectedOutput && normalizedCode.includes("console.log(")) {
-            // Extract what's being logged and compare case-insensitively
-            const logMatch = normalizedCode.match(/console\.log\((.*?)\)/);
-            if (logMatch) {
-              const loggedValue = logMatch[1].replace(/['"]/g, '').toLowerCase();
-              isCorrect = expectedOutput.includes(loggedValue) || loggedValue.includes(expectedOutput);
-              actualOutput = isCorrect ? challenge.expectedOutput : `Expected: ${challenge.expectedOutput}`;
-            }
-          }
-        }
-      }
-      
-      // If no specific check matched, return false
-      if (actualOutput === "") {
-        actualOutput = "Challenge type not recognized or incomplete code";
-        isCorrect = false;
-      }
-      
-    } catch (error) {
-      actualOutput = "Error in code execution";
-      isCorrect = false;
-    }
-    
-    return { isCorrect, actualOutput };
-  };
-
-  const resetChallenge = () => {
-    setUserCode(currentChallenge.starterCode);
-    setTestResult(null);
-    setStartTime(new Date());
-  };
-
-  const goToChallenge = (index: number) => {
-    // Allow going to any completed challenge or the next incomplete one
-    const isAccessible = currentLanguageProgress.completedChallenges.includes(index) ||
-                        index === currentLanguageProgress.completedChallenges.length;
-    
-    if (isAccessible) {
-      setCurrentChallengeIndex(index);
-      setTestResult(null);
-    }
-  };
-
-  const getSkillLevelColor = (level: string) => {
-    switch (level) {
-      case "Expert": return "text-purple-500";
-      case "Advanced": return "text-blue-500";
-      case "Intermediate": return "text-green-500";
-      default: return "text-gray-500";
-    }
+  const startProject = (projectId: number) => {
+    toast({
+      title: "Project Started!",
+      description: "Opening project environment...",
+    });
+    // Here you would typically navigate to a project environment
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Enhanced Header */}
+      {/* Enhanced Header with Progress */}
       <div className="border-b border-border bg-card/80 backdrop-blur-lg sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -329,286 +104,379 @@ export default function Learn() {
                   <Code className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold capitalize">{language} Dashboard</h1>
-                  <p className="text-sm text-muted-foreground">Master programming step by step</p>
+                  <h1 className="text-xl font-bold capitalize">{language} Learning Path</h1>
+                  <p className="text-sm text-muted-foreground">Progress through lessons and projects</p>
                 </div>
               </div>
             </div>
 
             <div className="flex items-center gap-6">
-              <div className="text-right">
-                <div className="flex items-center gap-2">
-                  <Trophy className="h-4 w-4 text-warning" />
-                  <span className="text-sm font-medium">
-                    {currentLanguageProgress.completedChallenges.length} / {languageChallenges.length}
-                  </span>
+              {/* Progress Overview */}
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">
+                      {completedLessons} / {totalLessons} Lessons
+                    </span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {overallProgress}% Complete
+                  </div>
                 </div>
-                <div className="text-xs text-muted-foreground capitalize">
-                  {currentLanguageProgress.skillLevel} Level
+                <div className="w-32">
+                  <Progress value={overallProgress} className="h-2" />
                 </div>
               </div>
-              <Progress value={progress} className="w-32" />
+              
+              <Badge variant="secondary" className="capitalize">
+                {currentLanguageProgress.skillLevel}
+              </Badge>
             </div>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 h-[calc(100vh-12rem)]">
-          {/* Challenge Navigation Sidebar */}
-          <div className="xl:col-span-1">
-            <Card className="h-full">
-              <div className="p-4 border-b border-border">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Target className="h-4 w-4 text-primary" />
-                  Challenges
-                </h3>
-              </div>
-              <div className="p-2 h-[calc(100%-80px)] overflow-y-auto space-y-1">
-                {languageChallenges.slice(0, 100).map((challenge, index) => {
-                  const isCompleted = currentLanguageProgress.completedChallenges.includes(index);
-                  const isCurrent = index === currentChallengeIndex;
-                  const isAccessible = isCompleted || index <= currentLanguageProgress.completedChallenges.length;
-                  
-                  return (
-                    <Button
-                      key={challenge.id}
-                      variant={isCurrent ? "default" : "ghost"}
-                      size="sm"
-                      className={`w-full justify-start p-2 h-auto ${
-                        !isAccessible ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
-                      onClick={() => isAccessible && goToChallenge(index)}
-                      disabled={!isAccessible}
-                    >
-                      <div className="flex items-center gap-2 w-full">
-                        <div className="flex-shrink-0">
-                          {isCompleted ? (
-                            <CheckCircle className="h-4 w-4 text-success" />
-                          ) : isAccessible ? (
-                            <div className="h-4 w-4 rounded-full border-2 border-muted-foreground" />
-                          ) : (
-                            <Lock className="h-4 w-4 text-muted-foreground" />
-                          )}
-                        </div>
-                        <div className="flex-1 text-left">
-                          <div className="text-xs font-medium truncate">
-                            {challenge.title}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {challenge.difficulty}
-                          </div>
-                        </div>
-                      </div>
-                    </Button>
-                  );
-                })}
-              </div>
-            </Card>
-          </div>
+        <Tabs defaultValue="projects" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
+            <TabsTrigger value="projects" className="flex items-center gap-2">
+              <FolderOpen className="h-4 w-4" />
+              Projects
+            </TabsTrigger>
+            <TabsTrigger value="capstones" className="flex items-center gap-2">
+              <Crown className="h-4 w-4" />
+              Capstones
+            </TabsTrigger>
+            <TabsTrigger value="progress" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Progress
+            </TabsTrigger>
+            <TabsTrigger value="achievements" className="flex items-center gap-2">
+              <Trophy className="h-4 w-4" />
+              Achievements
+            </TabsTrigger>
+          </TabsList>
 
-          {/* Main Content */}
-          <div className="xl:col-span-3">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
-              {/* Challenge Panel */}
-              <div className="lg:col-span-1">
-                <ChallengePanel 
-                  challenge={currentChallenge} 
-                  testResult={testResult}
-                />
+          <TabsContent value="projects" className="space-y-8">
+            {/* Beginner Projects */}
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-lg bg-success/20">
+                  <Zap className="h-5 w-5 text-success" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold">Beginner Projects</h2>
+                  <p className="text-muted-foreground">Build foundational skills with guided projects</p>
+                </div>
               </div>
-
-              {/* Code Editor and Learning Resources */}
-              <div className="lg:col-span-1 space-y-6">
-                {/* Code Editor */}
-                <Card className="flex-1">
-                  <div className="p-4 border-b border-border">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-semibold">Code Editor</h3>
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="outline"
-                          size="sm"
-                          onClick={resetChallenge}
-                        >
-                          <RotateCcw className="h-4 w-4 mr-2" />
-                          Reset
-                        </Button>
-                        <Button 
-                          onClick={runCode}
-                          disabled={isRunning}
-                          className="bg-gradient-primary hover:shadow-lg transition-all duration-300"
-                        >
-                          {isRunning ? (
-                            <>
-                              <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2" />
-                              Running...
-                            </>
-                          ) : (
-                            <>
-                              <Play className="h-4 w-4 mr-2" />
-                              Run Code
-                            </>
-                          )}
-                        </Button>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {beginnerProjects.slice(0, 15).map((project) => (
+                  <Card key={project.id} className="p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer">
+                    <div className="flex items-start justify-between mb-4">
+                      <Badge variant="outline" className="text-success border-success">
+                        {project.difficulty}
+                      </Badge>
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {project.estimatedTime}
                       </div>
                     </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <CodeEditor 
-                      value={userCode}
-                      onChange={setUserCode}
-                      language={language || 'python'}
-                    />
                     
-                    {/* Code Output Window */}
-                    {testResult && (
-                      <div className="border-t border-border pt-4">
-                        <h4 className="font-medium mb-2 flex items-center gap-2">
-                          <div className={`h-2 w-2 rounded-full ${testResult.success ? 'bg-success' : 'bg-destructive'}`} />
-                          Output
-                        </h4>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">Expected Output:</p>
-                            <div className="p-2 bg-muted/30 rounded font-mono text-sm">
-                              {testResult.output}
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">Your Output:</p>
-                            <div className={`p-2 rounded font-mono text-sm ${
-                              testResult.success ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
-                            }`}>
-                              {testResult.actualOutput}
-                            </div>
-                          </div>
-                        </div>
-                        <div className={`mt-3 p-2 rounded text-sm ${
-                          testResult.success ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
-                        }`}>
-                          {testResult.message}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </Card>
-
-                {/* Learning Resources */}
-                <Card className="h-80">
-                  <Tabs defaultValue="tips" className="h-full">
-                    <div className="p-4 border-b border-border">
-                      <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="tips" className="text-xs">
-                          <Lightbulb className="h-3 w-3 mr-1" />
-                          Tips
-                        </TabsTrigger>
-                        <TabsTrigger value="tricks" className="text-xs">
-                          <Zap className="h-3 w-3 mr-1" />
-                          Tricks
-                        </TabsTrigger>
-                        <TabsTrigger value="progress" className="text-xs">
-                          <TrendingUp className="h-3 w-3 mr-1" />
-                          Stats
-                        </TabsTrigger>
-                      </TabsList>
-                    </div>
-
-                    <TabsContent value="tips" className="p-4 h-[calc(100%-80px)] overflow-y-auto">
-                      <div className="space-y-3">
-                        <h4 className="font-medium">Programming Tips:</h4>
-                        <div className="space-y-2 text-sm">
-                          <div className="p-2 bg-muted/50 rounded">
-                            💡 Always write clean, readable code
-                          </div>
-                          <div className="p-2 bg-muted/50 rounded">
-                            🔍 Test your code with different inputs
-                          </div>
-                          <div className="p-2 bg-muted/50 rounded">
-                            📝 Use meaningful variable names
-                          </div>
-                          <div className="p-2 bg-muted/50 rounded">
-                            🔄 Practice regularly to build muscle memory
-                          </div>
-                        </div>
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="tricks" className="p-4 h-[calc(100%-80px)] overflow-y-auto">
-                      <div className="space-y-3">
-                        <h4 className="font-medium">{language?.toUpperCase()} Tricks:</h4>
-                        <div className="space-y-2 text-sm">
-                          {language === 'python' && (
-                            <>
-                              <div className="p-2 bg-muted/50 rounded">
-                                🐍 Use list comprehensions for cleaner code
-                              </div>
-                              <div className="p-2 bg-muted/50 rounded">
-                                ⚡ Use f-strings for string formatting
-                              </div>
-                              <div className="p-2 bg-muted/50 rounded">
-                                🔧 Use enumerate() for index-value pairs
-                              </div>
-                            </>
-                          )}
-                          {language === 'javascript' && (
-                            <>
-                              <div className="p-2 bg-muted/50 rounded">
-                                🚀 Use arrow functions for concise syntax
-                              </div>
-                              <div className="p-2 bg-muted/50 rounded">
-                                📦 Use destructuring for cleaner code
-                              </div>
-                              <div className="p-2 bg-muted/50 rounded">
-                                🔄 Use async/await for better async code
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="progress" className="p-4 h-[calc(100%-80px)] overflow-y-auto">
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">Skill Level</span>
-                          <Badge className={getSkillLevelColor(currentLanguageProgress.skillLevel)}>
-                            {currentLanguageProgress.skillLevel}
+                    <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
+                      {project.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      {project.description}
+                    </p>
+                    
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap gap-1">
+                        {project.technologies.slice(0, 3).map((tech) => (
+                          <Badge key={tech} variant="secondary" className="text-xs">
+                            {tech}
                           </Badge>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span>Completed</span>
-                            <span>{currentLanguageProgress.completedChallenges.length} challenges</span>
-                          </div>
-                          <Progress value={progress} />
-                        </div>
-
-                        <div className="space-y-2">
-                          <h5 className="text-sm font-medium">Achievements</h5>
-                          {currentLanguageProgress.achievements.length > 0 ? (
-                            <div className="space-y-1">
-                              {currentLanguageProgress.achievements.map((achievement, index) => (
-                                <div key={index} className="flex items-center gap-2 text-xs">
-                                  <Award className="h-3 w-3 text-warning" />
-                                  {achievement}
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className="text-xs text-muted-foreground">Complete challenges to earn achievements!</p>
-                          )}
-                        </div>
+                        ))}
+                        {project.technologies.length > 3 && (
+                          <Badge variant="secondary" className="text-xs">
+                            +{project.technologies.length - 3}
+                          </Badge>
+                        )}
                       </div>
-                    </TabsContent>
-                  </Tabs>
-                </Card>
+                      
+                      <Button 
+                        size="sm" 
+                        className="w-full" 
+                        variant="outline"
+                        onClick={() => startProject(project.id)}
+                      >
+                        <Play className="h-3 w-3 mr-2" />
+                        Start Project
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
               </div>
             </div>
-          </div>
-        </div>
+
+            {/* Intermediate Projects */}
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-lg bg-warning/20">
+                  <Target className="h-5 w-5 text-warning" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold">Intermediate Projects</h2>
+                  <p className="text-muted-foreground">Challenge yourself with more complex applications</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {intermediateProjects.slice(0, 12).map((project) => (
+                  <Card key={project.id} className="p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer">
+                    <div className="flex items-start justify-between mb-4">
+                      <Badge variant="outline" className="text-warning border-warning">
+                        {project.difficulty}
+                      </Badge>
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {project.estimatedTime}
+                      </div>
+                    </div>
+                    
+                    <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
+                      {project.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      {project.description}
+                    </p>
+                    
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap gap-1">
+                        {project.technologies.slice(0, 3).map((tech) => (
+                          <Badge key={tech} variant="secondary" className="text-xs">
+                            {tech}
+                          </Badge>
+                        ))}
+                        {project.technologies.length > 3 && (
+                          <Badge variant="secondary" className="text-xs">
+                            +{project.technologies.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <Button 
+                        size="sm" 
+                        className="w-full" 
+                        variant="outline"
+                        onClick={() => startProject(project.id)}
+                      >
+                        <GitBranch className="h-3 w-3 mr-2" />
+                        Start Project
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="capstones" className="space-y-8">
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-lg bg-destructive/20">
+                  <Crown className="h-5 w-5 text-destructive" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold">Capstone Projects</h2>
+                  <p className="text-muted-foreground">Advanced projects to showcase your mastery</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {advancedProjects.slice(0, 8).map((project) => (
+                  <Card key={project.id} className="p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer border-2 border-destructive/20">
+                    <div className="flex items-start justify-between mb-4">
+                      <Badge variant="destructive">
+                        {project.difficulty}
+                      </Badge>
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {project.estimatedTime}
+                      </div>
+                    </div>
+                    
+                    <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
+                      {project.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      {project.description}
+                    </p>
+                    
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap gap-1">
+                        {project.technologies.slice(0, 4).map((tech) => (
+                          <Badge key={tech} variant="secondary" className="text-xs">
+                            {tech}
+                          </Badge>
+                        ))}
+                        {project.technologies.length > 4 && (
+                          <Badge variant="secondary" className="text-xs">
+                            +{project.technologies.length - 4}
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <div className="text-xs text-muted-foreground mb-2">
+                        Skills: {project.skills.slice(0, 3).join(", ")}
+                      </div>
+                      
+                      <Button 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => startProject(project.id)}
+                      >
+                        <Rocket className="h-3 w-3 mr-2" />
+                        Start Capstone
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="progress" className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="p-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-primary/20">
+                    <BookOpen className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{completedLessons}</div>
+                    <div className="text-sm text-muted-foreground">Lessons Completed</div>
+                  </div>
+                </div>
+              </Card>
+              
+              <Card className="p-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-success/20">
+                    <FolderOpen className="h-5 w-5 text-success" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{completedProjects}</div>
+                    <div className="text-sm text-muted-foreground">Projects Completed</div>
+                  </div>
+                </div>
+              </Card>
+              
+              <Card className="p-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-warning/20">
+                    <Trophy className="h-5 w-5 text-warning" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{currentLanguageProgress.achievements.length}</div>
+                    <div className="text-sm text-muted-foreground">Achievements</div>
+                  </div>
+                </div>
+              </Card>
+              
+              <Card className="p-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-secondary/20">
+                    <TrendingUp className="h-5 w-5 text-secondary" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{overallProgress}%</div>
+                    <div className="text-sm text-muted-foreground">Overall Progress</div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Detailed Progress */}
+            <div className="space-y-6">
+              <Card className="p-6">
+                <h3 className="font-semibold mb-4">Learning Progress Breakdown</h3>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>Foundation Lessons</span>
+                      <span>{completedLessons} / {totalLessons}</span>
+                    </div>
+                    <Progress value={(completedLessons / totalLessons) * 100} />
+                  </div>
+                  
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>Hands-on Projects</span>
+                      <span>{completedProjects} / {totalProjects}</span>
+                    </div>
+                    <Progress value={(completedProjects / totalProjects) * 100} />
+                  </div>
+                  
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>Overall Mastery</span>
+                      <span>{overallProgress}%</span>
+                    </div>
+                    <Progress value={overallProgress} className="h-3" />
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="font-semibold mb-4">Skill Development</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 border rounded-lg">
+                    <div className="text-2xl font-bold text-success">{beginnerProjects.length}</div>
+                    <div className="text-sm text-muted-foreground">Beginner Projects</div>
+                  </div>
+                  <div className="text-center p-4 border rounded-lg">
+                    <div className="text-2xl font-bold text-warning">{intermediateProjects.length}</div>
+                    <div className="text-sm text-muted-foreground">Intermediate Projects</div>
+                  </div>
+                  <div className="text-center p-4 border rounded-lg">
+                    <div className="text-2xl font-bold text-destructive">{advancedProjects.length}</div>
+                    <div className="text-sm text-muted-foreground">Advanced Projects</div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="achievements" className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {currentLanguageProgress.achievements.length > 0 ? (
+                currentLanguageProgress.achievements.map((achievement, index) => (
+                  <Card key={index} className="p-6 border-2 border-warning/20">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-warning/20">
+                        <Award className="h-5 w-5 text-warning" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">{achievement}</h3>
+                        <p className="text-sm text-muted-foreground">Achievement unlocked!</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))
+              ) : (
+                <Card className="p-6 col-span-full text-center">
+                  <div className="p-4">
+                    <Trophy className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="font-semibold mb-2">No Achievements Yet</h3>
+                    <p className="text-muted-foreground">Complete projects and challenges to unlock achievements!</p>
+                  </div>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

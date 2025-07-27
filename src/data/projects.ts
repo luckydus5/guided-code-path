@@ -177,6 +177,226 @@ export const HANDS_ON_PROJECTS: Project[] = [
     category: "Web Development",
     languages: ["javascript", "python"]
   },
+  {
+    id: 16,
+    title: "Music Player App",
+    description: "Create a responsive music player with playlists, controls, and audio visualization.",
+    difficulty: "Beginner",
+    estimatedTime: "1-2 weeks",
+    technologies: ["JavaScript", "Web Audio API", "CSS"],
+    skills: ["Audio Processing", "User Interface", "File Handling"],
+    category: "Web Development",
+    languages: ["javascript"]
+  },
+  {
+    id: 17,
+    title: "Image Gallery",
+    description: "Build an interactive image gallery with filtering, lightbox, and lazy loading.",
+    difficulty: "Beginner",
+    estimatedTime: "1 week",
+    technologies: ["JavaScript", "CSS", "Intersection Observer"],
+    skills: ["Image Optimization", "Performance", "UI/UX"],
+    category: "Web Development",
+    languages: ["javascript"]
+  },
+  {
+    id: 18,
+    title: "Contact Manager",
+    description: "Manage contacts with CRUD operations, search, and export functionality.",
+    difficulty: "Beginner",
+    estimatedTime: "1 week",
+    technologies: ["JavaScript", "Local Storage", "CSS"],
+    skills: ["Data Management", "Search Algorithms", "UI Design"],
+    category: "Productivity",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 19,
+    title: "Snake Game",
+    description: "Classic snake game with collision detection, scoring, and difficulty levels.",
+    difficulty: "Beginner",
+    estimatedTime: "3-5 days",
+    technologies: ["JavaScript", "Canvas", "CSS"],
+    skills: ["Game Logic", "Canvas Manipulation", "Event Handling"],
+    category: "Games",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 20,
+    title: "Text Editor",
+    description: "Simple text editor with formatting, save/load, and find/replace features.",
+    difficulty: "Beginner",
+    estimatedTime: "1-2 weeks",
+    technologies: ["JavaScript", "File API", "CSS"],
+    skills: ["Text Processing", "File Operations", "User Interface"],
+    category: "Productivity",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 21,
+    title: "Habit Tracker",
+    description: "Track daily habits with streaks, statistics, and visual progress indicators.",
+    difficulty: "Beginner",
+    estimatedTime: "1 week",
+    technologies: ["JavaScript", "Chart.js", "Local Storage"],
+    skills: ["Data Visualization", "Progress Tracking", "Statistics"],
+    category: "Productivity",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 22,
+    title: "Quiz Application",
+    description: "Interactive quiz app with multiple choice questions, scoring, and results.",
+    difficulty: "Beginner",
+    estimatedTime: "1 week",
+    technologies: ["JavaScript", "JSON", "CSS"],
+    skills: ["Data Structures", "Logic Flow", "User Interaction"],
+    category: "Education",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 23,
+    title: "Currency Converter",
+    description: "Real-time currency converter with exchange rates from external APIs.",
+    difficulty: "Beginner",
+    estimatedTime: "3-5 days",
+    technologies: ["JavaScript", "Exchange Rate API", "CSS"],
+    skills: ["API Integration", "Mathematical Calculations", "Error Handling"],
+    category: "Finance",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 24,
+    title: "Recipe Book",
+    description: "Digital recipe book with categories, search, and shopping list generation.",
+    difficulty: "Beginner",
+    estimatedTime: "1-2 weeks",
+    technologies: ["JavaScript", "Local Storage", "CSS"],
+    skills: ["Data Organization", "Search Functionality", "List Management"],
+    category: "Lifestyle",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 25,
+    title: "Tic Tac Toe",
+    description: "Classic Tic Tac Toe game with AI opponent and score tracking.",
+    difficulty: "Beginner",
+    estimatedTime: "2-3 days",
+    technologies: ["JavaScript", "CSS", "Minimax Algorithm"],
+    skills: ["Game Logic", "AI Implementation", "Pattern Recognition"],
+    category: "Games",
+    languages: ["javascript", "python", "java"]
+  },
+  {
+    id: 26,
+    title: "News Aggregator",
+    description: "Aggregate news from multiple sources with filtering and bookmarking.",
+    difficulty: "Beginner",
+    estimatedTime: "1-2 weeks",
+    technologies: ["JavaScript", "News API", "CSS"],
+    skills: ["API Integration", "Data Filtering", "Content Management"],
+    category: "News",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 27,
+    title: "BMI Calculator",
+    description: "Calculate BMI with health recommendations and progress tracking.",
+    difficulty: "Beginner",
+    estimatedTime: "2-3 days",
+    technologies: ["JavaScript", "Chart.js", "CSS"],
+    skills: ["Health Calculations", "Data Visualization", "User Input"],
+    category: "Health",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 28,
+    title: "Markdown Editor",
+    description: "Live markdown editor with preview, syntax highlighting, and export options.",
+    difficulty: "Beginner",
+    estimatedTime: "1 week",
+    technologies: ["JavaScript", "Markdown Parser", "CSS"],
+    skills: ["Text Processing", "Real-time Updates", "File Export"],
+    category: "Productivity",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 29,
+    title: "Color Picker Tool",
+    description: "Advanced color picker with palette generation and color harmony rules.",
+    difficulty: "Beginner",
+    estimatedTime: "1 week",
+    technologies: ["JavaScript", "Canvas", "Color Theory"],
+    skills: ["Color Mathematics", "Canvas API", "Design Tools"],
+    category: "Design Tools",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 30,
+    title: "Memory Game",
+    description: "Card matching memory game with themes, difficulty levels, and high scores.",
+    difficulty: "Beginner",
+    estimatedTime: "1 week",
+    technologies: ["JavaScript", "CSS Animations", "Local Storage"],
+    skills: ["Game Logic", "Memory Management", "Animation"],
+    category: "Games",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 31,
+    title: "URL Shortener",
+    description: "Create short URLs with click tracking and analytics dashboard.",
+    difficulty: "Beginner",
+    estimatedTime: "1 week",
+    technologies: ["JavaScript", "Local Storage", "Chart.js"],
+    skills: ["URL Manipulation", "Analytics", "Data Tracking"],
+    category: "Utility",
+    languages: ["javascript", "python", "go"]
+  },
+  {
+    id: 32,
+    title: "Pomodoro Timer",
+    description: "Productivity timer with work/break cycles, notifications, and statistics.",
+    difficulty: "Beginner",
+    estimatedTime: "3-5 days",
+    technologies: ["JavaScript", "Notification API", "CSS"],
+    skills: ["Timer Logic", "Notifications", "Productivity Methods"],
+    category: "Productivity",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 33,
+    title: "Drawing Canvas",
+    description: "Digital drawing app with brush tools, colors, and save functionality.",
+    difficulty: "Beginner",
+    estimatedTime: "1-2 weeks",
+    technologies: ["JavaScript", "Canvas API", "File API"],
+    skills: ["Canvas Drawing", "Tool Implementation", "File Handling"],
+    category: "Creative",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 34,
+    title: "Typing Speed Test",
+    description: "Test typing speed and accuracy with various text samples and statistics.",
+    difficulty: "Beginner",
+    estimatedTime: "1 week",
+    technologies: ["JavaScript", "CSS", "Statistics"],
+    skills: ["Text Analysis", "Performance Metrics", "User Interface"],
+    category: "Education",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 35,
+    title: "Random Password Manager",
+    description: "Generate and store secure passwords with encryption and categories.",
+    difficulty: "Beginner",
+    estimatedTime: "1-2 weeks",
+    technologies: ["JavaScript", "Crypto API", "Local Storage"],
+    skills: ["Cryptography", "Security", "Data Management"],
+    category: "Security",
+    languages: ["javascript", "python", "java"]
+  },
 
   // INTERMEDIATE PROJECTS (36-70)
   {
@@ -232,6 +452,116 @@ export const HANDS_ON_PROJECTS: Project[] = [
     technologies: ["React", "Node.js", "PostgreSQL", "Redis"],
     skills: ["Project Management Logic", "Team Collaboration", "Notification Systems"],
     category: "Productivity",
+    languages: ["javascript", "python", "java"]
+  },
+  {
+    id: 41,
+    title: "Learning Management System",
+    description: "Online education platform with courses, quizzes, progress tracking, and certificates.",
+    difficulty: "Intermediate",
+    estimatedTime: "6-8 weeks",
+    technologies: ["React", "Node.js", "MongoDB", "JWT"],
+    skills: ["Educational Technology", "Progress Tracking", "Authentication"],
+    category: "Education",
+    languages: ["javascript", "python", "java"]
+  },
+  {
+    id: 42,
+    title: "Stock Trading Simulator",
+    description: "Virtual trading platform with real market data, portfolios, and performance analytics.",
+    difficulty: "Intermediate",
+    estimatedTime: "4-6 weeks",
+    technologies: ["React", "Financial APIs", "WebSocket", "Chart.js"],
+    skills: ["Financial Data", "Real-time Updates", "Portfolio Management"],
+    category: "Finance",
+    languages: ["javascript", "python", "java"]
+  },
+  {
+    id: 43,
+    title: "Code Review Platform",
+    description: "GitHub-like platform for code reviews, pull requests, and collaboration.",
+    difficulty: "Intermediate",
+    estimatedTime: "5-7 weeks",
+    technologies: ["React", "Git API", "Node.js", "Monaco Editor"],
+    skills: ["Version Control", "Code Analysis", "Collaborative Tools"],
+    category: "Developer Tools",
+    languages: ["javascript", "python", "go"]
+  },
+  {
+    id: 44,
+    title: "Restaurant Management System",
+    description: "Complete restaurant system with POS, inventory, staff management, and analytics.",
+    difficulty: "Intermediate",
+    estimatedTime: "5-6 weeks",
+    technologies: ["React", "Node.js", "PostgreSQL", "Receipt Printing"],
+    skills: ["Business Logic", "Inventory Management", "Payment Processing"],
+    category: "Business",
+    languages: ["javascript", "python", "java"]
+  },
+  {
+    id: 45,
+    title: "Event Management Platform",
+    description: "Event organization platform with ticketing, attendee management, and check-in.",
+    difficulty: "Intermediate",
+    estimatedTime: "4-5 weeks",
+    technologies: ["React", "Node.js", "Stripe", "QR Codes"],
+    skills: ["Event Planning", "Ticket Management", "QR Code Generation"],
+    category: "Events",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 46,
+    title: "IoT Dashboard",
+    description: "Monitor and control IoT devices with real-time data visualization and alerts.",
+    difficulty: "Intermediate",
+    estimatedTime: "4-6 weeks",
+    technologies: ["React", "MQTT", "InfluxDB", "Grafana"],
+    skills: ["IoT Protocols", "Time Series Data", "Device Management"],
+    category: "IoT",
+    languages: ["javascript", "python", "cpp"]
+  },
+  {
+    id: 47,
+    title: "Health Monitoring App",
+    description: "Track health metrics with wearable device integration and health insights.",
+    difficulty: "Intermediate",
+    estimatedTime: "5-6 weeks",
+    technologies: ["React Native", "Health APIs", "Machine Learning"],
+    skills: ["Health Data", "Mobile Development", "Data Analysis"],
+    category: "Health",
+    languages: ["javascript", "python", "swift"]
+  },
+  {
+    id: 48,
+    title: "Music Streaming Service",
+    description: "Spotify-like music streaming with playlists, recommendations, and social features.",
+    difficulty: "Intermediate",
+    estimatedTime: "6-8 weeks",
+    technologies: ["React", "Node.js", "FFmpeg", "Recommendation Engine"],
+    skills: ["Audio Streaming", "Recommendation Systems", "Social Features"],
+    category: "Media",
+    languages: ["javascript", "python"]
+  },
+  {
+    id: 49,
+    title: "Delivery Tracking System",
+    description: "Package delivery system with real-time tracking, route optimization, and notifications.",
+    difficulty: "Intermediate",
+    estimatedTime: "4-5 weeks",
+    technologies: ["React", "Google Maps API", "WebSocket", "Push Notifications"],
+    skills: ["Geolocation", "Route Planning", "Real-time Tracking"],
+    category: "Logistics",
+    languages: ["javascript", "python", "java"]
+  },
+  {
+    id: 50,
+    title: "Online Banking System",
+    description: "Secure banking platform with transactions, transfers, and account management.",
+    difficulty: "Intermediate",
+    estimatedTime: "6-8 weeks",
+    technologies: ["React", "Node.js", "Encryption", "2FA"],
+    skills: ["Financial Security", "Transaction Processing", "Authentication"],
+    category: "Finance",
     languages: ["javascript", "python", "java"]
   },
 
@@ -290,8 +620,63 @@ export const HANDS_ON_PROJECTS: Project[] = [
     skills: ["High-Performance Computing", "Financial Algorithms", "Real-time Systems"],
     category: "Finance",
     languages: ["cpp", "java", "python", "rust"]
+  },
+  {
+    id: 76,
+    title: "Cloud Operating System",
+    description: "Browser-based operating system with virtual desktop, file system, and applications.",
+    difficulty: "Advanced",
+    estimatedTime: "14-20 weeks",
+    technologies: ["WebAssembly", "Service Workers", "IndexedDB", "WebRTC"],
+    skills: ["Operating System Concepts", "WebAssembly", "System Architecture"],
+    category: "System Programming",
+    languages: ["javascript", "rust", "cpp"]
+  },
+  {
+    id: 77,
+    title: "Game Engine",
+    description: "2D/3D game engine with physics, rendering, audio, and scripting capabilities.",
+    difficulty: "Advanced",
+    estimatedTime: "16-24 weeks",
+    technologies: ["C++", "OpenGL", "Physics Engine", "Audio Engine"],
+    skills: ["Graphics Programming", "Physics Simulation", "Engine Architecture"],
+    category: "Game Development",
+    languages: ["cpp", "rust", "csharp"]
+  },
+  {
+    id: 78,
+    title: "Compiler and Language",
+    description: "Design and implement a new programming language with compiler and runtime.",
+    difficulty: "Advanced",
+    estimatedTime: "12-18 weeks",
+    technologies: ["LLVM", "Parser Generators", "Assembly"],
+    skills: ["Compiler Design", "Language Theory", "Code Generation"],
+    category: "System Programming",
+    languages: ["cpp", "rust", "go"]
+  },
+  {
+    id: 79,
+    title: "Neural Network Framework",
+    description: "Deep learning framework with automatic differentiation and GPU acceleration.",
+    difficulty: "Advanced",
+    estimatedTime: "14-20 weeks",
+    technologies: ["CUDA", "OpenCL", "Linear Algebra", "Python C Extensions"],
+    skills: ["GPU Programming", "Parallel Computing", "Mathematical Optimization"],
+    category: "AI/ML",
+    languages: ["python", "cpp", "cuda"]
+  },
+  {
+    id: 80,
+    title: "Database Management System",
+    description: "Relational database with SQL parser, query optimizer, and transaction management.",
+    difficulty: "Advanced",
+    estimatedTime: "16-24 weeks",
+    technologies: ["C++", "B+ Trees", "ACID Properties", "Query Optimization"],
+    skills: ["Database Architecture", "Query Processing", "Concurrency Control"],
+    category: "System Programming",
+    languages: ["cpp", "rust", "java"]
   }
-  // ... Continue with more projects to reach 100
+  // Continue adding more projects to reach 100...
 ];
 
 // Helper function to get projects by difficulty
