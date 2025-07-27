@@ -5,6 +5,7 @@ import type { User as SupabaseUser, Session } from "@supabase/supabase-js";
 import HeroSection from "@/components/HeroSection";
 import LanguageSelector from "@/components/LanguageSelector";
 import GameDashboard from "@/components/GameDashboard";
+import CompellingDashboard from "@/components/CompellingDashboard";
 import Navbar from "@/components/Navbar";
 import AuthForm from "@/components/AuthForm";
 
@@ -173,7 +174,7 @@ const Index = () => {
             <LanguageSelector onSelect={handleLanguageSelect} />
           </div>
         ) : (
-          <GameDashboard user={user} profile={profile} />
+          <CompellingDashboard user={user} profile={profile} />
         )
       ) : (
         <HeroSection onGetStarted={handleGetStarted} />
