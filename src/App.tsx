@@ -22,6 +22,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/learn" element={<Learn />} />
           <Route path="/learn/:language" element={<Learn />} />
         <Route path="/learn/:language/project/:projectId" element={<ProjectEnvironment />} />
         <Route path="/learn/:language/project/:projectId/preview" element={<ProjectPreviewDashboard />} />
