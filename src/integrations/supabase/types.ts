@@ -14,7 +14,220 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      achievements: {
+        Row: {
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          language: string | null
+          lessons_required: number | null
+          name: string
+          xp_required: number | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          icon: string
+          id?: string
+          language?: string | null
+          lessons_required?: number | null
+          name: string
+          xp_required?: number | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          language?: string | null
+          lessons_required?: number | null
+          name?: string
+          xp_required?: number | null
+        }
+        Relationships: []
+      }
+      lessons: {
+        Row: {
+          created_at: string
+          description: string | null
+          difficulty: string
+          expected_output: string | null
+          explanation: string | null
+          hints: string[] | null
+          id: string
+          instructions: string
+          language: string
+          learning_objectives: string[] | null
+          level: string
+          order_index: number
+          solution: string
+          starter_code: string | null
+          title: string
+          unit: number
+          updated_at: string
+          xp_value: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          difficulty: string
+          expected_output?: string | null
+          explanation?: string | null
+          hints?: string[] | null
+          id?: string
+          instructions: string
+          language: string
+          learning_objectives?: string[] | null
+          level: string
+          order_index: number
+          solution: string
+          starter_code?: string | null
+          title: string
+          unit: number
+          updated_at?: string
+          xp_value?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          expected_output?: string | null
+          explanation?: string | null
+          hints?: string[] | null
+          id?: string
+          instructions?: string
+          language?: string
+          learning_objectives?: string[] | null
+          level?: string
+          order_index?: number
+          solution?: string
+          starter_code?: string | null
+          title?: string
+          unit?: number
+          updated_at?: string
+          xp_value?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          last_activity: string | null
+          level: number
+          streak: number
+          updated_at: string
+          user_id: string
+          username: string | null
+          xp: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          last_activity?: string | null
+          level?: number
+          streak?: number
+          updated_at?: string
+          user_id: string
+          username?: string | null
+          xp?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          last_activity?: string | null
+          level?: number
+          streak?: number
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+          xp?: number
+        }
+        Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_progress: {
+        Row: {
+          attempts: number
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          language: string
+          lesson_id: string
+          time_spent_seconds: number
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          language: string
+          lesson_id: string
+          time_spent_seconds?: number
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          language?: string
+          lesson_id?: string
+          time_spent_seconds?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
