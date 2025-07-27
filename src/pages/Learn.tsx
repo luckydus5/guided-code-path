@@ -34,6 +34,15 @@ interface UserProgress {
     skillLevel: "Beginner" | "Intermediate" | "Advanced" | "Expert";
     achievements: string[];
     completedProjects: number[];
+    completedLessons: string[];
+    currentModule: string;
+    masteryScore: number; // 0-100
+    projectsInProgress: number[];
+    capstoneProjectsCompleted: number[];
+    skillsEarned: string[];
+    certifications: string[];
+    streakDays: number;
+    lastActiveDate: string;
   };
 }
 
@@ -56,7 +65,16 @@ export default function Learn() {
     totalTimeSpent: 0,
     skillLevel: "Beginner" as const,
     achievements: [],
-    completedProjects: []
+    completedProjects: [],
+    completedLessons: [],
+    currentModule: "",
+    masteryScore: 0,
+    projectsInProgress: [],
+    capstoneProjectsCompleted: [],
+    skillsEarned: [],
+    certifications: [],
+    streakDays: 0,
+    lastActiveDate: new Date().toISOString()
   };
 
   const languageProjects = getProjectsByLanguage(language || 'python');
@@ -64,15 +82,38 @@ export default function Learn() {
   const intermediateProjects = languageProjects.filter(p => p.difficulty === 'Intermediate');
   const advancedProjects = languageProjects.filter(p => p.difficulty === 'Advanced');
 
-  // Calculate overall progress including projects
+  // CodeCraft Learning Platform Progress Calculation (500+ projects per language)
+  const CODECRAFT_PROJECT_TARGETS = {
+    python: { beginner: 200, intermediate: 200, advanced: 100, capstone: 25 },
+    javascript: { beginner: 200, intermediate: 200, advanced: 100, capstone: 25 },
+    java: { beginner: 200, intermediate: 200, advanced: 100, capstone: 25 },
+    html: { beginner: 200, intermediate: 200, advanced: 100, capstone: 20 },
+    css: { beginner: 200, intermediate: 200, advanced: 100, capstone: 20 }
+  };
+
+  const currentTargets = CODECRAFT_PROJECT_TARGETS[language as keyof typeof CODECRAFT_PROJECT_TARGETS] || 
+                        CODECRAFT_PROJECT_TARGETS.python;
+  
+  const totalProjectsTarget = currentTargets.beginner + currentTargets.intermediate + 
+                             currentTargets.advanced + currentTargets.capstone;
+  
   const totalLessons = languageChallenges.length;
-  const completedLessons = currentLanguageProgress.completedChallenges.length;
+  const completedLessons = currentLanguageProgress.completedLessons?.length || 
+                          currentLanguageProgress.completedChallenges.length;
   const totalProjects = languageProjects.length;
   const completedProjects = currentLanguageProgress.completedProjects?.length || 0;
+  const capstoneCompleted = currentLanguageProgress.capstoneProjectsCompleted?.length || 0;
   
-  const overallProgress = Math.round(
-    ((completedLessons / totalLessons) * 0.4 + (completedProjects / totalProjects) * 0.6) * 100
-  );
+  // Advanced progress calculation with weighted scoring
+  const lessonProgress = (completedLessons / totalLessons) * 0.3; // 30% weight
+  const projectProgress = (completedProjects / totalProjectsTarget) * 0.5; // 50% weight  
+  const capstoneProgress = (capstoneCompleted / currentTargets.capstone) * 0.2; // 20% weight
+  
+  const overallProgress = Math.min(100, Math.round((lessonProgress + projectProgress + capstoneProgress) * 100));
+  
+  // Mastery score calculation
+  const masteryScore = currentLanguageProgress.masteryScore || 
+    Math.round((overallProgress * 0.7) + (currentLanguageProgress.skillsEarned?.length || 0) * 2);
 
   const startProject = (projectId: number) => {
     toast({
@@ -378,7 +419,8 @@ export default function Learn() {
           </TabsContent>
 
           <TabsContent value="progress" className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* CodeCraft Learning Platform Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
               <Card className="p-6">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-primary/20">
@@ -405,6 +447,18 @@ export default function Learn() {
               
               <Card className="p-6">
                 <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-destructive/20">
+                    <Crown className="h-5 w-5 text-destructive" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{capstoneCompleted}</div>
+                    <div className="text-sm text-muted-foreground">Capstone Projects</div>
+                  </div>
+                </div>
+              </Card>
+              
+              <Card className="p-6">
+                <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-warning/20">
                     <Trophy className="h-5 w-5 text-warning" />
                   </div>
@@ -418,64 +472,155 @@ export default function Learn() {
               <Card className="p-6">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-secondary/20">
-                    <TrendingUp className="h-5 w-5 text-secondary" />
+                    <Star className="h-5 w-5 text-secondary" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold">{overallProgress}%</div>
-                    <div className="text-sm text-muted-foreground">Overall Progress</div>
+                    <div className="text-2xl font-bold">{masteryScore}</div>
+                    <div className="text-sm text-muted-foreground">Mastery Score</div>
                   </div>
                 </div>
               </Card>
             </div>
 
-            {/* Detailed Progress */}
+            {/* CodeCraft Progress Breakdown */}
             <div className="space-y-6">
               <Card className="p-6">
-                <h3 className="font-semibold mb-4">Learning Progress Breakdown</h3>
-                <div className="space-y-4">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 rounded-lg bg-primary/20">
+                    <TrendingUp className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">CodeCraft Learning Platform Progress</h3>
+                    <p className="text-sm text-muted-foreground">Project-based learning with 500+ real-world projects</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-6">
                   <div>
                     <div className="flex justify-between text-sm mb-2">
-                      <span>Foundation Lessons</span>
+                      <span className="font-medium">Foundation Lessons</span>
                       <span>{completedLessons} / {totalLessons}</span>
                     </div>
-                    <Progress value={(completedLessons / totalLessons) * 100} />
+                    <Progress value={(completedLessons / totalLessons) * 100} className="h-2" />
+                    <div className="text-xs text-muted-foreground mt-1">Theory, concepts, and guided practice</div>
                   </div>
                   
                   <div>
                     <div className="flex justify-between text-sm mb-2">
-                      <span>Hands-on Projects</span>
-                      <span>{completedProjects} / {totalProjects}</span>
+                      <span className="font-medium">Beginner Projects (Target: {currentTargets.beginner})</span>
+                      <span>{Math.min(completedProjects, currentTargets.beginner)} / {currentTargets.beginner}</span>
                     </div>
-                    <Progress value={(completedProjects / totalProjects) * 100} />
+                    <Progress value={(Math.min(completedProjects, currentTargets.beginner) / currentTargets.beginner) * 100} className="h-2" />
+                    <div className="text-xs text-muted-foreground mt-1">Foundation building with guided tutorials</div>
                   </div>
                   
                   <div>
                     <div className="flex justify-between text-sm mb-2">
-                      <span>Overall Mastery</span>
+                      <span className="font-medium">Intermediate Projects (Target: {currentTargets.intermediate})</span>
+                      <span>{Math.max(0, Math.min(completedProjects - currentTargets.beginner, currentTargets.intermediate))} / {currentTargets.intermediate}</span>
+                    </div>
+                    <Progress value={(Math.max(0, Math.min(completedProjects - currentTargets.beginner, currentTargets.intermediate)) / currentTargets.intermediate) * 100} className="h-2" />
+                    <div className="text-xs text-muted-foreground mt-1">Skill application with moderate complexity</div>
+                  </div>
+                  
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="font-medium">Advanced Projects (Target: {currentTargets.advanced})</span>
+                      <span>{Math.max(0, Math.min(completedProjects - currentTargets.beginner - currentTargets.intermediate, currentTargets.advanced))} / {currentTargets.advanced}</span>
+                    </div>
+                    <Progress value={(Math.max(0, Math.min(completedProjects - currentTargets.beginner - currentTargets.intermediate, currentTargets.advanced)) / currentTargets.advanced) * 100} className="h-2" />
+                    <div className="text-xs text-muted-foreground mt-1">Expert-level challenges and optimization</div>
+                  </div>
+                  
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="font-medium">Capstone Projects (Target: {currentTargets.capstone})</span>
+                      <span>{capstoneCompleted} / {currentTargets.capstone}</span>
+                    </div>
+                    <Progress value={(capstoneCompleted / currentTargets.capstone) * 100} className="h-2" />
+                    <div className="text-xs text-muted-foreground mt-1">Portfolio-worthy applications demonstrating mastery</div>
+                  </div>
+                  
+                  <div className="border-t pt-4">
+                    <div className="flex justify-between text-base font-semibold mb-2">
+                      <span>Overall Platform Progress</span>
                       <span>{overallProgress}%</span>
                     </div>
                     <Progress value={overallProgress} className="h-3" />
+                    <div className="text-xs text-muted-foreground mt-2">
+                      Target: {totalProjectsTarget} total projects • Mastery Score: {masteryScore}/100
+                    </div>
                   </div>
                 </div>
               </Card>
 
-              <Card className="p-6">
-                <h3 className="font-semibold mb-4">Skill Development</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 border rounded-lg">
-                    <div className="text-2xl font-bold text-success">{beginnerProjects.length}</div>
-                    <div className="text-sm text-muted-foreground">Beginner Projects</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="p-6">
+                  <h3 className="font-semibold mb-4 flex items-center gap-2">
+                    <Target className="h-5 w-5" />
+                    Skill Development Pathway
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-3 h-3 rounded-full bg-success"></div>
+                        <span className="text-sm font-medium">Beginner Level</span>
+                      </div>
+                      <div className="text-sm text-muted-foreground">{currentTargets.beginner} projects</div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-3 h-3 rounded-full bg-warning"></div>
+                        <span className="text-sm font-medium">Intermediate Level</span>
+                      </div>
+                      <div className="text-sm text-muted-foreground">{currentTargets.intermediate} projects</div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-3 h-3 rounded-full bg-destructive"></div>
+                        <span className="text-sm font-medium">Advanced Level</span>
+                      </div>
+                      <div className="text-sm text-muted-foreground">{currentTargets.advanced} projects</div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 border rounded-lg bg-primary/5">
+                      <div className="flex items-center gap-3">
+                        <Crown className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium">Capstone Projects</span>
+                      </div>
+                      <div className="text-sm text-muted-foreground">{currentTargets.capstone} projects</div>
+                    </div>
                   </div>
-                  <div className="text-center p-4 border rounded-lg">
-                    <div className="text-2xl font-bold text-warning">{intermediateProjects.length}</div>
-                    <div className="text-sm text-muted-foreground">Intermediate Projects</div>
+                </Card>
+
+                <Card className="p-6">
+                  <h3 className="font-semibold mb-4 flex items-center gap-2">
+                    <Award className="h-5 w-5" />
+                    Learning Metrics
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <span className="text-sm">Time Investment</span>
+                      <span className="text-sm font-medium">{Math.round(currentLanguageProgress.totalTimeSpent / 60)}h</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Current Streak</span>
+                      <span className="text-sm font-medium">{currentLanguageProgress.streakDays} days</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Skills Earned</span>
+                      <span className="text-sm font-medium">{currentLanguageProgress.skillsEarned?.length || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Projects in Progress</span>
+                      <span className="text-sm font-medium">{currentLanguageProgress.projectsInProgress?.length || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Certifications</span>
+                      <span className="text-sm font-medium">{currentLanguageProgress.certifications?.length || 0}</span>
+                    </div>
                   </div>
-                  <div className="text-center p-4 border rounded-lg">
-                    <div className="text-2xl font-bold text-destructive">{advancedProjects.length}</div>
-                    <div className="text-sm text-muted-foreground">Advanced Projects</div>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </div>
             </div>
           </TabsContent>
 
