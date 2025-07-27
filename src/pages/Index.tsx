@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import type { User as SupabaseUser } from "@supabase/supabase-js";
+import type { User as SupabaseUser, Session } from "@supabase/supabase-js";
 import HeroSection from "@/components/HeroSection";
 import LanguageSelector from "@/components/LanguageSelector";
 import GameDashboard from "@/components/GameDashboard";
@@ -29,88 +29,93 @@ interface UserProfile {
 
 const Index = () => {
   const navigate = useNavigate();
-  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
+  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
 
   useEffect(() => {
-    // Check for existing session
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchProfile(session.user.id);
-      }
-      setLoading(false);
-    };
-
-    getSession();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchProfile(session.user.id);
-      } else {
-        setProfile(null);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    initializeAuth();
   }, []);
 
-  const fetchProfile = async (userId: string) => {
+  const initializeAuth = async () => {
     try {
-      const { data, error } = await supabase
+      // Set up auth listener first
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            // Defer profile handling to avoid auth callback deadlock
+            setTimeout(() => {
+              handleUserProfile(session.user.id);
+            }, 0);
+          } else {
+            setProfile(null);
+          }
+          setLoading(false);
+        }
+      );
+
+      // Then check for existing session
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      if (currentSession?.user) {
+        setSession(currentSession);
+        setUser(currentSession.user);
+        await handleUserProfile(currentSession.user.id);
+      }
+      setLoading(false);
+
+      return () => subscription.unsubscribe();
+    } catch (error) {
+      console.error('Auth initialization error:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleUserProfile = async (userId: string) => {
+    try {
+      // First try to fetch existing profile
+      const { data: existingProfile, error: fetchError } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
         .maybeSingle();
 
-      if (error) {
-        console.error('Error fetching profile:', error);
+      if (fetchError) {
+        console.error('Error fetching profile:', fetchError);
         return;
       }
 
-      if (data) {
-        setProfile(data);
+      if (existingProfile) {
+        setProfile(existingProfile);
       } else {
-        // Create a new profile if it doesn't exist
-        await createProfile(userId);
+        // Create new profile if doesn't exist
+        const { data: newProfile, error: createError } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: userId,
+            username: `user_${Date.now()}`,
+            display_name: 'New Learner',
+            xp: 0,
+            level: 1,
+            streak: 0
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          console.error('Error creating profile:', createError);
+          return;
+        }
+
+        setProfile(newProfile);
       }
     } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  const createProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .insert({
-          user_id: userId,
-          username: `user_${userId.slice(0, 8)}`,
-          display_name: 'New Learner',
-          xp: 0,
-          level: 1,
-          streak: 0
-        })
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error creating profile:', error);
-        return;
-      }
-
-      if (data) {
-        setProfile(data);
-      }
-    } catch (error) {
-      console.error('Error creating profile:', error);
+      console.error('Profile handling error:', error);
     }
   };
 
@@ -130,17 +135,26 @@ const Index = () => {
     setShowAuth(false);
   };
 
-  const handleSignOut = () => {
-    setUser(null);
-    setProfile(null);
-    setShowLanguageSelector(false);
-    setShowAuth(false);
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      setSession(null);
+      setProfile(null);
+      setShowLanguageSelector(false);
+      setShowAuth(false);
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
       </div>
     );
   }
