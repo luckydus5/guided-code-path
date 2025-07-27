@@ -41,38 +41,8 @@ export default function Learn() {
   const { language } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  // If no language is specified, show language selection
-  if (!language) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-        <div className="container mx-auto px-6 py-16">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4">Choose Your Learning Path</h1>
-            <p className="text-lg text-muted-foreground">Select a programming language to begin your journey</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {[
-              { lang: 'python', title: 'Python', description: 'Perfect for beginners and data science', icon: '🐍' },
-              { lang: 'javascript', title: 'JavaScript', description: 'Build interactive web applications', icon: '🚀' },
-              { lang: 'java', title: 'Java', description: 'Enterprise applications and Android development', icon: '☕' }
-            ].map((option) => (
-              <Card key={option.lang} className="p-6 cursor-pointer hover:shadow-lg transition-all">
-                <div className="text-center" onClick={() => navigate(`/learn/${option.lang}`)}>
-                  <div className="text-4xl mb-4">{option.icon}</div>
-                  <h3 className="text-xl font-semibold mb-2">{option.title}</h3>
-                  <p className="text-muted-foreground">{option.description}</p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
   
-  // Load user progress from localStorage
+  // Load user progress from localStorage - HOOKS MUST BE CALLED FIRST
   const [userProgress, setUserProgress] = useState<UserProgress>(() => {
     const saved = localStorage.getItem('codelearning-progress');
     return saved ? JSON.parse(saved) : {};
@@ -111,6 +81,36 @@ export default function Learn() {
     });
     navigate(`/learn/${language}/project/${projectId}`);
   };
+
+  // If no language is specified, show language selection
+  if (!language) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+        <div className="container mx-auto px-6 py-16">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold mb-4">Choose Your Learning Path</h1>
+            <p className="text-lg text-muted-foreground">Select a programming language to begin your journey</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {[
+              { lang: 'python', title: 'Python', description: 'Perfect for beginners and data science', icon: '🐍' },
+              { lang: 'javascript', title: 'JavaScript', description: 'Build interactive web applications', icon: '🚀' },
+              { lang: 'java', title: 'Java', description: 'Enterprise applications and Android development', icon: '☕' }
+            ].map((option) => (
+              <Card key={option.lang} className="p-6 cursor-pointer hover:shadow-lg transition-all">
+                <div className="text-center" onClick={() => navigate(`/learn/${option.lang}`)}>
+                  <div className="text-4xl mb-4">{option.icon}</div>
+                  <h3 className="text-xl font-semibold mb-2">{option.title}</h3>
+                  <p className="text-muted-foreground">{option.description}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
