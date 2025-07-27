@@ -199,34 +199,10 @@ export default function Learn() {
     }
   };
 
-  // If no language is specified, show language selection
+  // If no language is specified, redirect to Python by default
   if (!language) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-        <div className="container mx-auto px-6 py-16">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4">Choose Your Learning Path</h1>
-            <p className="text-lg text-muted-foreground">Select a programming language to begin your journey</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {[
-              { lang: 'python', title: 'Python', description: 'Perfect for beginners and data science', icon: '🐍' },
-              { lang: 'javascript', title: 'JavaScript', description: 'Build interactive web applications', icon: '🚀' },
-              { lang: 'java', title: 'Java', description: 'Enterprise applications and Android development', icon: '☕' }
-            ].map((option) => (
-              <Card key={option.lang} className="p-6 cursor-pointer hover:shadow-lg transition-all">
-                <div className="text-center" onClick={() => navigate(`/learn/${option.lang}`)}>
-                  <div className="text-4xl mb-4">{option.icon}</div>
-                  <h3 className="text-xl font-semibold mb-2">{option.title}</h3>
-                  <p className="text-muted-foreground">{option.description}</p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    navigate('/learn/python');
+    return null;
   }
 
   return (
@@ -285,8 +261,12 @@ export default function Learn() {
       </div>
 
       <div className="container mx-auto px-6 py-8">
-        <Tabs defaultValue="projects" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+        <Tabs defaultValue="resources" className="w-full">
+          <TabsList className="grid w-full grid-cols-5 mb-8">
+            <TabsTrigger value="resources" className="flex items-center gap-2">
+              <BookOpen className="h-4 w-4" />
+              Learning Resources
+            </TabsTrigger>
             <TabsTrigger value="projects" className="flex items-center gap-2">
               <FolderOpen className="h-4 w-4" />
               Projects
@@ -304,6 +284,57 @@ export default function Learn() {
               Achievements
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="resources" className="space-y-8">
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-lg bg-primary/20">
+                  <BookOpen className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold capitalize">{language} Learning Resources</h2>
+                  <p className="text-muted-foreground">Master the fundamentals before diving into projects</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {getProjectLearningResources(1, language || 'python').map((resource, index) => (
+                  <Card key={index} className="p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer">
+                    <div className="flex items-start gap-3 mb-4">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <ResourceIcon type={resource.type} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <Badge variant="outline" className="text-xs capitalize">
+                            {resource.type}
+                          </Badge>
+                          <Badge variant="secondary" className="text-xs">
+                            {resource.duration}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
+                      {resource.title}
+                    </h3>
+                    
+                    <div className="space-y-3">
+                      <Button 
+                        size="sm" 
+                        className="w-full" 
+                        variant="outline"
+                      >
+                        <ExternalLink className="h-3 w-3 mr-2" />
+                        Start Learning
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
 
           <TabsContent value="projects" className="space-y-8">
             {/* Beginner Projects */}
