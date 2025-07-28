@@ -191,5 +191,17 @@ export const PROGRAMMING_LANGUAGES: Language[] = [
     features: ["Database Management", "Data Querying", "Standardized", "Declarative"],
     useCases: ["Database Design", "Data Analysis", "Backend Development", "Business Intelligence"],
     estimatedTime: "1-2 months"
+  },
+  {
+    id: "capstone",
+    name: "Capstone Projects",
+    description: "Advanced, real-world projects that combine multiple technologies. Perfect for building a professional portfolio.",
+    difficulty: "Advanced",
+    popularity: 100,
+    icon: "🚀",
+    color: "from-purple-600 to-pink-600",
+    features: ["Full-Stack Development", "Industry Best Practices", "Portfolio Ready", "Real-World Applications"],
+    useCases: ["Job Applications", "Portfolio Building", "Skill Demonstration", "Career Advancement"],
+    estimatedTime: "Coming Soon"
   }
 ];

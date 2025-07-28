@@ -38,6 +38,33 @@ export default function LearningResources({
   const getResourcesForProject = (): Resource[] => {
     const resources: Resource[] = [];
     
+    // Web Fundamentals specific resources
+    if (language === 'web-fundamentals') {
+      resources.push(
+        {
+          title: "MDN Web Development Guide",
+          type: "documentation",
+          url: "https://developer.mozilla.org/en-US/docs/Learn",
+          description: "Complete web development learning guide from Mozilla",
+          difficulty: "beginner"
+        },
+        {
+          title: "JavaScript.info - Modern Tutorial",
+          type: "tutorial",
+          url: "https://javascript.info/",
+          description: "Modern JavaScript tutorial from basics to advanced",
+          difficulty: "beginner"
+        },
+        {
+          title: "CSS-Tricks Guides",
+          type: "article",
+          url: "https://css-tricks.com/guides/",
+          description: "Comprehensive CSS guides and tutorials",
+          difficulty: "intermediate"
+        }
+      );
+    }
+    
     // Language-specific resources
     if (language === 'python') {
       resources.push(

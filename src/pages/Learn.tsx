@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import LearningContent from "@/components/LearningContent";
 import { 
   Code, 
   Play, 
@@ -31,7 +32,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LANGUAGE_CHALLENGES } from "@/data/challenges";
-import { HANDS_ON_PROJECTS, getProjectsByLanguage, getWebFundamentalsProjects, getProjectsByDifficulty } from "@/data/projects";
+import { HANDS_ON_PROJECTS, getProjectsByLanguage, getWebFundamentalsProjects, getCapstoneProjects, getProjectsByDifficulty } from "@/data/projects";
 
 interface UserProgress {
   [language: string]: {
@@ -78,6 +79,37 @@ export default function Learn() {
     const saved = localStorage.getItem('codelearning-progress');
     return saved ? JSON.parse(saved) : {};
   });
+
+  // State for learning content display
+  const [currentLearningContent, setCurrentLearningContent] = useState<{
+    title: string;
+    type: string;
+    difficulty: string;
+  } | null>(null);
+
+  // Storage key for current learning content
+  const learningContentStorageKey = `currentLearningContent_${language || 'web-fundamentals'}`;
+
+  // Load saved learning content state on component mount
+  useEffect(() => {
+    try {
+      const savedLearningContent = localStorage.getItem(learningContentStorageKey);
+      if (savedLearningContent) {
+        setCurrentLearningContent(JSON.parse(savedLearningContent));
+      }
+    } catch (error) {
+      console.error('Error loading saved learning content state:', error);
+    }
+  }, [learningContentStorageKey]);
+
+  // Auto-save learning content state when it changes
+  useEffect(() => {
+    if (currentLearningContent) {
+      localStorage.setItem(learningContentStorageKey, JSON.stringify(currentLearningContent));
+    } else {
+      localStorage.removeItem(learningContentStorageKey);
+    }
+  }, [currentLearningContent, learningContentStorageKey]);
 
   const languageChallenges = isWebFundamentals ? [] : (LANGUAGE_CHALLENGES[language || 'python'] || LANGUAGE_CHALLENGES.python);
   
@@ -141,13 +173,49 @@ export default function Learn() {
   // Comprehensive learning resources for each language
   const getLanguageLearningResources = (language: string) => {
     const resourcesByLanguage = {
+      'web-fundamentals': [
+        // HTML Learning Resources
+        { type: "article", title: "HTML Basics - MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/HTML_basics", duration: "30 min", difficulty: "Beginner", description: "Complete introduction to HTML fundamentals from Mozilla" },
+        { type: "documentation", title: "HTML5 Semantic Elements Guide", url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element", duration: "45 min", difficulty: "Beginner", description: "Comprehensive reference for HTML5 semantic elements" },
+        { type: "article", title: "HTML Forms and Input Elements", url: "https://developer.mozilla.org/en-US/docs/Learn/Forms", duration: "40 min", difficulty: "Beginner", description: "Master HTML forms and input validation" },
+        { type: "documentation", title: "HTML Accessibility Guidelines", url: "https://developer.mozilla.org/en-US/docs/Learn/Accessibility/HTML", duration: "35 min", difficulty: "Intermediate", description: "Building accessible web content with HTML" },
+        
+        // CSS Learning Resources  
+        { type: "article", title: "CSS Basics - MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/CSS_basics", duration: "35 min", difficulty: "Beginner", description: "Essential CSS concepts and styling fundamentals" },
+        { type: "article", title: "CSS Flexbox Complete Guide", url: "https://css-tricks.com/snippets/css/a-guide-to-flexbox/", duration: "25 min", difficulty: "Beginner", description: "Master CSS Flexbox for modern layouts" },
+        { type: "article", title: "CSS Grid Layout Complete Guide", url: "https://css-tricks.com/snippets/css/complete-guide-grid/", duration: "30 min", difficulty: "Intermediate", description: "Comprehensive guide to CSS Grid layout system" },
+        { type: "documentation", title: "CSS Animations and Transitions", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations", duration: "25 min", difficulty: "Intermediate", description: "Creating smooth animations with CSS" },
+        { type: "article", title: "Responsive Web Design Principles", url: "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Responsive_Design", duration: "40 min", difficulty: "Intermediate", description: "Building responsive websites for all devices" },
+        
+        // JavaScript Learning Resources
+        { type: "article", title: "JavaScript Basics - MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/JavaScript_basics", duration: "35 min", difficulty: "Beginner", description: "JavaScript fundamentals and core concepts" },
+        { type: "documentation", title: "JavaScript DOM Manipulation", url: "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model", duration: "45 min", difficulty: "Beginner", description: "Interacting with HTML elements using JavaScript" },
+        { type: "article", title: "JavaScript Event Handling", url: "https://developer.mozilla.org/en-US/docs/Web/Events", duration: "30 min", difficulty: "Beginner", description: "Handling user interactions and browser events" },
+        { type: "documentation", title: "JavaScript Async Programming", url: "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous", duration: "50 min", difficulty: "Intermediate", description: "Promises, async/await, and asynchronous JavaScript" },
+        { type: "article", title: "Modern JavaScript ES6+ Features", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide", duration: "60 min", difficulty: "Intermediate", description: "Modern JavaScript features and best practices" },
+        { type: "article", title: "Web Performance Optimization", url: "https://developer.mozilla.org/en-US/docs/Learn/Performance", duration: "45 min", difficulty: "Advanced", description: "Optimizing web applications for speed and efficiency" },
+        
+        // GitHub Repositories - Educational Content
+        { type: "github", title: "freeCodeCamp - Web Development Curriculum", url: "https://github.com/freeCodeCamp/freeCodeCamp", stars: "384k", difficulty: "Beginner", description: "Complete interactive web development curriculum with HTML, CSS, and JavaScript projects" },
+        { type: "github", title: "JavaScript30 - 30 Day Vanilla JS Challenge", url: "https://github.com/wesbos/JavaScript30", stars: "26k", difficulty: "Beginner", description: "30-day vanilla JavaScript coding challenge to build real projects without frameworks" },
+        { type: "github", title: "You Don't Know JS Book Series", url: "https://github.com/getify/You-Dont-Know-JS", stars: "177k", difficulty: "Intermediate", description: "Deep dive into JavaScript core mechanisms and advanced concepts" },
+        { type: "github", title: "33 JavaScript Concepts", url: "https://github.com/leonardomso/33-js-concepts", stars: "62k", difficulty: "Intermediate", description: "33 JavaScript concepts every developer should know with examples" },
+        { type: "github", title: "JavaScript Algorithms and Data Structures", url: "https://github.com/trekhleb/javascript-algorithms", stars: "183k", difficulty: "Intermediate", description: "Algorithms and data structures implemented in JavaScript with explanations" },
+        { type: "github", title: "HTML5 Boilerplate", url: "https://github.com/h5bp/html5-boilerplate", stars: "56k", difficulty: "Intermediate", description: "Professional front-end template for building fast, robust web applications" },
+        { type: "github", title: "Animate.css - CSS Animation Library", url: "https://github.com/animate-css/animate.css", stars: "79k", difficulty: "Beginner", description: "Cross-browser CSS animations library ready to use in your projects" },
+        { type: "github", title: "Modern CSS Layout Patterns", url: "https://github.com/una/layout-patterns", stars: "12k", difficulty: "Intermediate", description: "Collection of modern CSS layout patterns and techniques" },
+        { type: "github", title: "Web Development Best Practices", url: "https://github.com/google/WebFundamentals", stars: "13k", difficulty: "Intermediate", description: "Google's web development best practices and performance guidelines" },
+        { type: "github", title: "Frontend Mentor Challenges", url: "https://github.com/frontendmentor-community/html-css-js-challenges", stars: "8k", difficulty: "Beginner", description: "Real-world HTML, CSS, and JavaScript coding challenges" },
+        { type: "github", title: "Clean Code JavaScript", url: "https://github.com/ryanmcdermott/clean-code-javascript", stars: "89k", difficulty: "Intermediate", description: "Clean Code concepts adapted for JavaScript developers" },
+        { type: "github", title: "Awesome CSS Learning", url: "https://github.com/micromata/awesome-css-learning", stars: "3k", difficulty: "Beginner", description: "Curated list of awesome CSS learning resources and tools" }
+      ],
       html: [
-        { type: "video", title: "HTML5 Semantic Elements Masterclass", url: "#", duration: "45 min", difficulty: "Beginner" },
-        { type: "article", title: "Building Accessible Web Forms", url: "#", duration: "20 min", difficulty: "Beginner" },
-        { type: "documentation", title: "HTML5 API Reference Guide", url: "#", duration: "30 min", difficulty: "Intermediate" },
-        { type: "video", title: "SEO-Optimized HTML Structure", url: "#", duration: "35 min", difficulty: "Intermediate" },
-        { type: "article", title: "Progressive Web App HTML Foundation", url: "#", duration: "25 min", difficulty: "Advanced" },
-        { type: "video", title: "HTML Performance Optimization", url: "#", duration: "40 min", difficulty: "Advanced" },
+        { type: "article", title: "HTML5 Semantic Elements Masterclass", url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element", duration: "45 min", difficulty: "Beginner" },
+        { type: "article", title: "Building Accessible Web Forms", url: "https://developer.mozilla.org/en-US/docs/Learn/Forms", duration: "20 min", difficulty: "Beginner" },
+        { type: "documentation", title: "HTML5 API Reference Guide", url: "https://developer.mozilla.org/en-US/docs/Web/API", duration: "30 min", difficulty: "Intermediate" },
+        { type: "article", title: "SEO-Optimized HTML Structure", url: "https://developer.mozilla.org/en-US/docs/Learn/HTML", duration: "35 min", difficulty: "Intermediate" },
+        { type: "article", title: "Progressive Web App HTML Foundation", url: "https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps", duration: "25 min", difficulty: "Advanced" },
+        { type: "article", title: "HTML Performance Optimization", url: "https://developer.mozilla.org/en-US/docs/Learn/Performance", duration: "40 min", difficulty: "Advanced" },
         // GitHub Repositories
         { type: "github", title: "freeCodeCamp - Complete Web Development Curriculum", url: "https://github.com/freeCodeCamp/freeCodeCamp", stars: "384k", difficulty: "Beginner", description: "The most comprehensive web development curriculum with interactive HTML challenges and projects" },
         { type: "github", title: "30 seconds of code - HTML Snippets", url: "https://github.com/30-seconds/30-seconds-of-code", stars: "118k", difficulty: "Beginner", description: "Short HTML code snippets for all your development needs" },
@@ -155,12 +223,12 @@ export default function Learn() {
         { type: "github", title: "HEAD - Guide to HTML head elements", url: "https://github.com/joshbuchea/HEAD", stars: "29k", difficulty: "Beginner", description: "Everything you need to know about the HTML head element" }
       ],
       css: [
-        { type: "video", title: "CSS Flexbox Complete Course", url: "#", duration: "50 min", difficulty: "Beginner" },
-        { type: "article", title: "CSS Grid Layout Fundamentals", url: "#", duration: "30 min", difficulty: "Beginner" },
-        { type: "documentation", title: "CSS Custom Properties Guide", url: "#", duration: "20 min", difficulty: "Intermediate" },
-        { type: "video", title: "Advanced CSS Animations", url: "#", duration: "45 min", difficulty: "Intermediate" },
-        { type: "article", title: "CSS Architecture & Methodologies", url: "#", duration: "35 min", difficulty: "Advanced" },
-        { type: "video", title: "CSS-in-JS and Modern Styling", url: "#", duration: "40 min", difficulty: "Advanced" },
+        { type: "article", title: "CSS Flexbox Complete Course", url: "https://css-tricks.com/snippets/css/a-guide-to-flexbox/", duration: "50 min", difficulty: "Beginner" },
+        { type: "article", title: "CSS Grid Layout Fundamentals", url: "https://css-tricks.com/snippets/css/complete-guide-grid/", duration: "30 min", difficulty: "Beginner" },
+        { type: "documentation", title: "CSS Custom Properties Guide", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties", duration: "20 min", difficulty: "Intermediate" },
+        { type: "article", title: "Advanced CSS Animations", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations", duration: "45 min", difficulty: "Intermediate" },
+        { type: "article", title: "CSS Architecture & Methodologies", url: "https://developer.mozilla.org/en-US/docs/Learn/CSS", duration: "35 min", difficulty: "Advanced" },
+        { type: "article", title: "CSS-in-JS and Modern Styling", url: "https://developer.mozilla.org/en-US/docs/Learn/CSS", duration: "40 min", difficulty: "Advanced" },
         // GitHub Repositories
         { type: "github", title: "Animate.css - CSS Animations Library", url: "https://github.com/animate-css/animate.css", stars: "79k", difficulty: "Beginner", description: "Cross-browser CSS animations library ready to use" },
         { type: "github", title: "CSS Layout Patterns", url: "https://github.com/una/layout-patterns", stars: "12k", difficulty: "Intermediate", description: "Modern CSS layout patterns and techniques" },
@@ -168,12 +236,12 @@ export default function Learn() {
         { type: "github", title: "Flexbox Froggy Solutions", url: "https://github.com/thomaspark/flexboxfroggy", stars: "4k", difficulty: "Beginner", description: "Game for learning CSS flexbox with interactive exercises" }
       ],
       javascript: [
-        { type: "video", title: "JavaScript ES6+ Features Deep Dive", url: "#", duration: "60 min", difficulty: "Beginner" },
-        { type: "article", title: "DOM Manipulation & Event Handling", url: "#", duration: "25 min", difficulty: "Beginner" },
-        { type: "documentation", title: "Async JavaScript & Promises", url: "#", duration: "30 min", difficulty: "Intermediate" },
-        { type: "video", title: "JavaScript Design Patterns", url: "#", duration: "55 min", difficulty: "Intermediate" },
-        { type: "article", title: "Performance Optimization Techniques", url: "#", duration: "40 min", difficulty: "Advanced" },
-        { type: "video", title: "Node.js & Server-Side JavaScript", url: "#", duration: "65 min", difficulty: "Advanced" },
+        { type: "article", title: "JavaScript ES6+ Features Deep Dive", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide", duration: "60 min", difficulty: "Beginner" },
+        { type: "article", title: "DOM Manipulation & Event Handling", url: "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model", duration: "25 min", difficulty: "Beginner" },
+        { type: "documentation", title: "Async JavaScript & Promises", url: "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous", duration: "30 min", difficulty: "Intermediate" },
+        { type: "article", title: "JavaScript Design Patterns", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript", duration: "55 min", difficulty: "Intermediate" },
+        { type: "article", title: "Performance Optimization Techniques", url: "https://developer.mozilla.org/en-US/docs/Learn/Performance", duration: "40 min", difficulty: "Advanced" },
+        { type: "article", title: "Node.js & Server-Side JavaScript", url: "https://nodejs.org/en/docs/", duration: "65 min", difficulty: "Advanced" },
         // GitHub Repositories
         { type: "github", title: "JavaScript30 - 30 Day Vanilla JS Challenge", url: "https://github.com/wesbos/JavaScript30", stars: "26k", difficulty: "Beginner", description: "30-day vanilla JavaScript coding challenge to build real projects" },
         { type: "github", title: "33 JS Concepts - JavaScript Fundamentals", url: "https://github.com/leonardomso/33-js-concepts", stars: "62k", difficulty: "Intermediate", description: "33 JavaScript concepts every developer should know" },
@@ -214,24 +282,36 @@ export default function Learn() {
   // Learning resources for each project
   const getProjectLearningResources = (projectId: number, language: string) => {
     const projectSpecificResources = {
+      'web-fundamentals': [
+        // Project-specific HTML resources
+        { type: "article", title: "HTML Structure Best Practices", url: "https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/Document_and_website_structure", duration: "15 min", difficulty: "Beginner" },
+        { type: "documentation", title: "HTML Forms and Validation", url: "https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation", duration: "20 min", difficulty: "Beginner" },
+        { type: "article", title: "CSS Layout Techniques for Projects", url: "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout", duration: "25 min", difficulty: "Intermediate" },
+        { type: "documentation", title: "JavaScript Project Patterns", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects", duration: "18 min", difficulty: "Intermediate" },
+        { type: "article", title: "Responsive Design Implementation", url: "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Responsive_Design", duration: "22 min", difficulty: "Intermediate" },
+        // GitHub repositories for project inspiration
+        { type: "github", title: "Frontend Mentor Projects", url: "https://github.com/frontendmentor-community", stars: "5k", difficulty: "Beginner", description: "Real-world frontend projects with designs and requirements" },
+        { type: "github", title: "JavaScript Project Examples", url: "https://github.com/bradtraversy/50projects50days", stars: "33k", difficulty: "Beginner", description: "50 mini web projects using HTML, CSS & JavaScript" },
+        { type: "github", title: "Responsive Web Design Projects", url: "https://github.com/microsoft/Web-Dev-For-Beginners", stars: "81k", difficulty: "Beginner", description: "Microsoft's web development curriculum with projects" }
+      ],
       html: [
-        { type: "article", title: "HTML Semantic Elements for This Project", url: "#", duration: "10 min" },
-        { type: "video", title: "Building Responsive Layouts", url: "#", duration: "15 min" },
-        { type: "documentation", title: "HTML5 Best Practices", url: "#", duration: "8 min" }
+        { type: "article", title: "HTML Semantic Elements for This Project", url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element", duration: "10 min" },
+        { type: "article", title: "Building Responsive Layouts", url: "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Responsive_Design", duration: "15 min" },
+        { type: "documentation", title: "HTML5 Best Practices", url: "https://developer.mozilla.org/en-US/docs/Learn/HTML", duration: "8 min" }
       ],
       css: [
-        { type: "article", title: "CSS Flexbox for This Project", url: "#", duration: "12 min" },
-        { type: "video", title: "CSS Grid Layout Tutorial", url: "#", duration: "20 min" },
-        { type: "documentation", title: "CSS Animations for This Project", url: "#", duration: "15 min" }
+        { type: "article", title: "CSS Flexbox for This Project", url: "https://css-tricks.com/snippets/css/a-guide-to-flexbox/", duration: "12 min" },
+        { type: "article", title: "CSS Grid Layout Tutorial", url: "https://css-tricks.com/snippets/css/complete-guide-grid/", duration: "20 min" },
+        { type: "documentation", title: "CSS Animations for This Project", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations", duration: "15 min" }
       ],
       javascript: [
-        { type: "article", title: "JavaScript Features for This Project", url: "#", duration: "15 min" },
-        { type: "video", title: "DOM Manipulation for This Project", url: "#", duration: "18 min" },
-        { type: "documentation", title: "Async Patterns for This Project", url: "#", duration: "12 min" }
+        { type: "article", title: "JavaScript Features for This Project", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide", duration: "15 min" },
+        { type: "article", title: "DOM Manipulation for This Project", url: "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model", duration: "18 min" },
+        { type: "documentation", title: "Async Patterns for This Project", url: "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous", duration: "12 min" }
       ],
       python: [
         { type: "article", title: "Python Libraries for This Project", url: "#", duration: "12 min" },
-        { type: "video", title: "OOP Concepts for This Project", url: "#", duration: "25 min" },
+        { type: "article", title: "OOP Concepts for This Project", url: "#", duration: "25 min" },
         { type: "documentation", title: "Python Best Practices", url: "#", duration: "10 min" }
       ]
     };
@@ -281,9 +361,34 @@ export default function Learn() {
   };
 
   // If no language is specified, redirect to Python by default
+  const handleLearningComplete = () => {
+    toast({
+      title: "Lesson Completed! 🎉",
+      description: "Great job! You've completed this learning module.",
+    });
+    setCurrentLearningContent(null);
+  };
+
+  const handleBackToResources = () => {
+    setCurrentLearningContent(null);
+  };
+
   if (!language) {
     navigate('/learn/python');
     return null;
+  }
+
+  // If learning content is selected, show it instead of the main page
+  if (currentLearningContent) {
+    return (
+      <LearningContent
+        title={currentLearningContent.title}
+        type={currentLearningContent.type}
+        difficulty={currentLearningContent.difficulty}
+        onComplete={handleLearningComplete}
+        onBack={handleBackToResources}
+      />
+    );
   }
 
   return (
@@ -428,6 +533,13 @@ export default function Learn() {
                         onClick={() => {
                           if (resource.type === 'github') {
                             window.open(resource.url, '_blank');
+                          } else {
+                            // Show learning content for articles and documentation
+                            setCurrentLearningContent({
+                              title: resource.title,
+                              type: resource.type,
+                              difficulty: resource.difficulty
+                            });
                           }
                         }}
                       >
@@ -438,7 +550,7 @@ export default function Learn() {
                           </>
                         ) : (
                           <>
-                            <ExternalLink className="h-3 w-3 mr-2" />
+                            <BookOpen className="h-3 w-3 mr-2" />
                             Start Learning
                           </>
                         )}

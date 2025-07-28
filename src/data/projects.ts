@@ -11,6 +11,8 @@ export interface Project {
   requirements?: string[];
   learningObjectives?: string[];
   isWebFundamentalsProject?: boolean;
+  isCapstoneProject?: boolean;
+  comingSoon?: boolean;
 }
 
 // WEB DEVELOPMENT FUNDAMENTALS PROJECTS
@@ -1202,6 +1204,9 @@ export const getProjectsByLanguage = (languageId: string) => {
   if (languageId === 'html' || languageId === 'web-fundamentals') {
     return WEB_FUNDAMENTALS_PROJECTS;
   }
+  if (languageId === 'capstone' || languageId === 'capstones') {
+    return CAPSTONE_PROJECTS;
+  }
   return HANDS_ON_PROJECTS.filter(project => project.languages.includes(languageId));
 };
 
@@ -1210,7 +1215,202 @@ export const getWebFundamentalsProjects = () => {
   return WEB_FUNDAMENTALS_PROJECTS;
 };
 
+// CAPSTONE PROJECTS - Coming Soon
+export const CAPSTONE_PROJECTS: Project[] = [
+  {
+    id: 101,
+    title: "Full-Stack E-Commerce Platform",
+    description: "Build a complete e-commerce platform with user authentication, product catalog, shopping cart, payment processing, and admin dashboard. Coming Soon!",
+    difficulty: "Advanced",
+    estimatedTime: "8-12 weeks",
+    technologies: ["React", "Node.js", "Express", "MongoDB", "Stripe", "JWT"],
+    skills: ["Full-Stack Development", "Database Design", "API Development", "Payment Integration", "Authentication"],
+    category: "Capstone",
+    languages: ["javascript", "typescript"],
+    isCapstoneProject: true,
+    comingSoon: true,
+    requirements: [
+      "User registration and authentication system",
+      "Product catalog with search and filtering",
+      "Shopping cart and checkout process",
+      "Payment integration with Stripe",
+      "Order management system",
+      "Admin dashboard for inventory management",
+      "Responsive design for all devices",
+      "Unit and integration tests"
+    ],
+    learningObjectives: [
+      "Master full-stack web development",
+      "Implement secure authentication systems",
+      "Design and work with databases",
+      "Integrate third-party payment services",
+      "Build scalable and maintainable applications",
+      "Deploy applications to production"
+    ]
+  },
+  {
+    id: 102,
+    title: "AI-Powered Learning Management System",
+    description: "Create an intelligent LMS with personalized learning paths, AI-driven content recommendations, progress tracking, and interactive assessments. Coming Soon!",
+    difficulty: "Advanced",
+    estimatedTime: "10-14 weeks",
+    technologies: ["React", "Python", "Django", "PostgreSQL", "TensorFlow", "Redis"],
+    skills: ["Machine Learning", "Backend Development", "Data Analytics", "Real-time Features"],
+    category: "Capstone",
+    languages: ["python", "javascript"],
+    isCapstoneProject: true,
+    comingSoon: true,
+    requirements: [
+      "User roles (students, instructors, admins)",
+      "Course creation and management tools",
+      "AI-powered content recommendations",
+      "Progress tracking and analytics",
+      "Interactive quizzes and assessments",
+      "Real-time chat and discussions",
+      "Video streaming integration",
+      "Mobile-responsive design"
+    ],
+    learningObjectives: [
+      "Integrate AI/ML into web applications",
+      "Build complex user role systems",
+      "Implement real-time features",
+      "Work with video streaming APIs",
+      "Create data visualization dashboards",
+      "Optimize application performance"
+    ]
+  },
+  {
+    id: 103,
+    title: "Real-Time Collaboration Platform",
+    description: "Build a comprehensive collaboration platform with real-time editing, video calls, project management, and team communication features. Coming Soon!",
+    difficulty: "Advanced",
+    estimatedTime: "6-10 weeks",
+    technologies: ["React", "Node.js", "Socket.io", "WebRTC", "MongoDB", "Docker"],
+    skills: ["Real-time Development", "WebRTC", "Microservices", "DevOps"],
+    category: "Capstone",
+    languages: ["javascript", "typescript"],
+    isCapstoneProject: true,
+    comingSoon: true,
+    requirements: [
+      "Real-time collaborative document editing",
+      "Video and audio calling with WebRTC",
+      "Project management with kanban boards",
+      "Team chat and messaging",
+      "File sharing and version control",
+      "User presence indicators",
+      "Notification system",
+      "Docker containerization"
+    ],
+    learningObjectives: [
+      "Master real-time web technologies",
+      "Implement WebRTC for peer-to-peer communication",
+      "Build scalable microservices architecture",
+      "Work with containerization and deployment",
+      "Create responsive and accessible UIs",
+      "Implement security best practices"
+    ]
+  },
+  {
+    id: 104,
+    title: "IoT Smart Home Dashboard",
+    description: "Develop a comprehensive IoT platform for smart home management with device control, automation, data visualization, and mobile app. Coming Soon!",
+    difficulty: "Advanced",
+    estimatedTime: "8-12 weeks",
+    technologies: ["React Native", "Node.js", "MQTT", "InfluxDB", "Grafana", "Arduino"],
+    skills: ["IoT Development", "Mobile Development", "Data Visualization", "Hardware Integration"],
+    category: "Capstone",
+    languages: ["javascript", "c++"],
+    isCapstoneProject: true,
+    comingSoon: true,
+    requirements: [
+      "Device management and control interface",
+      "Real-time sensor data collection",
+      "Automation rules and scheduling",
+      "Data visualization dashboards",
+      "Mobile app for remote control",
+      "Voice control integration",
+      "Energy usage monitoring",
+      "Security and access control"
+    ],
+    learningObjectives: [
+      "Understand IoT architecture and protocols",
+      "Build cross-platform mobile applications",
+      "Work with time-series databases",
+      "Create interactive data visualizations",
+      "Implement device-to-cloud communication",
+      "Design user-friendly control interfaces"
+    ]
+  },
+  {
+    id: 105,
+    title: "Blockchain Cryptocurrency Exchange",
+    description: "Create a secure cryptocurrency trading platform with wallet integration, real-time trading, order matching, and advanced security features. Coming Soon!",
+    difficulty: "Advanced",
+    estimatedTime: "12-16 weeks",
+    technologies: ["React", "Node.js", "Solidity", "Web3.js", "PostgreSQL", "Redis"],
+    skills: ["Blockchain Development", "Cryptocurrency", "Security", "Financial Systems"],
+    category: "Capstone",
+    languages: ["javascript", "solidity"],
+    isCapstoneProject: true,
+    comingSoon: true,
+    requirements: [
+      "User wallet integration",
+      "Real-time cryptocurrency trading",
+      "Order book and matching engine",
+      "Advanced charting and analytics",
+      "Multi-factor authentication",
+      "Cold storage security",
+      "Regulatory compliance features",
+      "API for external integrations"
+    ],
+    learningObjectives: [
+      "Master blockchain and smart contract development",
+      "Implement high-frequency trading systems",
+      "Build secure financial applications",
+      "Work with cryptocurrency APIs",
+      "Understand regulatory compliance",
+      "Create advanced security measures"
+    ]
+  },
+  {
+    id: 106,
+    title: "Machine Learning Model Deployment Platform",
+    description: "Build a comprehensive MLOps platform for model training, deployment, monitoring, and management with automated pipelines. Coming Soon!",
+    difficulty: "Advanced",
+    estimatedTime: "10-14 weeks",
+    technologies: ["Python", "React", "Docker", "Kubernetes", "TensorFlow", "MLflow"],
+    skills: ["Machine Learning", "DevOps", "Cloud Computing", "Data Engineering"],
+    category: "Capstone",
+    languages: ["python", "javascript"],
+    isCapstoneProject: true,
+    comingSoon: true,
+    requirements: [
+      "Model training and experimentation interface",
+      "Automated model deployment pipelines",
+      "Model performance monitoring",
+      "Version control for ML models",
+      "A/B testing framework",
+      "Resource scaling and optimization",
+      "Data pipeline management",
+      "Comprehensive logging and analytics"
+    ],
+    learningObjectives: [
+      "Master MLOps best practices",
+      "Build scalable ML infrastructure",
+      "Implement automated CI/CD for ML",
+      "Work with container orchestration",
+      "Create monitoring and alerting systems",
+      "Optimize model performance and costs"
+    ]
+  }
+];
+
+// Helper function to get capstone projects
+export const getCapstoneProjects = () => {
+  return CAPSTONE_PROJECTS;
+};
+
 // Helper function to get all projects
 export const getAllProjects = () => {
-  return [...WEB_FUNDAMENTALS_PROJECTS, ...HANDS_ON_PROJECTS];
+  return [...WEB_FUNDAMENTALS_PROJECTS, ...HANDS_ON_PROJECTS, ...CAPSTONE_PROJECTS];
 };
