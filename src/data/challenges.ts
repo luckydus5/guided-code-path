@@ -1051,7 +1051,10 @@ export const challenges: Challenge[] = [
 // Export LANGUAGE_CHALLENGES for backward compatibility
 export const LANGUAGE_CHALLENGES = {
   python: pythonChallenges,
-  javascript: javascriptChallenges
+  javascript: javascriptChallenges,
+  html: javascriptChallenges, // HTML uses similar structure
+  css: javascriptChallenges,  // CSS uses similar structure
+  java: pythonChallenges      // Java uses similar structure to Python
 };
 
 export default challenges;

@@ -26,7 +26,8 @@ import {
   FileText,
   Video,
   ExternalLink,
-  SkipForward
+  SkipForward,
+  Github
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LANGUAGE_CHALLENGES } from "@/data/challenges";
@@ -130,7 +131,12 @@ export default function Learn() {
         { type: "documentation", title: "HTML5 API Reference Guide", url: "#", duration: "30 min", difficulty: "Intermediate" },
         { type: "video", title: "SEO-Optimized HTML Structure", url: "#", duration: "35 min", difficulty: "Intermediate" },
         { type: "article", title: "Progressive Web App HTML Foundation", url: "#", duration: "25 min", difficulty: "Advanced" },
-        { type: "video", title: "HTML Performance Optimization", url: "#", duration: "40 min", difficulty: "Advanced" }
+        { type: "video", title: "HTML Performance Optimization", url: "#", duration: "40 min", difficulty: "Advanced" },
+        // GitHub Repositories
+        { type: "github", title: "freeCodeCamp - Complete Web Development Curriculum", url: "https://github.com/freeCodeCamp/freeCodeCamp", stars: "384k", difficulty: "Beginner", description: "The most comprehensive web development curriculum with interactive HTML challenges and projects" },
+        { type: "github", title: "30 seconds of code - HTML Snippets", url: "https://github.com/30-seconds/30-seconds-of-code", stars: "118k", difficulty: "Beginner", description: "Short HTML code snippets for all your development needs" },
+        { type: "github", title: "HTML5 Boilerplate", url: "https://github.com/h5bp/html5-boilerplate", stars: "56k", difficulty: "Intermediate", description: "Professional front-end template for building web apps and sites" },
+        { type: "github", title: "HEAD - Guide to HTML head elements", url: "https://github.com/joshbuchea/HEAD", stars: "29k", difficulty: "Beginner", description: "Everything you need to know about the HTML head element" }
       ],
       css: [
         { type: "video", title: "CSS Flexbox Complete Course", url: "#", duration: "50 min", difficulty: "Beginner" },
@@ -138,7 +144,12 @@ export default function Learn() {
         { type: "documentation", title: "CSS Custom Properties Guide", url: "#", duration: "20 min", difficulty: "Intermediate" },
         { type: "video", title: "Advanced CSS Animations", url: "#", duration: "45 min", difficulty: "Intermediate" },
         { type: "article", title: "CSS Architecture & Methodologies", url: "#", duration: "35 min", difficulty: "Advanced" },
-        { type: "video", title: "CSS-in-JS and Modern Styling", url: "#", duration: "40 min", difficulty: "Advanced" }
+        { type: "video", title: "CSS-in-JS and Modern Styling", url: "#", duration: "40 min", difficulty: "Advanced" },
+        // GitHub Repositories
+        { type: "github", title: "Animate.css - CSS Animations Library", url: "https://github.com/animate-css/animate.css", stars: "79k", difficulty: "Beginner", description: "Cross-browser CSS animations library ready to use" },
+        { type: "github", title: "CSS Layout Patterns", url: "https://github.com/una/layout-patterns", stars: "12k", difficulty: "Intermediate", description: "Modern CSS layout patterns and techniques" },
+        { type: "github", title: "CSS Guidelines", url: "https://github.com/csswizardry/CSS-Guidelines", stars: "6k", difficulty: "Advanced", description: "High-level advice and guidelines for writing sane CSS" },
+        { type: "github", title: "Flexbox Froggy Solutions", url: "https://github.com/thomaspark/flexboxfroggy", stars: "4k", difficulty: "Beginner", description: "Game for learning CSS flexbox with interactive exercises" }
       ],
       javascript: [
         { type: "video", title: "JavaScript ES6+ Features Deep Dive", url: "#", duration: "60 min", difficulty: "Beginner" },
@@ -146,7 +157,12 @@ export default function Learn() {
         { type: "documentation", title: "Async JavaScript & Promises", url: "#", duration: "30 min", difficulty: "Intermediate" },
         { type: "video", title: "JavaScript Design Patterns", url: "#", duration: "55 min", difficulty: "Intermediate" },
         { type: "article", title: "Performance Optimization Techniques", url: "#", duration: "40 min", difficulty: "Advanced" },
-        { type: "video", title: "Node.js & Server-Side JavaScript", url: "#", duration: "65 min", difficulty: "Advanced" }
+        { type: "video", title: "Node.js & Server-Side JavaScript", url: "#", duration: "65 min", difficulty: "Advanced" },
+        // GitHub Repositories
+        { type: "github", title: "JavaScript30 - 30 Day Vanilla JS Challenge", url: "https://github.com/wesbos/JavaScript30", stars: "26k", difficulty: "Beginner", description: "30-day vanilla JavaScript coding challenge to build real projects" },
+        { type: "github", title: "33 JS Concepts - JavaScript Fundamentals", url: "https://github.com/leonardomso/33-js-concepts", stars: "62k", difficulty: "Intermediate", description: "33 JavaScript concepts every developer should know" },
+        { type: "github", title: "You Don't Know JS Book Series", url: "https://github.com/getify/You-Dont-Know-JS", stars: "177k", difficulty: "Advanced", description: "Deep dive into JavaScript core mechanisms and advanced concepts" },
+        { type: "github", title: "JavaScript Algorithms and Data Structures", url: "https://github.com/trekhleb/javascript-algorithms", stars: "183k", difficulty: "Intermediate", description: "Algorithms and data structures implemented in JavaScript with explanations" }
       ],
       python: [
         { type: "video", title: "Python Data Structures & Algorithms", url: "#", duration: "70 min", difficulty: "Beginner" },
@@ -154,7 +170,12 @@ export default function Learn() {
         { type: "documentation", title: "Python Standard Library Overview", url: "#", duration: "25 min", difficulty: "Intermediate" },
         { type: "video", title: "Web Development with Flask/Django", url: "#", duration: "80 min", difficulty: "Intermediate" },
         { type: "article", title: "Machine Learning with Python", url: "#", duration: "45 min", difficulty: "Advanced" },
-        { type: "video", title: "Python Performance & Optimization", url: "#", duration: "50 min", difficulty: "Advanced" }
+        { type: "video", title: "Python Performance & Optimization", url: "#", duration: "50 min", difficulty: "Advanced" },
+        // GitHub Repositories
+        { type: "github", title: "The Algorithms - Python Implementation", url: "https://github.com/TheAlgorithms/Python", stars: "178k", difficulty: "Intermediate", description: "All algorithms implemented in Python with detailed explanations" },
+        { type: "github", title: "Python Programming Exercises", url: "https://github.com/zhiwehu/Python-programming-exercises", stars: "25k", difficulty: "Beginner", description: "100+ Python programming exercises with solutions for skill building" },
+        { type: "github", title: "Real Python Tutorials", url: "https://github.com/realpython/python-guide", stars: "27k", difficulty: "Intermediate", description: "Python best practices guidebook written for humans" },
+        { type: "github", title: "Project-Based Learning Python", url: "https://github.com/practical-tutorials/project-based-learning", stars: "157k", difficulty: "Beginner", description: "Curated list of project-based Python tutorials and learning resources" }
       ],
       java: [
         { type: "video", title: "Java Fundamentals & OOP Concepts", url: "#", duration: "75 min", difficulty: "Beginner" },
@@ -162,7 +183,12 @@ export default function Learn() {
         { type: "documentation", title: "Spring Framework Essentials", url: "#", duration: "50 min", difficulty: "Intermediate" },
         { type: "video", title: "Java Concurrency & Multithreading", url: "#", duration: "60 min", difficulty: "Intermediate" },
         { type: "article", title: "Microservices with Spring Boot", url: "#", duration: "55 min", difficulty: "Advanced" },
-        { type: "video", title: "Java Performance Tuning", url: "#", duration: "45 min", difficulty: "Advanced" }
+        { type: "video", title: "Java Performance Tuning", url: "#", duration: "45 min", difficulty: "Advanced" },
+        // GitHub Repositories
+        { type: "github", title: "Java Design Patterns", url: "https://github.com/iluwatar/java-design-patterns", stars: "86k", difficulty: "Intermediate", description: "Design patterns implemented in Java with detailed examples" },
+        { type: "github", title: "Spring Boot Examples", url: "https://github.com/spring-projects/spring-boot", stars: "73k", difficulty: "Intermediate", description: "Official Spring Boot repository with examples and documentation" },
+        { type: "github", title: "Effective Java Examples", url: "https://github.com/jbloch/effective-java-3e-source-code", stars: "4k", difficulty: "Advanced", description: "Source code for the book 'Effective Java' by Joshua Bloch" },
+        { type: "github", title: "Java Programming Practice", url: "https://github.com/TheAlgorithms/Java", stars: "57k", difficulty: "Beginner", description: "All algorithms implemented in Java with explanations" }
       ]
     };
 
@@ -235,6 +261,7 @@ export default function Learn() {
     switch (type) {
       case "video": return <Video className="h-4 w-4" />;
       case "documentation": return <FileText className="h-4 w-4" />;
+      case "github": return <Github className="h-4 w-4" />;
       default: return <BookOpen className="h-4 w-4" />;
     }
   };
@@ -349,9 +376,16 @@ export default function Learn() {
                           <Badge variant="outline" className="text-xs capitalize">
                             {resource.type}
                           </Badge>
-                          <Badge variant="secondary" className="text-xs">
-                            {resource.duration}
-                          </Badge>
+                          {resource.type === 'github' ? (
+                            <div className="flex items-center gap-1">
+                              <Star className="h-3 w-3 text-yellow-500" />
+                              <span className="text-xs text-muted-foreground">{resource.stars}</span>
+                            </div>
+                          ) : (
+                            <Badge variant="secondary" className="text-xs">
+                              {resource.duration}
+                            </Badge>
+                          )}
                         </div>
                         <Badge 
                           variant={resource.difficulty === 'Beginner' ? 'default' : resource.difficulty === 'Intermediate' ? 'secondary' : 'destructive'} 
@@ -366,14 +400,34 @@ export default function Learn() {
                       {resource.title}
                     </h3>
                     
+                    {resource.type === 'github' && resource.description && (
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                        {resource.description}
+                      </p>
+                    )}
+                    
                     <div className="space-y-3">
                       <Button 
                         size="sm" 
                         className="w-full" 
                         variant="outline"
+                        onClick={() => {
+                          if (resource.type === 'github') {
+                            window.open(resource.url, '_blank');
+                          }
+                        }}
                       >
-                        <ExternalLink className="h-3 w-3 mr-2" />
-                        Start Learning
+                        {resource.type === 'github' ? (
+                          <>
+                            <Github className="h-3 w-3 mr-2" />
+                            View Repository
+                          </>
+                        ) : (
+                          <>
+                            <ExternalLink className="h-3 w-3 mr-2" />
+                            Start Learning
+                          </>
+                        )}
                       </Button>
                     </div>
                   </Card>

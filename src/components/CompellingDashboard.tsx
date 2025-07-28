@@ -5,6 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { 
   Code2, 
   Trophy, 
@@ -22,13 +25,26 @@ import {
   Rocket,
   FileCode,
   Monitor,
-  Smartphone
+  Smartphone,
+  Settings,
+  Edit3,
+  Save,
+  User,
+  Github,
+  ExternalLink,
+  FileText,
+  File
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface CompellingDashboardProps {
   user: any;
   profile: any;
+  onProfileUpdate?: () => void;
+  showProfileEdit?: boolean;
+  onCloseProfileEdit?: () => void;
 }
 
 interface LearningPath {
@@ -44,6 +60,13 @@ interface LearningPath {
   color: string;
   technologies: string[];
   nextLesson?: string;
+  resources?: {
+    type: "article" | "documentation" | "video";
+    title: string;
+    url: string;
+    duration: string;
+    difficulty: "Beginner" | "Intermediate" | "Advanced";
+  }[];
 }
 
 const learningPaths: LearningPath[] = [
@@ -59,7 +82,12 @@ const learningPaths: LearningPath[] = [
     projects: 8,
     color: "from-blue-500 to-purple-600",
     technologies: ["HTML", "CSS", "JavaScript"],
-    nextLesson: "HTML Structure & Semantic Elements"
+    nextLesson: "HTML Structure & Semantic Elements",
+    resources: [
+      { type: "article", title: "HTML5 Semantic Elements Guide", url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element", duration: "15 min", difficulty: "Beginner" },
+      { type: "documentation", title: "CSS Flexbox Complete Reference", url: "https://css-tricks.com/snippets/css/a-guide-to-flexbox/", duration: "20 min", difficulty: "Beginner" },
+      { type: "article", title: "JavaScript ES6+ Features Overview", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide", duration: "25 min", difficulty: "Intermediate" }
+    ]
   },
   {
     id: "python-mastery",
@@ -73,7 +101,12 @@ const learningPaths: LearningPath[] = [
     projects: 12,
     color: "from-green-500 to-yellow-500",
     technologies: ["Python", "Django", "FastAPI"],
-    nextLesson: "Python Basics & Variables"
+    nextLesson: "Python Basics & Variables",
+    resources: [
+      { type: "article", title: "Python Data Structures Explained", url: "https://docs.python.org/3/tutorial/datastructures.html", duration: "18 min", difficulty: "Beginner" },
+      { type: "documentation", title: "Python Standard Library Reference", url: "https://docs.python.org/3/library/", duration: "30 min", difficulty: "Intermediate" },
+      { type: "article", title: "Object-Oriented Programming in Python", url: "https://realpython.com/python3-object-oriented-programming/", duration: "22 min", difficulty: "Intermediate" }
+    ]
   },
   {
     id: "javascript-advanced",
@@ -87,7 +120,14 @@ const learningPaths: LearningPath[] = [
     projects: 15,
     color: "from-yellow-500 to-orange-500",
     technologies: ["JavaScript", "React", "Node.js"],
-    nextLesson: "ES6+ Features & Modern JavaScript"
+    nextLesson: "ES6+ Features & Modern JavaScript",
+    resources: [
+      // { type: "video", title: "React Hooks Deep Dive", url: "#", duration: "45 min", difficulty: "Intermediate" },
+      // { type: "video", title: "Advanced JavaScript Patterns", url: "#", duration: "50 min", difficulty: "Advanced" },
+      { type: "article", title: "Modern JavaScript Features Guide", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide", duration: "25 min", difficulty: "Intermediate" },
+      { type: "documentation", title: "React Official Documentation", url: "https://react.dev/learn", duration: "35 min", difficulty: "Intermediate" },
+      { type: "article", title: "Node.js Best Practices", url: "https://nodejs.org/en/docs/guides/", duration: "20 min", difficulty: "Advanced" }
+    ]
   },
   {
     id: "mobile-development",
@@ -101,36 +141,244 @@ const learningPaths: LearningPath[] = [
     projects: 10,
     color: "from-purple-500 to-pink-500",
     technologies: ["React Native", "TypeScript", "Expo"],
-    nextLesson: "Mobile Development Fundamentals"
+    nextLesson: "Mobile Development Fundamentals",
+    resources: [
+      // { type: "video", title: "React Native Complete Course", url: "#", duration: "60 min", difficulty: "Advanced" },
+      { type: "article", title: "React Native Getting Started Guide", url: "https://reactnative.dev/docs/getting-started", duration: "20 min", difficulty: "Intermediate" },
+      { type: "documentation", title: "Expo SDK Documentation", url: "https://docs.expo.dev/", duration: "25 min", difficulty: "Intermediate" },
+      { type: "article", title: "Mobile App Performance Optimization", url: "https://reactnative.dev/docs/performance", duration: "30 min", difficulty: "Advanced" }
+    ]
   }
 ];
 
-export default function CompellingDashboard({ user, profile }: CompellingDashboardProps) {
+export default function CompellingDashboard({ user, profile, onProfileUpdate, showProfileEdit = false, onCloseProfileEdit }: CompellingDashboardProps) {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
-  const [streakDays, setStreakDays] = useState(7);
-  const [todayCompleted, setTodayCompleted] = useState(false);
-
-  // Mock data for demonstration
-  const [stats] = useState({
-    totalXP: profile?.xp || 1250,
-    level: profile?.level || 5,
-    streak: profile?.streak || 7,
-    projectsCompleted: 12,
-    lessonsCompleted: 48,
-    badgesEarned: 8,
-    minutesCoded: 420,
-    rank: "#127"
+  const [stats, setStats] = useState({
+    totalXP: profile?.xp || 0,
+    level: profile?.level || 1,
+    streak: profile?.streak || 0,
+    projectsCompleted: 0,
+    lessonsCompleted: 0,
+    badgesEarned: 0,
+    minutesCoded: 0,
+    codingTimeDisplay: '0 mins',
+    rank: "#0"
   });
+  const [isProfileEditOpen, setIsProfileEditOpen] = useState(showProfileEdit);
+  const [editProfile, setEditProfile] = useState({
+    display_name: profile?.display_name || '',
+    username: profile?.username || '',
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchUserStats();
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    setIsProfileEditOpen(showProfileEdit);
+  }, [showProfileEdit]);
+
+  const fetchUserStats = async () => {
+    if (!user?.id) return;
+
+    try {
+      // Fetch completed projects
+      const { data: projectCompletions, error: projectError } = await supabase
+        .from('project_completions')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (projectError) {
+        console.error('Error fetching project completions:', projectError);
+      }
+
+      // Fetch completed lessons  
+      const { data: lessonProgress, error: lessonError } = await supabase
+        .from('user_progress')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('completed', true);
+
+      if (lessonError) {
+        console.error('Error fetching lesson progress:', lessonError);
+      }
+
+      // Fetch user achievements
+      const { data: userAchievements, error: achievementError } = await supabase
+        .from('user_achievements')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (achievementError) {
+        console.error('Error fetching achievements:', achievementError);
+      }
+
+      // Calculate total coding time from projects and lessons
+      const projectTime = projectCompletions?.reduce((total, project) => 
+        total + (project.time_spent_seconds || 0), 0) || 0;
+      const lessonTime = lessonProgress?.reduce((total, lesson) => 
+        total + (lesson.time_spent_seconds || 0), 0) || 0;
+      const totalSeconds = projectTime + lessonTime;
+      const totalMinutes = Math.floor(totalSeconds / 60);
+
+      // Format time display
+      const formatCodingTime = (minutes: number) => {
+        if (minutes >= 60) {
+          const hours = Math.floor(minutes / 60);
+          const remainingMinutes = minutes % 60;
+          return {
+            value: hours + (remainingMinutes > 0 ? (remainingMinutes / 60) : 0),
+            unit: hours === 1 ? 'hour' : 'hours',
+            display: hours + (remainingMinutes > 0 ? `.${Math.floor(remainingMinutes / 6)}` : '') + (hours === 1 ? ' hr' : ' hrs')
+          };
+        }
+        return {
+          value: minutes,
+          unit: minutes === 1 ? 'minute' : 'minutes', 
+          display: `${minutes} min${minutes !== 1 ? 's' : ''}`
+        };
+      };
+
+      const codingTime = formatCodingTime(totalMinutes);
+
+      // Calculate rank based on XP (simplified ranking)
+      const currentXP = profile?.xp || 0;
+      const estimatedRank = Math.max(1, Math.floor((10000 - currentXP) / 100));
+
+      setStats({
+        totalXP: currentXP,
+        level: profile?.level || 1,
+        streak: profile?.streak || 0,
+        projectsCompleted: projectCompletions?.length || 0,
+        lessonsCompleted: lessonProgress?.length || 0,
+        badgesEarned: userAchievements?.length || 0,
+        minutesCoded: totalMinutes,
+        codingTimeDisplay: codingTime.display,
+        rank: `#${estimatedRank}`
+      });
+
+    } catch (error) {
+      console.error('Error fetching user stats:', error);
+    }
+  };
+
+  const handleProfileEdit = () => {
+    setEditProfile({
+      display_name: profile?.display_name || '',
+      username: profile?.username || '',
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
+    setIsProfileEditOpen(true);
+  };
+
+  const handleSaveProfile = async () => {
+    if (!user?.id || !profile?.id) return;
+
+    // Validation
+    if (!editProfile.display_name.trim()) {
+      toast({
+        title: "Error",
+        description: "Display name cannot be empty",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (editProfile.newPassword && editProfile.newPassword !== editProfile.confirmPassword) {
+      toast({
+        title: "Error", 
+        description: "New passwords don't match",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (editProfile.newPassword && editProfile.newPassword.length < 6) {
+      toast({
+        title: "Error",
+        description: "Password must be at least 6 characters",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Update profile in database
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          display_name: editProfile.display_name,
+          username: editProfile.username
+        })
+        .eq('id', profile.id);
+
+      if (profileError) {
+        throw profileError;
+      }
+
+      // Update password if provided
+      if (editProfile.newPassword) {
+        const { error: passwordError } = await supabase.auth.updateUser({
+          password: editProfile.newPassword
+        });
+
+        if (passwordError) {
+          throw passwordError;
+        }
+      }
+
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been successfully updated"
+      });
+
+      setIsProfileEditOpen(false);
+      
+      if (onCloseProfileEdit) {
+        onCloseProfileEdit();
+      }
+      
+      // Call the update callback if provided, otherwise refresh the page
+      if (onProfileUpdate) {
+        onProfileUpdate();
+      } else {
+        window.location.reload();
+      }
+
+    } catch (error: any) {
+      console.error('Error updating profile:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update profile",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const startLearningPath = (pathId: string) => {
     const path = learningPaths.find(p => p.id === pathId);
     if (path?.id === "web-fundamentals") {
-      navigate("/learn?language=html");
+      navigate("/learn/html");
     } else if (path?.id === "python-mastery") {
-      navigate("/learn?language=python");
+      navigate("/learn/python");
     } else if (path?.id === "javascript-advanced") {
-      navigate("/learn?language=javascript");
+      navigate("/learn/javascript");
+    } else if (path?.id === "mobile-development") {
+      navigate("/learn/javascript"); // React Native uses JavaScript
     }
   };
 
@@ -149,9 +397,19 @@ export default function CompellingDashboard({ user, profile }: CompellingDashboa
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-3xl font-bold text-foreground">
-                  Welcome back, {profile?.display_name || "Coder"}!
-                </h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-3xl font-bold text-foreground">
+                    Welcome back, {profile?.display_name || "Coder"}!
+                  </h1>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleProfileEdit}
+                    className="hover:bg-muted"
+                  >
+                    <Edit3 className="h-4 w-4" />
+                  </Button>
+                </div>
                 <p className="text-muted-foreground">Ready to level up your coding skills?</p>
               </div>
             </div>
@@ -204,8 +462,8 @@ export default function CompellingDashboard({ user, profile }: CompellingDashboa
                 <div className="flex items-center justify-center mb-2">
                   <Clock className="h-6 w-6 text-purple-500" />
                 </div>
-                <div className="text-2xl font-bold text-foreground">{stats.minutesCoded}</div>
-                <p className="text-sm text-muted-foreground">Minutes coded</p>
+                <div className="text-lg font-bold text-foreground">{stats.codingTimeDisplay}</div>
+                <p className="text-sm text-muted-foreground">Time coded</p>
               </CardContent>
             </Card>
           </div>
@@ -299,6 +557,70 @@ export default function CompellingDashboard({ user, profile }: CompellingDashboa
                               <div className="flex items-center space-x-2">
                                 <Play className="h-4 w-4 text-primary" />
                                 <span className="text-sm font-medium">Next: {path.nextLesson}</span>
+                              </div>
+                            </div>
+                          )}
+
+                          {path.resources && path.resources.length > 0 && (
+                            <div className="mt-4 space-y-2">
+                              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                <BookOpen className="h-4 w-4" />
+                                <span>Learning Resources</span>
+                              </div>
+                              <div className="space-y-2 max-h-32 overflow-y-auto">
+                                {path.resources.slice(0, 2).map((resource, index) => (
+                                  <div key={index} className="p-2 bg-muted/20 rounded border border-border/50 hover:bg-muted/40 transition-colors">
+                                    <div className="flex items-start justify-between">
+                                      <div className="min-w-0 flex-1">
+                                        <div className="flex items-center gap-2">
+                                          <div className="flex items-center gap-1">
+                                            {resource.type === 'article' && <File className="h-3 w-3 text-blue-500" />}
+                                            {resource.type === 'documentation' && <FileText className="h-3 w-3 text-green-500" />}
+                                            {resource.type === 'video' && <Play className="h-3 w-3 text-red-500" />}
+                                            <p className="text-xs font-medium text-foreground truncate">
+                                              {resource.title}
+                                            </p>
+                                          </div>
+                                          <Badge variant="outline" className="text-xs px-1 py-0">
+                                            {resource.type}
+                                          </Badge>
+                                        </div>
+                                        <div className="flex items-center gap-2 mt-1">
+                                          <span className="text-xs text-muted-foreground">
+                                            {resource.duration}
+                                          </span>
+                                          <Badge variant="secondary" className="text-xs px-1 py-0">
+                                            {resource.difficulty}
+                                          </Badge>
+                                        </div>
+                                      </div>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-6 w-6 p-0 ml-2"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          window.open(resource.url, '_blank');
+                                        }}
+                                      >
+                                        <ExternalLink className="h-3 w-3" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ))}
+                                {path.resources.length > 2 && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="w-full h-6 text-xs"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      // TODO: Show all resources in a modal or navigate to learn page
+                                    }}
+                                  >
+                                    View {path.resources.length - 2} more resources
+                                  </Button>
+                                )}
                               </div>
                             </div>
                           )}
@@ -448,6 +770,101 @@ export default function CompellingDashboard({ user, profile }: CompellingDashboa
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Profile Edit Dialog */}
+      <Dialog open={isProfileEditOpen} onOpenChange={(open) => {
+        setIsProfileEditOpen(open);
+        if (!open && onCloseProfileEdit) {
+          onCloseProfileEdit();
+        }
+      }}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Edit Profile
+            </DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="display_name" className="text-right">
+                Display Name
+              </Label>
+              <Input
+                id="display_name"
+                value={editProfile.display_name}
+                onChange={(e) => setEditProfile(prev => ({ ...prev, display_name: e.target.value }))}
+                className="col-span-3"
+                placeholder="Your display name"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="username" className="text-right">
+                Username
+              </Label>
+              <Input
+                id="username"
+                value={editProfile.username}
+                onChange={(e) => setEditProfile(prev => ({ ...prev, username: e.target.value }))}
+                className="col-span-3"
+                placeholder="Your username"
+              />
+            </div>
+            <div className="border-t pt-4">
+              <h4 className="text-sm font-medium mb-3">Change Password</h4>
+              <div className="grid grid-cols-4 items-center gap-4 mb-3">
+                <Label htmlFor="new_password" className="text-right text-sm">
+                  New Password
+                </Label>
+                <Input
+                  id="new_password"
+                  type="password"
+                  value={editProfile.newPassword}
+                  onChange={(e) => setEditProfile(prev => ({ ...prev, newPassword: e.target.value }))}
+                  className="col-span-3"
+                  placeholder="Leave blank to keep current"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="confirm_password" className="text-right text-sm">
+                  Confirm Password
+                </Label>
+                <Input
+                  id="confirm_password"
+                  type="password"
+                  value={editProfile.confirmPassword}
+                  onChange={(e) => setEditProfile(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  className="col-span-3"
+                  placeholder="Confirm new password"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => {
+              setIsProfileEditOpen(false);
+              if (onCloseProfileEdit) {
+                onCloseProfileEdit();
+              }
+            }}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveProfile} disabled={loading}>
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Changes
+                </>
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

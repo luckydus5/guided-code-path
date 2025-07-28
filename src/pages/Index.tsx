@@ -20,12 +20,17 @@ interface Language {
 
 interface UserProfile {
   id: string;
-  username: string;
-  display_name: string;
+  user_id: string;
+  username: string | null;
+  display_name: string | null;
   xp: number;
   level: number;
   streak: number;
-  avatar_url?: string;
+  avatar_url?: string | null;
+  bio?: string | null;
+  last_activity?: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 const Index = () => {
@@ -36,6 +41,7 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  const [showProfileSettings, setShowProfileSettings] = useState(false);
 
   useEffect(() => {
     initializeAuth();
@@ -56,19 +62,21 @@ const Index = () => {
             }, 0);
           } else {
             setProfile(null);
+            setLoading(false);
           }
-          setLoading(false);
         }
       );
 
       // Then check for existing session
       const { data: { session: currentSession } } = await supabase.auth.getSession();
+      
       if (currentSession?.user) {
         setSession(currentSession);
         setUser(currentSession.user);
         await handleUserProfile(currentSession.user.id);
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
 
       return () => subscription.unsubscribe();
     } catch (error) {
@@ -88,11 +96,13 @@ const Index = () => {
 
       if (fetchError) {
         console.error('Error fetching profile:', fetchError);
+        setLoading(false);
         return;
       }
 
       if (existingProfile) {
         setProfile(existingProfile);
+        setLoading(false);
       } else {
         // Create new profile if doesn't exist
         const { data: newProfile, error: createError } = await supabase
@@ -110,13 +120,16 @@ const Index = () => {
 
         if (createError) {
           console.error('Error creating profile:', createError);
+          setLoading(false);
           return;
         }
 
         setProfile(newProfile);
+        setLoading(false);
       }
     } catch (error) {
       console.error('Profile handling error:', error);
+      setLoading(false);
     }
   };
 
@@ -132,8 +145,25 @@ const Index = () => {
     navigate(`/learn/${language.id}`);
   };
 
+  const handleBackToDashboard = () => {
+    setShowLanguageSelector(false);
+  };
+
+  const handleProfileUpdate = async () => {
+    // Refresh the profile data
+    if (user?.id) {
+      await handleUserProfile(user.id);
+    }
+  };
+
+  const handleSettingsClick = () => {
+    setShowProfileSettings(true);
+  };
+
   const handleAuthSuccess = () => {
     setShowAuth(false);
+    // Don't immediately show language selector, wait for profile to load
+    // This will be handled by the auth state change listener
   };
 
   const handleSignOut = async () => {
@@ -144,6 +174,7 @@ const Index = () => {
       setProfile(null);
       setShowLanguageSelector(false);
       setShowAuth(false);
+      setLoading(false);
     } catch (error) {
       console.error('Sign out error:', error);
     }
@@ -164,17 +195,40 @@ const Index = () => {
     return <AuthForm onAuthSuccess={handleAuthSuccess} />;
   }
 
+  // Show loading if user exists but profile is still loading
+  if (user && !profile) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p className="text-muted-foreground">Setting up your profile...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
-      <Navbar user={user} profile={profile} onSignOut={handleSignOut} />
+      <Navbar 
+        user={user} 
+        profile={profile} 
+        onSignOut={handleSignOut}
+        onSettingsClick={handleSettingsClick}
+      />
       
       {user && profile ? (
         showLanguageSelector ? (
           <div className="min-h-screen flex items-center justify-center py-12">
-            <LanguageSelector onSelect={handleLanguageSelect} />
+            <LanguageSelector onSelect={handleLanguageSelect} onBack={handleBackToDashboard} />
           </div>
         ) : (
-          <CompellingDashboard user={user} profile={profile} />
+          <CompellingDashboard 
+            user={user} 
+            profile={profile} 
+            onProfileUpdate={handleProfileUpdate}
+            showProfileEdit={showProfileSettings}
+            onCloseProfileEdit={() => setShowProfileSettings(false)}
+          />
         )
       ) : (
         <HeroSection onGetStarted={handleGetStarted} />

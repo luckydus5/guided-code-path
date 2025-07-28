@@ -22,9 +22,10 @@ interface NavbarProps {
   user: SupabaseUser | null;
   profile: UserProfile | null;
   onSignOut: () => void;
+  onSettingsClick?: () => void;
 }
 
-export default function Navbar({ user, profile, onSignOut }: NavbarProps) {
+export default function Navbar({ user, profile, onSignOut, onSettingsClick }: NavbarProps) {
   const { toast } = useToast();
 
   const handleSignOut = async () => {
@@ -143,7 +144,7 @@ export default function Navbar({ user, profile, onSignOut }: NavbarProps) {
                     <Trophy className="mr-2 h-4 w-4" />
                     Achievements
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={onSettingsClick}>
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
                   </DropdownMenuItem>

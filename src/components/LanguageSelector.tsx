@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Code, Zap, Star } from "lucide-react";
+import { Code, Zap, Star, ArrowLeft } from "lucide-react";
 import { PROGRAMMING_LANGUAGES, type Language } from "@/data/languages";
 
 const languages = PROGRAMMING_LANGUAGES;
 
 interface LanguageSelectorProps {
   onSelect: (language: Language) => void;
+  onBack?: () => void;
 }
 
-export default function LanguageSelector({ onSelect }: LanguageSelectorProps) {
+export default function LanguageSelector({ onSelect, onBack }: LanguageSelectorProps) {
   const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(null);
 
   const handleLanguageSelect = (language: Language) => {
@@ -38,6 +39,19 @@ export default function LanguageSelector({ onSelect }: LanguageSelectorProps) {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-6">
+      {onBack && (
+        <div className="mb-6">
+          <Button 
+            variant="ghost" 
+            onClick={onBack}
+            className="hover:bg-muted"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </div>
+      )}
+      
       <div className="text-center mb-12">
         <h2 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
           Choose Your Language
