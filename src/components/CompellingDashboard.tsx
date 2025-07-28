@@ -79,13 +79,23 @@ const learningPaths: LearningPath[] = [
     estimatedTime: "6-8 weeks",
     progress: 0,
     lessons: 24,
-    projects: 8,
+    projects: 12,
     color: "from-blue-500 to-purple-600",
     technologies: ["HTML", "CSS", "JavaScript"],
     nextLesson: "HTML Structure & Semantic Elements",
     resources: [
       { type: "documentation", title: "CSS Flexbox Complete Reference", url: "https://css-tricks.com/snippets/css/a-guide-to-flexbox/", duration: "20 min", difficulty: "Beginner" },
-      { type: "article", title: "JavaScript ES6+ Features Overview", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide", duration: "25 min", difficulty: "Intermediate" }
+      { type: "article", title: "JavaScript ES6+ Features Overview", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide", duration: "25 min", difficulty: "Intermediate" },
+      { type: "documentation", title: "HTML5 Semantic Elements Guide", url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element", duration: "15 min", difficulty: "Beginner" },
+      { type: "article", title: "CSS Grid Layout Complete Guide", url: "https://css-tricks.com/snippets/css/complete-guide-grid/", duration: "30 min", difficulty: "Intermediate" },
+      { type: "video", title: "JavaScript DOM Manipulation", url: "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model", duration: "45 min", difficulty: "Beginner" },
+      { type: "documentation", title: "CSS Animations & Transitions", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations", duration: "25 min", difficulty: "Intermediate" },
+      { type: "article", title: "Responsive Web Design Principles", url: "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Responsive_Design", duration: "35 min", difficulty: "Beginner" },
+      { type: "documentation", title: "JavaScript Event Handling", url: "https://developer.mozilla.org/en-US/docs/Web/Events", duration: "20 min", difficulty: "Beginner" },
+      { type: "article", title: "Web Accessibility (a11y) Basics", url: "https://developer.mozilla.org/en-US/docs/Learn/Accessibility", duration: "40 min", difficulty: "Intermediate" },
+      { type: "video", title: "Modern CSS Layout Techniques", url: "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout", duration: "50 min", difficulty: "Intermediate" },
+      { type: "documentation", title: "JavaScript Async Programming", url: "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous", duration: "30 min", difficulty: "Advanced" },
+      { type: "article", title: "Web Performance Optimization", url: "https://developer.mozilla.org/en-US/docs/Learn/Performance", duration: "45 min", difficulty: "Advanced" }
     ]
   },
   {

@@ -8,7 +8,8 @@ import Index from "./pages/Index";
 import Learn from "./pages/Learn";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
-import ProjectEnvironment from "./components/ProjectEnvironment";
+import ProjectEnvironment from "./pages/ProjectEnvironment";
+import CodeEnvironmentDemo from "./pages/CodeEnvironmentDemo";
 import ProjectPreviewDashboard from "./components/ProjectPreviewDashboard";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/learn" element={<Learn />} />
           <Route path="/learn/:language" element={<Learn />} />
+          <Route path="/code-environment" element={<CodeEnvironmentDemo />} />
         <Route path="/learn/:language/project/:projectId" element={<ProjectEnvironment />} />
         <Route path="/learn/:language/project/:projectId/preview" element={<ProjectPreviewDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
