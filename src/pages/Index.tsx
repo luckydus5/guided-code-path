@@ -141,6 +141,10 @@ const Index = () => {
     }
   };
 
+  const handleSignIn = () => {
+    setShowAuth(true);
+  };
+
   const handleLanguageSelect = (language: Language) => {
     navigate(`/learn/${language.id}`);
   };
@@ -231,7 +235,7 @@ const Index = () => {
           />
         )
       ) : (
-        <HeroSection onGetStarted={handleGetStarted} />
+        <HeroSection onGetStarted={handleGetStarted} onSignIn={handleSignIn} />
       )}
     </div>
   );

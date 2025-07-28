@@ -26,9 +26,10 @@ import {
 
 interface HeroSectionProps {
   onGetStarted: () => void;
+  onSignIn?: () => void;
 }
 
-export default function HeroSection({ onGetStarted }: HeroSectionProps) {
+export default function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps) {
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-background via-background/95 to-muted/20 overflow-hidden">
       {/* Enhanced Background Effects */}
@@ -38,6 +39,33 @@ export default function HeroSection({ onGetStarted }: HeroSectionProps) {
         <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-indigo-500/10 to-cyan-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
+
+      {/* Top Navigation Bar */}
+      {onSignIn && (
+        <div className="relative z-20 flex justify-between items-center p-6">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur-lg opacity-50"></div>
+              <div className="relative p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl">
+                <Code className="h-6 w-6 text-white" />
+              </div>
+            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              CodeLearner
+            </span>
+          </div>
+          
+          <Button 
+            variant="outline"
+            size="lg"
+            onClick={onSignIn}
+            className="border-2 border-white/20 hover:border-white/40 hover:bg-white/10 backdrop-blur-sm transition-all duration-300 group"
+          >
+            <Users className="mr-2 h-4 w-4" />
+            Sign In
+          </Button>
+        </div>
+      )}
       
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Hero Content */}
@@ -92,25 +120,16 @@ export default function HeroSection({ onGetStarted }: HeroSectionProps) {
               </div>
             </div>
 
-            {/* Enhanced CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16 animate-slide-up">
+            {/* Enhanced CTA Button */}
+            <div className="flex justify-center mb-16 animate-slide-up">
               <Button 
                 size="lg" 
-                className="text-xl px-10 py-7 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-3xl transition-all duration-300 group transform hover:scale-105"
+                className="text-xl px-12 py-7 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-3xl transition-all duration-300 group transform hover:scale-105"
                 onClick={onGetStarted}
               >
                 <Rocket className="mr-3 h-6 w-6 group-hover:translate-y-[-2px] transition-transform" />
                 Start Your Journey
                 <ChevronRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
-              </Button>
-              
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="text-xl px-10 py-7 border-2 border-purple-500/50 hover:border-purple-500 hover:bg-purple-500/10 transition-all duration-300 group transform hover:scale-105"
-              >
-                <Sparkles className="mr-3 h-6 w-6 text-purple-500 group-hover:text-purple-400" />
-                View Demo
               </Button>
             </div>
 

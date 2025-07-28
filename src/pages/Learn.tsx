@@ -240,12 +240,8 @@ export default function Learn() {
   const currentStep = getCurrentStep();
   const totalSteps = 10;
 
-  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
-  const [showLearningResources, setShowLearningResources] = useState(false);
-
   const handleStartProject = (projectId: number) => {
-    setSelectedProjectId(projectId);
-    setShowLearningResources(true);
+    startProjectDirectly(projectId);
   };
 
   const startProjectDirectly = (projectId: number) => {
@@ -253,7 +249,6 @@ export default function Learn() {
       title: "Project Started!",
       description: "Opening project environment...",
     });
-    setShowLearningResources(false);
     navigate(`/learn/${language}/project/${projectId}`);
   };
 
@@ -635,79 +630,6 @@ export default function Learn() {
             {/* Achievements content will be here */}
           </TabsContent>
         </Tabs>
-
-        {/* Learning Resources Modal */}
-        <Dialog open={showLearningResources} onOpenChange={setShowLearningResources}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <GraduationCap className="h-5 w-5" />
-                Learning Resources
-              </DialogTitle>
-            </DialogHeader>
-            
-            {selectedProjectId && (
-              <div className="space-y-6">
-                <div className="text-center p-4 bg-muted/50 rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Review these resources before starting your project for better understanding
-                  </p>
-                  <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                    <Clock className="h-3 w-3" />
-                    Estimated reading time: 25-40 minutes
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  {getProjectLearningResources(selectedProjectId, language || 'python').map((resource, index) => (
-                    <Card key={index} className="p-4 hover:shadow-md transition-shadow">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-primary/10">
-                          <ResourceIcon type={resource.type} />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-1">
-                            <h4 className="font-medium">{resource.title}</h4>
-                            <Badge variant="outline" className="text-xs">
-                              {resource.duration}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground capitalize">
-                            {resource.type}
-                          </p>
-                        </div>
-                        <Button size="sm" variant="ghost">
-                          <ExternalLink className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-
-                <div className="flex gap-3 pt-4 border-t">
-                  <Button 
-                    variant="outline" 
-                    className="flex-1"
-                    onClick={() => startProjectDirectly(selectedProjectId)}
-                  >
-                    <SkipForward className="h-4 w-4 mr-2" />
-                    Skip to Project
-                  </Button>
-                  <Button 
-                    className="flex-1"
-                    onClick={() => {
-                      // In a real app, track that user reviewed resources
-                      setTimeout(() => startProjectDirectly(selectedProjectId), 500);
-                    }}
-                  >
-                    <Play className="h-4 w-4 mr-2" />
-                    Start Learning
-                  </Button>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );

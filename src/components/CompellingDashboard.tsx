@@ -84,7 +84,6 @@ const learningPaths: LearningPath[] = [
     technologies: ["HTML", "CSS", "JavaScript"],
     nextLesson: "HTML Structure & Semantic Elements",
     resources: [
-      { type: "article", title: "HTML5 Semantic Elements Guide", url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element", duration: "15 min", difficulty: "Beginner" },
       { type: "documentation", title: "CSS Flexbox Complete Reference", url: "https://css-tricks.com/snippets/css/a-guide-to-flexbox/", duration: "20 min", difficulty: "Beginner" },
       { type: "article", title: "JavaScript ES6+ Features Overview", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide", duration: "25 min", difficulty: "Intermediate" }
     ]
@@ -122,8 +121,6 @@ const learningPaths: LearningPath[] = [
     technologies: ["JavaScript", "React", "Node.js"],
     nextLesson: "ES6+ Features & Modern JavaScript",
     resources: [
-      // { type: "video", title: "React Hooks Deep Dive", url: "#", duration: "45 min", difficulty: "Intermediate" },
-      // { type: "video", title: "Advanced JavaScript Patterns", url: "#", duration: "50 min", difficulty: "Advanced" },
       { type: "article", title: "Modern JavaScript Features Guide", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide", duration: "25 min", difficulty: "Intermediate" },
       { type: "documentation", title: "React Official Documentation", url: "https://react.dev/learn", duration: "35 min", difficulty: "Intermediate" },
       { type: "article", title: "Node.js Best Practices", url: "https://nodejs.org/en/docs/guides/", duration: "20 min", difficulty: "Advanced" }
@@ -143,7 +140,6 @@ const learningPaths: LearningPath[] = [
     technologies: ["React Native", "TypeScript", "Expo"],
     nextLesson: "Mobile Development Fundamentals",
     resources: [
-      // { type: "video", title: "React Native Complete Course", url: "#", duration: "60 min", difficulty: "Advanced" },
       { type: "article", title: "React Native Getting Started Guide", url: "https://reactnative.dev/docs/getting-started", duration: "20 min", difficulty: "Intermediate" },
       { type: "documentation", title: "Expo SDK Documentation", url: "https://docs.expo.dev/", duration: "25 min", difficulty: "Intermediate" },
       { type: "article", title: "Mobile App Performance Optimization", url: "https://reactnative.dev/docs/performance", duration: "30 min", difficulty: "Advanced" }
@@ -688,6 +684,20 @@ export default function CompellingDashboard({ user, profile, onProfileUpdate, sh
                       </div>
                       <Progress value={40} className="h-2" />
                     </div>
+                    
+                    {/* AI Features Under Development Notice */}
+                    <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Brain className="h-4 w-4 text-yellow-600" />
+                        <span className="text-sm font-medium text-yellow-800 dark:text-yellow-300">AI Analysis</span>
+                        <Badge variant="outline" className="bg-yellow-500/10 text-yellow-700 border-yellow-500/30 text-xs">
+                          Under Development
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-yellow-700 dark:text-yellow-400">
+                        AI-powered skill analysis and personalized recommendations coming soon!
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -725,6 +735,20 @@ export default function CompellingDashboard({ user, profile, onProfileUpdate, sh
                         <p className="text-sm font-medium">Code Master</p>
                         <p className="text-xs text-muted-foreground">Completed 10 exercises</p>
                       </div>
+                    </div>
+
+                    {/* AI Achievements Coming Soon */}
+                    <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Brain className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-800 dark:text-blue-300">AI-Powered Insights</span>
+                        <Badge variant="outline" className="bg-blue-500/10 text-blue-700 border-blue-500/30 text-xs">
+                          Coming Soon
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-blue-700 dark:text-blue-400">
+                        Smart achievement tracking and personalized learning paths are in development.
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
