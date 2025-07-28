@@ -378,7 +378,7 @@ export default function CompellingDashboard({ user, profile, onProfileUpdate, sh
   const startLearningPath = (pathId: string) => {
     const path = learningPaths.find(p => p.id === pathId);
     if (path?.id === "web-fundamentals") {
-      navigate("/learn/html");
+      navigate("/learn/web-fundamentals");
     } else if (path?.id === "python-mastery") {
       navigate("/learn/python");
     } else if (path?.id === "javascript-advanced") {

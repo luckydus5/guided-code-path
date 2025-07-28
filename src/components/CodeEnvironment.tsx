@@ -54,6 +54,7 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
   const [isRunning, setIsRunning] = useState(false);
   const [autoRun, setAutoRun] = useState(true);
   const [showPreview, setShowPreview] = useState(true);
+  const [showCodeEditor, setShowCodeEditor] = useState(true);
 
   const activeFile = files.find(f => f.id === activeFileId);
 
@@ -223,6 +224,16 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
           <Button
             variant="outline"
             size="sm"
+            onClick={() => setShowCodeEditor(!showCodeEditor)}
+            className={showCodeEditor ? 'bg-green-500/10 text-green-700' : 'bg-gray-500/10 text-gray-700'}
+          >
+            <Code className="h-4 w-4 mr-2" />
+            {showCodeEditor ? 'Hide Code' : 'Show Code'}
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setAutoRun(!autoRun)}
             className={autoRun ? 'bg-green-500/10 text-green-700' : ''}
           >
@@ -254,7 +265,10 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
       {/* Main Content */}
       <div className="flex-1 flex">
         {/* Editor Panel */}
-        <div className={`${showPreview ? 'w-1/2' : 'w-full'} h-full border-r bg-card transition-all duration-300`}>
+        {showCodeEditor && (
+          <div className={`${
+            showPreview ? 'w-1/2' : 'w-full'
+          } h-full border-r bg-card transition-all duration-300`}>
           {/* File Tabs */}
           <div className="flex items-center justify-between border-b p-2">
             <div className="flex items-center space-x-1 overflow-x-auto">
@@ -312,10 +326,13 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
             )}
           </div>
         </div>
+        )}
 
         {/* Preview Panel */}
         {showPreview && (
-          <div className="w-1/2 flex flex-col bg-background transition-all duration-300">
+          <div className={`${
+            showCodeEditor ? 'w-1/2' : 'w-full'
+          } flex flex-col bg-background transition-all duration-300`}>
           {/* Preview Controls */}
           <div className="flex items-center justify-between p-4 border-b bg-card">
             <div className="flex items-center space-x-2">
@@ -370,6 +387,35 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
             </div>
           </div>
         </div>
+        )}
+
+        {/* Empty state when both panels are hidden */}
+        {!showPreview && !showCodeEditor && (
+          <div className="w-full flex items-center justify-center bg-muted/10">
+            <div className="text-center p-8">
+              <Code className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-semibold mb-2">Both panels are hidden</h3>
+              <p className="text-muted-foreground mb-4">
+                Show the code editor or preview to start working on your project.
+              </p>
+              <div className="flex items-center justify-center space-x-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCodeEditor(true)}
+                >
+                  <Code className="h-4 w-4 mr-2" />
+                  Show Code Editor
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowPreview(true)}
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  Show Preview
+                </Button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>

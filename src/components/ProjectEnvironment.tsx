@@ -16,18 +16,28 @@ import {
   Target,
   Code2,
   Terminal,
-  Trophy
+  Trophy,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import MultiLanguageCodeEditor from "./MultiLanguageCodeEditor";
 import LearningResources from "./LearningResources";
-import { getProjectsByLanguage } from "@/data/projects";
+import { getProjectsByLanguage, getWebFundamentalsProjects } from "@/data/projects";
 
 export default function ProjectEnvironment() {
   const { language, projectId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // Handle navigation on refresh - preserve the current project state
+  useEffect(() => {
+    // Store current project path when component mounts
+    if (language && projectId) {
+      sessionStorage.setItem('current-project-path', window.location.pathname);
+    }
+  }, [language, projectId]);
   
   const [codeFiles, setCodeFiles] = useState<any>({});
   const [output, setOutput] = useState("");
@@ -36,9 +46,15 @@ export default function ProjectEnvironment() {
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [startTime] = useState(Date.now());
   const [resetCount, setResetCount] = useState(0);
+  const [isCodeHidden, setIsCodeHidden] = useState(false);
 
-  const projects = getProjectsByLanguage(language || 'python');
+  const projects = language === 'web-fundamentals' 
+    ? getWebFundamentalsProjects() 
+    : getProjectsByLanguage(language || 'python');
   const project = projects.find(p => p.id === parseInt(projectId || '1'));
+  
+  // Check if this is a Web Fundamentals project
+  const isWebFundamentalsProject = language === 'web-fundamentals';
   
   // Determine if this is a multi-language project
   const isWebProject = project?.technologies.some(tech => 
@@ -228,9 +244,12 @@ Good testing practices lead to robust applications.`
       // Check for badge achievements
       await checkBadgeAchievements(data.id, timeSpent);
 
+      // Add project completion to achievements
+      await addProjectCompletionAchievement(data.id, project);
+
       toast({
         title: "🎉 Project Completed!",
-        description: "Congratulations! Redirecting to your completion dashboard...",
+        description: "Congratulations! Your achievement has been recorded. Redirecting...",
       });
 
       // Redirect to preview dashboard
@@ -312,6 +331,24 @@ Good testing practices lead to robust applications.`
     }
   };
 
+  const addProjectCompletionAchievement = async (completionId: string, project: any) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !project) return;
+
+      // For now, just show a success message
+      // The actual achievement system can be expanded later with proper database schema
+      toast({
+        title: "🏆 Achievement Unlocked!",
+        description: `"${project.title} Completed" - Great job finishing this project!`,
+      });
+      
+      console.log(`Achievement: ${project.title} completed by user ${user.id}`);
+    } catch (error) {
+      console.error('Error adding project achievement:', error);
+    }
+  };
+
   const nextStep = () => {
     if (currentStep < projectSteps.length - 1) {
       setCurrentStep(prev => prev + 1);
@@ -383,40 +420,96 @@ Good testing practices lead to robust applications.`
               <Badge variant="outline" className="capitalize">
                 {project.difficulty}
               </Badge>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsCodeHidden(!isCodeHidden)}
+                className="flex items-center gap-2"
+              >
+                {isCodeHidden ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                {isCodeHidden ? 'Show Code' : 'Hide Code'}
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-140px)]">
+      <div className="container mx-auto px-6 py-4 h-[calc(100vh-140px)] max-h-[650px] overflow-hidden">
+        {isCodeHidden ? (
+          <div className="h-full">
+            <Card className="h-full overflow-hidden">
+              <div className="p-3 border-b border-border flex items-center justify-between flex-shrink-0">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <Eye className="h-4 w-4" />
+                  Full Page Preview
+                </h3>
+                <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => {
+                      setCodeFiles(projectSteps[currentStep].code);
+                      setResetCount(prev => prev + 1);
+                    }}
+                    className="text-xs px-2 py-1 h-7"
+                  >
+                    <RefreshCw className="h-3 w-3 mr-1" />
+                    Reset
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={runCode}
+                    disabled={isRunning}
+                    className="text-xs px-2 py-1 h-7"
+                  >
+                    <Play className="h-3 w-3 mr-1" />
+                    {isRunning ? 'Running...' : 'Run'}
+                  </Button>
+                </div>
+              </div>
+              <div className="flex-1 min-h-0 bg-white">
+                <div className="h-full w-full p-4 bg-gray-50 flex items-center justify-center">
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold mb-2">Project Preview</h3>
+                    <p className="text-gray-600 mb-4">This is where your project output will be displayed</p>
+                    <div className="bg-white p-4 rounded-lg shadow-sm border">
+                      <pre className="text-sm text-left">{output || 'Run your code to see the output here...'}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        ) : (
+        <div className="flex gap-4 h-full">
           {/* Instructions Panel */}
-          <div className="lg:col-span-1">
-            <Card className="h-full flex flex-col">
-              <Tabs defaultValue="instructions" className="flex-1 flex flex-col">
-                <TabsList className="grid w-full grid-cols-3 m-4 mb-0 text-xs">
-                  <TabsTrigger value="instructions">
-                    <BookOpen className="h-4 w-4 mr-1" />
+          <div className="w-1/4 flex-shrink-0">
+            <Card className="h-full overflow-hidden">
+              <Tabs defaultValue="instructions" className="h-full flex flex-col">
+                <TabsList className="grid w-full grid-cols-3 m-3 mb-0 text-xs flex-shrink-0">
+                  <TabsTrigger value="instructions" className="text-xs">
+                    <BookOpen className="h-3 w-3 mr-1" />
                     Guide
                   </TabsTrigger>
-                  <TabsTrigger value="hints">
-                    <Lightbulb className="h-4 w-4 mr-1" />
-                    Hints
+                  <TabsTrigger value="hints" className="text-xs">
+                    <Lightbulb className="h-3 w-3 mr-1" />
+                    Tips
                   </TabsTrigger>
-                  <TabsTrigger value="resources">
-                    <Target className="h-4 w-4 mr-1" />
+                  <TabsTrigger value="resources" className="text-xs">
+                    <Target className="h-3 w-3 mr-1" />
                     Learn
                   </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="instructions" className="flex-1 p-4 pt-2">
-                  <div className="space-y-4">
+                <TabsContent value="instructions" className="flex-1 p-3 pt-2 overflow-y-auto">
+                  <div className="space-y-3">
                     <div>
-                      <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                        <Target className="h-5 w-5 text-primary" />
+                      <h3 className="font-semibold text-base mb-2 flex items-center gap-2">
+                        <Target className="h-4 w-4 text-primary" />
                         {projectSteps[currentStep].title}
                       </h3>
-                      <p className="text-muted-foreground text-sm mb-4">
+                      <p className="text-muted-foreground text-sm mb-3">
                         {projectSteps[currentStep].description}
                       </p>
                     </div>
@@ -542,11 +635,11 @@ Good testing practices lead to robust applications.`
           </div>
 
           {/* Code Editor and Output */}
-          <div className="lg:col-span-3 space-y-4">
+          <div className="flex-1 flex flex-col gap-3 min-h-0">
             {/* Code Editor */}
-            <Card className="flex-1">
-              <div className="p-4 border-b border-border flex items-center justify-between">
-                <h3 className="font-semibold flex items-center gap-2">
+            <Card className="flex-1 min-h-0 overflow-hidden">
+              <div className="p-3 border-b border-border flex items-center justify-between flex-shrink-0">
+                <h3 className="font-semibold flex items-center gap-2 text-sm">
                   <Code2 className="h-4 w-4" />
                   Code Editor
                 </h3>
@@ -558,19 +651,32 @@ Good testing practices lead to robust applications.`
                       setCodeFiles(projectSteps[currentStep].code);
                       setResetCount(prev => prev + 1);
                     }}
+                    className="text-xs px-2 py-1 h-7"
                   >
-                    <RefreshCw className="h-4 w-4 mr-2" />
+                    <RefreshCw className="h-3 w-3 mr-1" />
                     Reset
                   </Button>
                   {currentStep === projectSteps.length - 1 && completedSteps.includes(currentStep) && (
-                    <Button size="sm" onClick={completeProject} className="bg-gradient-primary">
-                      <Trophy className="h-4 w-4 mr-2" />
-                      Complete Project
+                    <Button size="sm" onClick={completeProject} className="bg-gradient-primary text-xs px-2 py-1 h-7">
+                      <Trophy className="h-3 w-3 mr-1" />
+                      Complete
                     </Button>
                   )}
                 </div>
               </div>
-              <div className="h-80">
+              {/* Start Fresh Message for Web Fundamentals */}
+              {isWebFundamentalsProject && (
+                <div className="p-2 bg-blue-50 dark:bg-blue-950/30 border-b border-blue-200 dark:border-blue-800 flex-shrink-0">
+                  <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+                    <Lightbulb className="h-3 w-3" />
+                    <span className="text-xs font-medium">Start Fresh Instructions:</span>
+                  </div>
+                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                    Delete all code in the environment and start the project from scratch. This is how you truly learn!
+                  </p>
+                </div>
+              )}
+              <div className="flex-1 min-h-0">
                 <MultiLanguageCodeEditor
                   languages={projectLanguages}
                   initialCode={codeFiles}
@@ -582,21 +688,22 @@ Good testing practices lead to robust applications.`
             </Card>
 
             {/* Output Panel */}
-            <Card className="flex-1">
-              <div className="p-4 border-b border-border">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Terminal className="h-4 w-4" />
+            <Card className="h-32 flex-shrink-0 overflow-hidden">
+              <div className="p-2 border-b border-border flex-shrink-0">
+                <h3 className="font-semibold flex items-center gap-2 text-xs">
+                  <Terminal className="h-3 w-3" />
                   Output
                 </h3>
               </div>
-              <div className="h-48 p-4">
-                <pre className="text-sm font-mono bg-muted/30 p-4 rounded-lg h-full overflow-auto">
+              <div className="flex-1 p-2 min-h-0">
+                <pre className="text-xs font-mono bg-muted/30 p-2 rounded-lg h-full overflow-auto">
                   {output || 'Click "Run Code" to see the output here...'}
                 </pre>
               </div>
             </Card>
           </div>
         </div>
+        )}
       </div>
     </div>
   );

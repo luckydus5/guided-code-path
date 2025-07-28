@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LANGUAGE_CHALLENGES } from "@/data/challenges";
-import { HANDS_ON_PROJECTS, getProjectsByLanguage } from "@/data/projects";
+import { HANDS_ON_PROJECTS, getProjectsByLanguage, getWebFundamentalsProjects, getProjectsByDifficulty } from "@/data/projects";
 
 interface UserProgress {
   [language: string]: {
@@ -58,13 +58,28 @@ export default function Learn() {
   const navigate = useNavigate();
   const { toast } = useToast();
   
+  // Ensure we have a valid language parameter, handle navigation on refresh
+  useEffect(() => {
+    if (!language) {
+      // If no language is specified, redirect to default dashboard
+      navigate('/learn/python');
+      return;
+    }
+    
+    // Store current path in sessionStorage to handle refresh
+    sessionStorage.setItem('current-learning-path', window.location.pathname);
+  }, [language, navigate]);
+  
+  // Check if this is Web Fundamentals
+  const isWebFundamentals = language === 'web-fundamentals';
+  
   // Load user progress from localStorage - HOOKS MUST BE CALLED FIRST
   const [userProgress, setUserProgress] = useState<UserProgress>(() => {
     const saved = localStorage.getItem('codelearning-progress');
     return saved ? JSON.parse(saved) : {};
   });
 
-  const languageChallenges = LANGUAGE_CHALLENGES[language || 'python'] || LANGUAGE_CHALLENGES.python;
+  const languageChallenges = isWebFundamentals ? [] : (LANGUAGE_CHALLENGES[language || 'python'] || LANGUAGE_CHALLENGES.python);
   
   const currentLanguageProgress = userProgress[language || 'python'] || {
     completedChallenges: [],
@@ -84,7 +99,8 @@ export default function Learn() {
     lastActiveDate: new Date().toISOString()
   };
 
-  const languageProjects = getProjectsByLanguage(language || 'python');
+  // Get projects based on whether it's Web Fundamentals or other languages
+  const languageProjects = isWebFundamentals ? getWebFundamentalsProjects() : getProjectsByLanguage(language || 'python');
   const beginnerProjects = languageProjects.filter(p => p.difficulty === 'Beginner');
   const intermediateProjects = languageProjects.filter(p => p.difficulty === 'Intermediate');
   const advancedProjects = languageProjects.filter(p => p.difficulty === 'Advanced');
@@ -249,7 +265,10 @@ export default function Learn() {
       title: "Project Started!",
       description: "Opening project environment...",
     });
-    navigate(`/learn/${language}/project/${projectId}`);
+    
+    // Use web-fundamentals as the language parameter for Web Fundamentals projects
+    const projectLanguage = isWebFundamentals ? 'web-fundamentals' : language;
+    navigate(`/learn/${projectLanguage}/project/${projectId}`);
   };
 
   const ResourceIcon = ({ type }: { type: string }) => {
