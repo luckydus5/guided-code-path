@@ -8,5 +8,9 @@ export default function Auth() {
     navigate("/");
   };
 
-  return <AuthForm onAuthSuccess={handleAuthSuccess} />;
+  const handleGoBack = () => {
+    navigate("/");
+  };
+
+  return <AuthForm onAuthSuccess={handleAuthSuccess} onGoBack={handleGoBack} />;
 }

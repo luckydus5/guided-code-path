@@ -192,7 +192,7 @@ const Index = () => {
   }
 
   if (showAuth) {
-    return <AuthForm onAuthSuccess={handleAuthSuccess} />;
+    return <AuthForm onAuthSuccess={handleAuthSuccess} onGoBack={() => setShowAuth(false)} />;
   }
 
   // Show loading if user exists but profile is still loading
