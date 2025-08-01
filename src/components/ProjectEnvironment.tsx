@@ -25,6 +25,12 @@ import { supabase } from "@/integrations/supabase/client";
 import MultiLanguageCodeEditor from "./MultiLanguageCodeEditor";
 import LearningResources from "./LearningResources";
 import { getProjectsByLanguage, getWebFundamentalsProjects } from "@/data/projects";
+// Enhanced Learning Components
+import { InteractiveChallenges } from "./InteractiveChallenges";
+import { StepByStepTutorial } from "./StepByStepTutorial";
+import { CodeValidator } from "./CodeValidator";
+import { LearningPath } from "./LearningPath";
+import { ModernDevTools } from "./ModernDevTools";
 
 export default function ProjectEnvironment() {
   const { language, projectId } = useParams();
@@ -47,6 +53,7 @@ export default function ProjectEnvironment() {
   const [startTime] = useState(Date.now());
   const [resetCount, setResetCount] = useState(0);
   const [isCodeHidden, setIsCodeHidden] = useState(false);
+  const [showLearningPath, setShowLearningPath] = useState(false);
 
   const projects = language === 'web-fundamentals' 
     ? getWebFundamentalsProjects() 
@@ -487,18 +494,30 @@ Good testing practices lead to robust applications.`
           <div className="w-1/4 flex-shrink-0">
             <Card className="h-full overflow-hidden">
               <Tabs defaultValue="instructions" className="h-full flex flex-col">
-                <TabsList className="grid w-full grid-cols-3 m-3 mb-0 text-xs flex-shrink-0">
-                  <TabsTrigger value="instructions" className="text-xs">
+                <TabsList className="grid w-full grid-cols-6 m-2 mb-0 text-xs flex-shrink-0 h-8">
+                  <TabsTrigger value="instructions" className="text-xs p-1">
                     <BookOpen className="h-3 w-3 mr-1" />
                     Guide
                   </TabsTrigger>
-                  <TabsTrigger value="hints" className="text-xs">
+                  <TabsTrigger value="hints" className="text-xs p-1">
                     <Lightbulb className="h-3 w-3 mr-1" />
                     Tips
                   </TabsTrigger>
-                  <TabsTrigger value="resources" className="text-xs">
+                  <TabsTrigger value="resources" className="text-xs p-1">
                     <Target className="h-3 w-3 mr-1" />
                     Learn
+                  </TabsTrigger>
+                  <TabsTrigger value="challenges" className="text-xs p-1">
+                    <Trophy className="h-3 w-3 mr-1" />
+                    Challenges
+                  </TabsTrigger>
+                  <TabsTrigger value="tutorial" className="text-xs p-1">
+                    <Play className="h-3 w-3 mr-1" />
+                    Tutorial
+                  </TabsTrigger>
+                  <TabsTrigger value="tools" className="text-xs p-1">
+                    <Terminal className="h-3 w-3 mr-1" />
+                    Tools
                   </TabsTrigger>
                 </TabsList>
 
@@ -575,6 +594,44 @@ Good testing practices lead to robust applications.`
                     language={language || 'python'}
                     difficulty={project?.difficulty || 'beginner'}
                     technologies={project?.technologies || []}
+                  />
+                </TabsContent>
+
+                {/* Interactive Challenges Tab */}
+                <TabsContent value="challenges" className="flex-1 p-0 overflow-y-auto">
+                  <InteractiveChallenges
+                    language={language || 'web-fundamentals'}
+                    onCompleteChallenge={(challengeId, points) => {
+                      console.log('Challenge completed:', challengeId, 'Points:', points);
+                      toast({
+                        title: "Challenge Completed!",
+                        description: `You earned ${points} points!`,
+                      });
+                    }}
+                  />
+                </TabsContent>
+
+                {/* Step-by-Step Tutorial Tab */}
+                <TabsContent value="tutorial" className="flex-1 p-0 overflow-y-auto">
+                  <StepByStepTutorial
+                    selectedLanguage={language || 'web-fundamentals'}
+                    onProgressUpdate={(tutorialId, stepIndex) => {
+                      console.log('Tutorial progress:', tutorialId, stepIndex);
+                    }}
+                  />
+                </TabsContent>
+
+                {/* Modern Dev Tools Tab */}
+                <TabsContent value="tools" className="flex-1 p-0 overflow-y-auto">
+                  <ModernDevTools
+                    currentCode={{
+                      html: '',
+                      css: '',
+                      javascript: ''
+                    }}
+                    onToolActivate={(toolId) => {
+                      console.log('Tool activated:', toolId);
+                    }}
                   />
                 </TabsContent>
               </Tabs>
@@ -685,6 +742,19 @@ Good testing practices lead to robust applications.`
                   isRunning={isRunning}
                 />
               </div>
+              
+              {/* Code Validator - Only show for web projects */}
+              {isWebProject && (
+                <div className="h-40 flex-shrink-0 mt-2">
+                  <CodeValidator
+                    code={codeFiles.html || codeFiles.css || codeFiles.js || ''}
+                    language="html"
+                    onValidationComplete={(results) => {
+                      console.log('Validation results:', results);
+                    }}
+                  />
+                </div>
+              )}
             </Card>
 
             {/* Output Panel */}
@@ -703,6 +773,43 @@ Good testing practices lead to robust applications.`
             </Card>
           </div>
         </div>
+        )}
+        
+        {/* Floating Learning Path Button */}
+        <Button
+          className="fixed bottom-6 right-6 rounded-full w-12 h-12 shadow-lg z-50"
+          onClick={() => setShowLearningPath(!showLearningPath)}
+        >
+          <Trophy className="h-5 w-5" />
+        </Button>
+        
+        {/* Learning Path Overlay */}
+        {showLearningPath && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-background rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+              <div className="flex justify-between items-center p-4 border-b">
+                <h2 className="text-xl font-semibold">Learning Path Progress</h2>
+                <Button variant="ghost" onClick={() => setShowLearningPath(false)}>
+                  ×
+                </Button>
+              </div>
+              <div className="overflow-y-auto max-h-[calc(90vh-100px)]">
+                <LearningPath
+                  onModuleStart={(moduleId) => {
+                    console.log('Module started:', moduleId);
+                    setShowLearningPath(false);
+                  }}
+                  onProgressUpdate={(progress) => {
+                    console.log('Progress updated:', progress);
+                    toast({
+                      title: "Progress Updated!",
+                      description: `Level ${progress.currentLevel} - ${progress.totalXP} XP`,
+                    });
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
