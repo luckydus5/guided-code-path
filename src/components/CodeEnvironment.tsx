@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+import { ImperativePanelHandle } from 'react-resizable-panels';
 import { 
   Play, 
   RefreshCw, 
@@ -21,7 +23,12 @@ import {
   Zap,
   RotateCcw,
   Rocket,
-  Share
+  Share,
+  Sun,
+  Moon,
+  Maximize2,
+  Minimize2,
+  RotateCw
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import DeploymentModal from './DeploymentModal';
@@ -62,16 +69,28 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
     return languageMap[language] || 'plaintext';
   };
 
-  // Get theme based on system preference
-  const getEditorTheme = () => {
+  // Theme management with state and localStorage persistence
+  const [editorTheme, setEditorTheme] = useState<'light' | 'vs-dark'>(() => {
     if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('code-environment-theme');
+      if (saved) return saved as 'light' | 'vs-dark';
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       return isDark ? 'vs-dark' : 'light';
     }
     return 'vs-dark';
+  });
+
+  const toggleEditorTheme = () => {
+    const newTheme = editorTheme === 'vs-dark' ? 'light' : 'vs-dark';
+    setEditorTheme(newTheme);
+    localStorage.setItem('code-environment-theme', newTheme);
   };
+
+  const getEditorTheme = () => editorTheme;
   const { toast } = useToast();
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const editorPanelRef = useRef<ImperativePanelHandle>(null);
+  const previewPanelRef = useRef<ImperativePanelHandle>(null);
   const [files, setFiles] = useState<FileTab[]>(initialFiles.length > 0 ? initialFiles : [
     { id: '1', name: 'index.html', language: 'html', content: getProjectHTML(projectId, projectTitle, projectDescription), isActive: true },
     { id: '2', name: 'style.css', language: 'css', content: getProjectCSS(projectId, projectTitle), isActive: false },
@@ -84,6 +103,49 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
   const [showPreview, setShowPreview] = useState(true);
   const [showCodeEditor, setShowCodeEditor] = useState(true);
   const [showDeploymentModal, setShowDeploymentModal] = useState(false);
+  
+  // Panel size management
+  const [editorSize, setEditorSize] = useState(50);
+  const [previewSize, setPreviewSize] = useState(50);
+  const [isEditorMaximized, setIsEditorMaximized] = useState(false);
+  const [isPreviewMaximized, setIsPreviewMaximized] = useState(false);
+
+  const maximizeEditor = () => {
+    if (isEditorMaximized) {
+      // Restore balanced view
+      editorPanelRef.current?.resize(50);
+      previewPanelRef.current?.resize(50);
+      setIsEditorMaximized(false);
+    } else {
+      // Maximize editor
+      editorPanelRef.current?.resize(85);
+      previewPanelRef.current?.resize(15);
+      setIsEditorMaximized(true);
+      setIsPreviewMaximized(false);
+    }
+  };
+
+  const maximizePreview = () => {
+    if (isPreviewMaximized) {
+      // Restore balanced view
+      editorPanelRef.current?.resize(50);
+      previewPanelRef.current?.resize(50);
+      setIsPreviewMaximized(false);
+    } else {
+      // Maximize preview
+      editorPanelRef.current?.resize(15);
+      previewPanelRef.current?.resize(85);
+      setIsPreviewMaximized(true);
+      setIsEditorMaximized(false);
+    }
+  };
+
+  const restoreBalance = () => {
+    editorPanelRef.current?.resize(50);
+    previewPanelRef.current?.resize(50);
+    setIsEditorMaximized(false);
+    setIsPreviewMaximized(false);
+  };
 
   const activeFile = files.find(f => f.id === activeFileId);
 
@@ -95,6 +157,37 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
       return () => clearTimeout(debounceTimer);
     }
   }, [files, autoRun]);
+
+  // Keyboard shortcuts for maximize/minimize
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case '1':
+            event.preventDefault();
+            if (showCodeEditor && showPreview) {
+              maximizeEditor();
+            }
+            break;
+          case '2':
+            event.preventDefault();
+            if (showCodeEditor && showPreview) {
+              maximizePreview();
+            }
+            break;
+          case '0':
+            event.preventDefault();
+            if (showCodeEditor && showPreview) {
+              restoreBalance();
+            }
+            break;
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [showCodeEditor, showPreview, isEditorMaximized, isPreviewMaximized]);
 
   const updateFileContent = (fileId: string, content: string) => {
     setFiles(prev => prev.map(file => 
@@ -237,9 +330,40 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
           {projectId && (
             <Badge variant="outline">Project: {projectId}</Badge>
           )}
+          {showCodeEditor && showPreview && (isEditorMaximized || isPreviewMaximized) && (
+            <Badge 
+              variant="secondary" 
+              className="bg-orange-500/10 text-orange-700 border-orange-200 dark:border-orange-800"
+            >
+              {isEditorMaximized ? '📝 Editor Maximized' : '👁️ Preview Maximized'}
+            </Badge>
+          )}
+          {showCodeEditor && showPreview && (
+            <Badge 
+              variant="outline" 
+              className="text-xs bg-gray-50 dark:bg-gray-900 border-dashed"
+              title="Keyboard shortcuts: Ctrl+1 (Maximize Editor), Ctrl+2 (Maximize Preview), Ctrl+0 (Balance)"
+            >
+              📌 Ctrl+1/2/0
+            </Badge>
+          )}
         </div>
         
         <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleEditorTheme}
+            className="bg-purple-500/10 text-purple-700 hover:bg-purple-500/20"
+          >
+            {editorTheme === 'vs-dark' ? (
+              <Sun className="h-4 w-4 mr-2" />
+            ) : (
+              <Moon className="h-4 w-4 mr-2" />
+            )}
+            {editorTheme === 'vs-dark' ? 'Light' : 'Dark'}
+          </Button>
+          
           <Button
             variant="outline"
             size="sm"
@@ -307,156 +431,353 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex">
-        {/* Editor Panel */}
-        {showCodeEditor && (
-          <div className={`${
-            showPreview ? 'w-1/2' : 'w-full'
-          } h-full border-r bg-card transition-all duration-300`}>
-          {/* File Tabs */}
-          <div className="flex items-center justify-between border-b p-2">
-            <div className="flex items-center space-x-1 overflow-x-auto">
-              {files.map(file => (
-                <Button
-                  key={file.id}
-                  variant={activeFileId === file.id ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setActiveFileId(file.id)}
-                  className="flex items-center space-x-2 whitespace-nowrap"
-                >
-                  {getLanguageIcon(file.language)}
-                  <span>{file.name}</span>
-                  {files.length > 1 && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteFile(file.id);
-                      }}
-                      className="ml-2 text-muted-foreground hover:text-destructive"
+      <div className="flex-1">
+        {showCodeEditor && showPreview ? (
+          <ResizablePanelGroup direction="horizontal" className="h-full" onLayout={(sizes) => {
+            if (sizes.length === 2) {
+              setEditorSize(sizes[0]);
+              setPreviewSize(sizes[1]);
+              // Update maximized states based on actual sizes
+              setIsEditorMaximized(sizes[0] > 75);
+              setIsPreviewMaximized(sizes[1] > 75);
+            }
+          }}>
+            {/* Editor Panel */}
+            <ResizablePanel ref={editorPanelRef} defaultSize={50} minSize={15}>
+              <div className="h-full bg-card border-r">
+                {/* File Tabs */}
+                <div className="flex items-center justify-between border-b p-2">
+                  <div className="flex items-center space-x-1 overflow-x-auto">
+                    {files.map(file => (
+                      <Button
+                        key={file.id}
+                        variant={activeFileId === file.id ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setActiveFileId(file.id)}
+                        className="flex items-center space-x-2 whitespace-nowrap"
+                      >
+                        {getLanguageIcon(file.language)}
+                        <span>{file.name}</span>
+                        {files.length > 1 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteFile(file.id);
+                            }}
+                            className="ml-2 text-muted-foreground hover:text-destructive"
+                          >
+                            ×
+                          </button>
+                        )}
+                      </Button>
+                    ))}
+                  </div>
+                  
+                  <div className="flex items-center gap-1">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={maximizeEditor}
+                      className={`h-6 w-6 p-0 transition-colors ${
+                        isEditorMaximized 
+                          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/40' 
+                          : 'hover:bg-blue-100 dark:hover:bg-blue-900/20'
+                      }`}
+                      title={isEditorMaximized ? "Restore editor size (Ctrl+1)" : "Maximize editor (Ctrl+1)"}
                     >
-                      ×
-                    </button>
-                  )}
-                </Button>
-              ))}
-            </div>
-            
-            <Button variant="ghost" size="sm" onClick={addNewFile}>
-              +
-            </Button>
-          </div>
-
-          {/* Code Editor */}
-          <div className="h-full p-4">
-            {activeFile && (
-              <div className="h-full">
-                <div className="mb-2 flex items-center justify-between">
-                  <Badge variant="secondary">
-                    {activeFile.language.toUpperCase()}
-                  </Badge>
-                  <span className="text-sm text-muted-foreground">
-                    {activeFile.name}
-                  </span>
+                      {isEditorMaximized ? (
+                        <Minimize2 className="h-3 w-3" />
+                      ) : (
+                        <Maximize2 className="h-3 w-3" />
+                      )}
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={addNewFile}>
+                      +
+                    </Button>
+                  </div>
                 </div>
+
+                {/* Code Editor */}
+                <div className="h-full p-4">
+                  {activeFile && (
+                    <div className="h-full">
+                      <div className="mb-2 flex items-center justify-between">
+                        <Badge variant="secondary">
+                          {activeFile.language.toUpperCase()}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">
+                          {activeFile.name}
+                        </span>
+                      </div>
+                      
+                      <div className="h-full border rounded-lg overflow-hidden">
+                        <Editor
+                          height="calc(100% - 2rem)"
+                          language={getMonacoLanguage(activeFile.language)}
+                          value={activeFile.content}
+                          onChange={(value) => updateFileContent(activeFile.id, value || '')}
+                          theme={getEditorTheme()}
+                          options={{
+                            fontSize: 14,
+                            fontFamily: 'JetBrains Mono, Fira Code, Monaco, Consolas, monospace',
+                            wordWrap: 'on',
+                            minimap: { enabled: false },
+                            scrollBeyondLastLine: false,
+                            automaticLayout: true,
+                            tabSize: 2,
+                            insertSpaces: true,
+                            detectIndentation: false,
+                            renderWhitespace: 'selection',
+                            bracketPairColorization: { enabled: true },
+                            guides: {
+                              bracketPairs: true,
+                              indentation: true
+                            },
+                            suggest: {
+                              snippetsPreventQuickSuggestions: false
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </ResizablePanel>
+            
+            <ResizableHandle withHandle />
+            
+            {/* Preview Panel */}
+            <ResizablePanel ref={previewPanelRef} defaultSize={50} minSize={15}>
+              <div className="h-full flex flex-col bg-background">
+                {/* Preview Controls */}
+                <div className="flex items-center justify-between p-4 border-b bg-card">
+                  <div className="flex items-center space-x-2">
+                    <Eye className="h-4 w-4" />
+                    <span className="font-medium">Preview</span>
+                    <Badge variant="outline">{previewMode}</Badge>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={maximizePreview}
+                      className={`h-6 w-6 p-0 transition-colors ${
+                        isPreviewMaximized 
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/40' 
+                          : 'hover:bg-green-100 dark:hover:bg-green-900/20'
+                      }`}
+                      title={isPreviewMaximized ? "Restore preview size (Ctrl+2)" : "Maximize preview (Ctrl+2)"}
+                    >
+                      {isPreviewMaximized ? (
+                        <Minimize2 className="h-3 w-3" />
+                      ) : (
+                        <Maximize2 className="h-3 w-3" />
+                      )}
+                    </Button>
+                    
+                    {(isEditorMaximized || isPreviewMaximized) && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={restoreBalance}
+                        className="h-6 px-2 text-xs"
+                        title="Restore balanced view (Ctrl+0)"
+                      >
+                        <RotateCw className="h-3 w-3 mr-1" />
+                        Balance
+                      </Button>
+                    )}
+                    
+                    <Button
+                      variant={previewMode === 'desktop' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setPreviewMode('desktop')}
+                    >
+                      <Monitor className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={previewMode === 'tablet' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setPreviewMode('tablet')}
+                    >
+                      <Tablet className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={previewMode === 'mobile' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setPreviewMode('mobile')}
+                    >
+                      <Smartphone className="h-4 w-4" />
+                    </Button>
+                    
+                    <Button variant="outline" size="sm" onClick={runCode}>
+                      <RotateCcw className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Preview Content */}
+                <div className="flex-1 p-4 bg-muted/30">
+                  <div className="h-full flex justify-center">
+                    <div 
+                      style={{ width: getPreviewWidth() }}
+                      className="h-full border bg-white rounded-lg shadow-lg overflow-hidden"
+                    >
+                      <iframe
+                        ref={iframeRef}
+                        className="w-full h-full border-0"
+                        title="Preview"
+                        sandbox="allow-scripts allow-same-origin"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        ) : showCodeEditor ? (
+          /* Only Editor Panel */
+          <div className="h-full bg-card">
+            {/* File Tabs */}
+            <div className="flex items-center justify-between border-b p-2">
+              <div className="flex items-center space-x-1 overflow-x-auto">
+                {files.map(file => (
+                  <Button
+                    key={file.id}
+                    variant={activeFileId === file.id ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setActiveFileId(file.id)}
+                    className="flex items-center space-x-2 whitespace-nowrap"
+                  >
+                    {getLanguageIcon(file.language)}
+                    <span>{file.name}</span>
+                    {files.length > 1 && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteFile(file.id);
+                        }}
+                        className="ml-2 text-muted-foreground hover:text-destructive"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </Button>
+                ))}
+              </div>
+              
+              <Button variant="ghost" size="sm" onClick={addNewFile}>
+                +
+              </Button>
+            </div>
+
+            {/* Code Editor */}
+            <div className="h-full p-4">
+              {activeFile && (
+                <div className="h-full">
+                  <div className="mb-2 flex items-center justify-between">
+                    <Badge variant="secondary">
+                      {activeFile.language.toUpperCase()}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      {activeFile.name}
+                    </span>
+                  </div>
+                  
+                  <div className="h-full border rounded-lg overflow-hidden">
+                    <Editor
+                      height="calc(100% - 2rem)"
+                      language={getMonacoLanguage(activeFile.language)}
+                      value={activeFile.content}
+                      onChange={(value) => updateFileContent(activeFile.id, value || '')}
+                      theme={getEditorTheme()}
+                      options={{
+                        fontSize: 14,
+                        fontFamily: 'JetBrains Mono, Fira Code, Monaco, Consolas, monospace',
+                        wordWrap: 'on',
+                        minimap: { enabled: false },
+                        scrollBeyondLastLine: false,
+                        automaticLayout: true,
+                        tabSize: 2,
+                        insertSpaces: true,
+                        detectIndentation: false,
+                        renderWhitespace: 'selection',
+                        bracketPairColorization: { enabled: true },
+                        guides: {
+                          bracketPairs: true,
+                          indentation: true
+                        },
+                        suggest: {
+                          snippetsPreventQuickSuggestions: false
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : showPreview ? (
+          /* Only Preview Panel */
+          <div className="h-full flex flex-col bg-background">
+            {/* Preview Controls */}
+            <div className="flex items-center justify-between p-4 border-b bg-card">
+              <div className="flex items-center space-x-2">
+                <Eye className="h-4 w-4" />
+                <span className="font-medium">Preview</span>
+                <Badge variant="outline">{previewMode}</Badge>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant={previewMode === 'desktop' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setPreviewMode('desktop')}
+                >
+                  <Monitor className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={previewMode === 'tablet' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setPreviewMode('tablet')}
+                >
+                  <Tablet className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={previewMode === 'mobile' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setPreviewMode('mobile')}
+                >
+                  <Smartphone className="h-4 w-4" />
+                </Button>
                 
-                <div className="h-full border rounded-lg overflow-hidden">
-                  <Editor
-                    height="calc(100% - 2rem)"
-                    language={getMonacoLanguage(activeFile.language)}
-                    value={activeFile.content}
-                    onChange={(value) => updateFileContent(activeFile.id, value || '')}
-                    theme={getEditorTheme()}
-                    options={{
-                      fontSize: 14,
-                      fontFamily: 'JetBrains Mono, Fira Code, Monaco, Consolas, monospace',
-                      wordWrap: 'on',
-                      minimap: { enabled: false },
-                      scrollBeyondLastLine: false,
-                      automaticLayout: true,
-                      tabSize: 2,
-                      insertSpaces: true,
-                      detectIndentation: false,
-                      renderWhitespace: 'selection',
-                      bracketPairColorization: { enabled: true },
-                      guides: {
-                        bracketPairs: true,
-                        indentation: true
-                      },
-                      suggest: {
-                        snippetsPreventQuickSuggestions: false
-                      }
-                    }}
+                <Button variant="outline" size="sm" onClick={runCode}>
+                  <RotateCcw className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Preview Content */}
+            <div className="flex-1 p-4 bg-muted/30">
+              <div className="h-full flex justify-center">
+                <div 
+                  style={{ width: getPreviewWidth() }}
+                  className="h-full border bg-white rounded-lg shadow-lg overflow-hidden"
+                >
+                  <iframe
+                    ref={iframeRef}
+                    className="w-full h-full border-0"
+                    title="Preview"
+                    sandbox="allow-scripts allow-same-origin"
                   />
                 </div>
               </div>
-            )}
-          </div>
-        </div>
-        )}
-
-        {/* Preview Panel */}
-        {showPreview && (
-          <div className={`${
-            showCodeEditor ? 'w-1/2' : 'w-full'
-          } flex flex-col bg-background transition-all duration-300`}>
-          {/* Preview Controls */}
-          <div className="flex items-center justify-between p-4 border-b bg-card">
-            <div className="flex items-center space-x-2">
-              <Eye className="h-4 w-4" />
-              <span className="font-medium">Preview</span>
-              <Badge variant="outline">{previewMode}</Badge>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <Button
-                variant={previewMode === 'desktop' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setPreviewMode('desktop')}
-              >
-                <Monitor className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={previewMode === 'tablet' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setPreviewMode('tablet')}
-              >
-                <Tablet className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={previewMode === 'mobile' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setPreviewMode('mobile')}
-              >
-                <Smartphone className="h-4 w-4" />
-              </Button>
-              
-              <Button variant="outline" size="sm" onClick={runCode}>
-                <RotateCcw className="h-4 w-4" />
-              </Button>
             </div>
           </div>
-
-          {/* Preview Content */}
-          <div className="flex-1 p-4 bg-muted/30">
-            <div className="h-full flex justify-center">
-              <div 
-                style={{ width: getPreviewWidth() }}
-                className="h-full border bg-white rounded-lg shadow-lg overflow-hidden"
-              >
-                <iframe
-                  ref={iframeRef}
-                  className="w-full h-full border-0"
-                  title="Preview"
-                  sandbox="allow-scripts allow-same-origin"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        )}
-
-        {/* Empty state when both panels are hidden */}
-        {!showPreview && !showCodeEditor && (
+        ) : (
+          /* Empty state when both panels are hidden */
           <div className="w-full flex items-center justify-center bg-muted/10">
             <div className="text-center p-8">
               <Code className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
