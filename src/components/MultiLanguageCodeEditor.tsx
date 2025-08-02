@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { 
   Play, 
@@ -12,6 +11,7 @@ import {
   Palette,
   Zap
 } from "lucide-react";
+import Editor from '@monaco-editor/react';
 
 interface CodeFiles {
   html?: string;
@@ -70,6 +70,27 @@ export default function MultiLanguageCodeEditor({
       default:
         return <Code2 className="h-4 w-4" />;
     }
+  };
+
+  // Function to map language names to Monaco Editor language identifiers
+  const getMonacoLanguage = (lang: string): string => {
+    const languageMap: { [key: string]: string } = {
+      'html': 'html',
+      'css': 'css',
+      'js': 'javascript',
+      'javascript': 'javascript',
+      'python': 'python'
+    };
+    return languageMap[lang] || 'plaintext';
+  };
+
+  // Get theme based on system preference
+  const getEditorTheme = () => {
+    if (typeof window !== 'undefined') {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return isDark ? 'vs-dark' : 'light';
+    }
+    return 'vs-dark';
   };
 
   const getLanguageLabel = (lang: string) => {
@@ -162,12 +183,35 @@ export default function MultiLanguageCodeEditor({
                   </Button>
                 </div>
                 
-                <Textarea
-                  value={files[lang] || ''}
-                  onChange={(e) => updateFile(lang, e.target.value)}
-                  placeholder={getPlaceholder(lang)}
-                  className="flex-1 font-mono text-sm resize-none bg-editor-background text-foreground border-border min-h-0"
-                />
+                <div className="flex-1 border rounded-lg overflow-hidden min-h-0">
+                  <Editor
+                    height="400px"
+                    language={getMonacoLanguage(lang)}
+                    value={files[lang] || ''}
+                    onChange={(value) => updateFile(lang, value || '')}
+                    theme={getEditorTheme()}
+                    options={{
+                      fontSize: 14,
+                      fontFamily: 'JetBrains Mono, Fira Code, Monaco, Consolas, monospace',
+                      wordWrap: 'on',
+                      minimap: { enabled: false },
+                      scrollBeyondLastLine: false,
+                      automaticLayout: true,
+                      tabSize: 2,
+                      insertSpaces: true,
+                      detectIndentation: false,
+                      renderWhitespace: 'selection',
+                      bracketPairColorization: { enabled: true },
+                      guides: {
+                        bracketPairs: true,
+                        indentation: true
+                      },
+                      suggest: {
+                        snippetsPreventQuickSuggestions: false
+                      }
+                    }}
+                  />
+                </div>
               </div>
             </TabsContent>
           ))}

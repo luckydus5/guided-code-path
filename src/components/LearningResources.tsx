@@ -24,6 +24,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   BookOpen, 
   Video, 
@@ -35,7 +37,10 @@ import {
   Search,
   Filter,
   Clock,
-  Star
+  Star,
+  PlayCircle,
+  CheckCircle2,
+  ArrowRight
 } from "lucide-react";
 
 /**
@@ -48,6 +53,9 @@ import {
  * @property {string} description - Brief description of what the resource covers
  * @property {string} [duration] - Optional estimated time to complete (e.g., "2 hours", "30 minutes")
  * @property {'beginner' | 'intermediate' | 'advanced'} difficulty - Skill level required
+ * @property {string} [content] - Learning notes and key concepts covered in the resource
+ * @property {string[]} [keyPoints] - Important takeaways and concepts to learn
+ * @property {string[]} [prerequisites] - What you should know before starting this resource
  */
 interface Resource {
   title: string;
@@ -56,6 +64,9 @@ interface Resource {
   description: string;
   duration?: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
+  content?: string;
+  keyPoints?: string[];
+  prerequisites?: string[];
 }
 
 /**
@@ -117,6 +128,7 @@ export default function LearningResources({
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
   
   /**
    * Generates context-aware learning resources based on project parameters
@@ -135,28 +147,78 @@ export default function LearningResources({
     // ============================================================================
     // WEB DEVELOPMENT FUNDAMENTALS LEARNING RESOURCES
     // ============================================================================
-    // Comprehensive curriculum covering HTML, CSS, JavaScript, and modern web development
-    // Organized by skill progression: Foundation → Styling → Interactivity → Advanced Topics
-    // Resources include interactive tutorials, documentation, videos, and practical projects
+    // GitHub-based tutorials, interactive learning, and video resources
+    // Focused on practical learning through repositories and hands-on projects
+    // Excludes documentation and articles - only tutorials, videos, and examples
     if (language === 'web-fundamentals') {
       
-      // FOUNDATION RESOURCES - HTML & Web Basics
-      // Core documentation and beginner-friendly tutorials for web structure
+      // FOUNDATION RESOURCES - Interactive Tutorials & Videos
+      // GitHub repositories, video courses, and hands-on learning platforms
       resources.push(
-        {
-          title: "MDN Web Development Guide",
-          type: "documentation",
-          url: "https://developer.mozilla.org/en-US/docs/Learn",
-          description: "Complete web development learning guide from Mozilla - the gold standard for web documentation",
-          difficulty: "beginner"
-        },
         {
           title: "freeCodeCamp Web Development",
           type: "tutorial",
           url: "https://www.freecodecamp.org/learn/responsive-web-design/",
           description: "Free interactive web development curriculum with hands-on projects and certifications",
           duration: "300 hours",
-          difficulty: "beginner"
+          difficulty: "beginner",
+          content: `# freeCodeCamp Learning Notes
+
+## Interactive Learning Experience
+freeCodeCamp offers hands-on coding experience with immediate feedback. You'll build real projects while learning.
+
+## Responsive Web Design Certification
+1. **Basic HTML and HTML5** (5 hours)
+   - Elements, attributes, forms
+   - Semantic structure
+   - Accessibility basics
+
+2. **Basic CSS** (5 hours)
+   - Selectors, properties, values
+   - Box model fundamentals
+   - Color and typography
+
+3. **Applied Visual Design** (6 hours)
+   - Layout techniques
+   - Animations and transforms
+   - Design principles
+
+4. **Applied Accessibility** (4 hours)
+   - Screen reader compatibility
+   - Keyboard navigation
+   - ARIA attributes
+
+5. **Responsive Web Design Principles** (4 hours)
+   - Mobile-first approach
+   - Flexbox and Grid
+   - Media queries
+
+6. **CSS Flexbox & Grid** (6 hours)
+   - Modern layout systems
+   - Responsive patterns
+   - Browser support
+
+## Certification Projects
+- Tribute Page
+- Survey Form
+- Product Landing Page
+- Technical Documentation Page
+- Personal Portfolio
+
+## Learning Benefits
+- 100% free with no ads
+- Self-paced learning
+- Real project portfolio
+- Active community support
+- Industry-recognized certificates`,
+          keyPoints: [
+            "Interactive coding challenges with immediate feedback",
+            "5 real-world projects for your portfolio",
+            "300+ coding challenges covering all fundamentals",
+            "Free certification upon completion",
+            "Active community support and forums"
+          ],
+          prerequisites: ["Basic computer skills", "Willingness to code daily"]
         },
         {
           title: "HTML & CSS Crash Course",
@@ -164,7 +226,55 @@ export default function LearningResources({
           url: "https://www.youtube.com/watch?v=UB1O30fR-EE",
           description: "Comprehensive beginner-friendly video covering HTML and CSS fundamentals in depth",
           duration: "2 hours",
-          difficulty: "beginner"
+          difficulty: "beginner",
+          content: `# HTML & CSS Crash Course Notes
+
+## Video Course Overview
+This comprehensive 2-hour video covers everything you need to start building websites from scratch.
+
+## Part 1: HTML Fundamentals (45 minutes)
+- **Document Structure**: DOCTYPE, html, head, body
+- **Essential Elements**: headings, paragraphs, links, images
+- **Semantic HTML**: header, nav, main, section, article, footer
+- **Forms**: input types, validation, accessibility
+- **Media**: images, videos, audio elements
+
+## Part 2: CSS Styling (75 minutes)
+- **CSS Basics**: selectors, properties, values
+- **Box Model**: margin, border, padding, content
+- **Layout**: display, position, float, flexbox
+- **Responsive Design**: media queries, mobile-first
+- **Modern CSS**: variables, animations, transforms
+
+## Practical Project
+You'll build a complete responsive website including:
+- Professional header with navigation
+- Hero section with call-to-action
+- Feature sections with cards
+- Contact form
+- Responsive footer
+
+## Key Concepts Explained
+- How browsers render HTML/CSS
+- Best practices for structure and naming
+- Common layout patterns
+- Mobile-first responsive design
+- Performance considerations
+
+## Follow-Along Tips
+- Code along with the instructor
+- Pause to experiment with variations
+- Take notes on key concepts
+- Practice the project multiple times
+- Experiment with different designs`,
+          keyPoints: [
+            "Complete website built from scratch in 2 hours",
+            "Visual explanations of complex concepts",
+            "Modern CSS techniques and best practices",
+            "Responsive design implementation",
+            "Professional development workflow"
+          ],
+          prerequisites: ["Text editor installed", "Web browser", "Basic computer skills"]
         },
         {
           title: "Codecademy HTML & CSS Course",
@@ -172,14 +282,151 @@ export default function LearningResources({
           url: "https://www.codecademy.com/learn/learn-html",
           description: "Interactive HTML and CSS lessons with immediate feedback and practice exercises",
           duration: "20 hours",
-          difficulty: "beginner"
+          difficulty: "beginner",
+          content: `# Codecademy HTML & CSS Learning Notes
+
+## Interactive Learning Platform
+Codecademy provides hands-on coding practice with instant feedback and guided exercises.
+
+## HTML Course Structure (10 hours)
+1. **Introduction to HTML**
+   - Elements and tags
+   - Document structure
+   - Basic text formatting
+
+2. **HTML Document Standards**
+   - DOCTYPE declarations
+   - Head section optimization
+   - Meta tags and SEO
+
+3. **Tables and Forms**
+   - Data presentation
+   - Form controls and validation
+   - Accessibility considerations
+
+4. **Semantic HTML**
+   - Meaningful structure
+   - Screen reader compatibility
+   - SEO benefits
+
+## CSS Course Structure (10 hours)
+1. **CSS Setup and Syntax**
+   - Selectors and properties
+   - Inline, internal, external styles
+   - CSS specificity rules
+
+2. **Visual Styling**
+   - Colors, fonts, backgrounds
+   - Text and box styling
+   - Visual hierarchy
+
+3. **Box Model and Layout**
+   - Margin, padding, border
+   - Display properties
+   - Positioning techniques
+
+4. **Responsive Design**
+   - Media queries
+   - Flexible layouts
+   - Mobile-first approach
+
+## Practice Projects
+- Personal portfolio page
+- Restaurant menu layout
+- Blog article styling
+- Responsive navigation
+
+## Learning Benefits
+- Immediate code execution
+- Step-by-step guidance
+- Real-time error feedback
+- Progress tracking
+- Certificate of completion`,
+          keyPoints: [
+            "Interactive coding environment with instant feedback",
+            "Structured curriculum with clear progression",
+            "Real-world projects and exercises",
+            "Progress tracking and achievements",
+            "Mobile-friendly learning platform"
+          ],
+          prerequisites: ["Web browser", "Basic typing skills", "Codecademy account (free)"]
         },
         {
           title: "W3Schools Web Development Tutorial",
           type: "tutorial",
           url: "https://www.w3schools.com/html/",
           description: "Step-by-step web development tutorials with live examples and try-it-yourself editors",
-          difficulty: "beginner"
+          difficulty: "beginner",
+          content: `# W3Schools Learning Notes
+
+## Comprehensive Reference and Tutorials
+W3Schools provides extensive tutorials with live examples you can edit and test immediately.
+
+## HTML Tutorial Sections
+1. **HTML Basics**
+   - Elements, attributes, headings
+   - Paragraphs, links, images
+   - Lists and tables
+
+2. **HTML Forms**
+   - Input types and attributes
+   - Form validation
+   - Accessibility features
+
+3. **HTML5 Features**
+   - Semantic elements
+   - Audio and video
+   - Canvas and SVG
+
+4. **HTML Graphics**
+   - Canvas API basics
+   - SVG graphics
+   - Responsive images
+
+## CSS Tutorial Sections
+1. **CSS Fundamentals**
+   - Selectors and properties
+   - Colors and backgrounds
+   - Text and fonts
+
+2. **CSS Layout**
+   - Box model
+   - Flexbox and Grid
+   - Responsive design
+
+3. **CSS Advanced**
+   - Animations and transitions
+   - Transforms
+   - Variables and functions
+
+## Interactive Features
+- "Try it Yourself" editors
+- Live code examples
+- Instant preview
+- Color picker tools
+- Reference guides
+
+## Learning Approach
+- Start with basics
+- Progress to advanced topics
+- Practice with examples
+- Use as reference guide
+- Test code variations
+
+## Best Use Cases
+- Quick reference lookup
+- Concept reinforcement
+- Code experimentation
+- Syntax verification
+- Property exploration`,
+          keyPoints: [
+            "Extensive reference material for HTML and CSS",
+            "Interactive 'Try it Yourself' code editors",
+            "Live examples for every concept",
+            "Beginner-friendly explanations",
+            "Comprehensive coverage of web standards"
+          ],
+          prerequisites: ["Web browser", "Basic computer literacy"]
         },
         
         // JAVASCRIPT FUNDAMENTALS
@@ -189,7 +436,101 @@ export default function LearningResources({
           type: "tutorial",
           url: "https://javascript.info/",
           description: "Comprehensive modern JavaScript tutorial covering ES6+, async programming, and advanced concepts",
-          difficulty: "beginner"
+          difficulty: "beginner",
+          content: `# JavaScript.info Learning Notes
+
+## The Modern JavaScript Tutorial
+This is one of the most comprehensive and up-to-date JavaScript resources available, covering everything from basics to advanced concepts.
+
+## Part 1: The JavaScript Language
+1. **An Introduction**
+   - What is JavaScript?
+   - Code editors and developer tools
+   - JavaScript engines and runtime
+
+2. **JavaScript Fundamentals** (20 lessons)
+   - Variables and constants
+   - Data types (numbers, strings, booleans)
+   - Operators and comparisons
+   - Conditional statements
+   - Loops and iterations
+   - Functions and scope
+
+3. **Code Quality**
+   - Debugging in browser
+   - Coding style and best practices
+   - Comments and documentation
+   - Testing with automated tests
+
+4. **Objects: The Basics**
+   - Object syntax and properties
+   - Object references and copying
+   - Garbage collection
+   - Object methods and 'this'
+   - Constructor functions
+
+5. **Data Types**
+   - Primitive methods
+   - Numbers and strings
+   - Arrays and array methods
+   - Maps and Sets
+   - WeakMap and WeakSet
+
+6. **Advanced Working with Functions**
+   - Function binding
+   - Arrow functions
+   - Call, apply, bind
+   - Decorators and forwarding
+
+7. **Objects, Classes and Inheritance**
+   - Prototypal inheritance
+   - Class syntax
+   - Mixins and composition
+
+## Part 2: Browser: Document, Events, Interfaces
+1. **Document Object Model (DOM)**
+   - DOM tree structure
+   - Searching and modifying elements
+   - Element properties and attributes
+
+2. **Events**
+   - Event handling
+   - Bubbling and capturing
+   - Event delegation
+   - Custom events
+
+3. **Forms and Controls**
+   - Form validation
+   - Input events
+   - File handling
+
+## Part 3: Additional Articles
+- Network requests (fetch, XMLHttpRequest)
+- Animation and graphics
+- Web components
+- Error handling
+
+## Learning Approach
+- Read theory first
+- Practice with provided examples
+- Complete tasks at the end of each chapter
+- Build small projects using learned concepts
+- Reference back as needed
+
+## Why This Resource is Excellent
+- Modern ES6+ syntax throughout
+- Detailed explanations with examples
+- Interactive tasks and solutions
+- Regular updates with latest features
+- Free and comprehensive`,
+          keyPoints: [
+            "Covers modern JavaScript (ES6+) from basics to advanced",
+            "Interactive examples and practice tasks",
+            "Clear explanations of complex concepts",
+            "Comprehensive coverage of DOM and browser APIs",
+            "Regularly updated with latest JavaScript features"
+          ],
+          prerequisites: ["Basic programming concepts", "HTML/CSS basics", "Text editor"]
         },
         {
           title: "JavaScript30 - 30 Day Challenge",
@@ -197,7 +538,97 @@ export default function LearningResources({
           url: "https://javascript30.com/",
           description: "Build 30 real-world projects in 30 days using vanilla JavaScript - no frameworks, no libraries",
           duration: "30 days",
-          difficulty: "intermediate"
+          difficulty: "intermediate",
+          content: `# JavaScript30 Learning Notes
+
+## 30 Days, 30 Projects, Pure JavaScript
+Created by Wes Bos, this free course teaches JavaScript through building 30 real-world projects without using any frameworks or libraries.
+
+## Course Philosophy
+- No frameworks, just vanilla JavaScript
+- Focus on fundamentals and core concepts
+- Learn by building, not just watching
+- Short videos (10-30 minutes each)
+- Real-world applicable projects
+
+## Sample Projects Include:
+1. **JavaScript Drum Kit**
+   - Event listeners
+   - Playing audio
+   - CSS transforms
+   - Data attributes
+
+2. **JS + CSS Clock**
+   - Date object manipulation
+   - CSS transforms
+   - Real-time updates
+   - Smooth animations
+
+3. **CSS Variables + JS**
+   - CSS custom properties
+   - Range inputs
+   - Real-time updates
+   - Color manipulation
+
+4. **Array Cardio**
+   - Array methods mastery
+   - Filter, map, reduce
+   - Sort and find
+   - Data manipulation
+
+5. **Flex Panel Gallery**
+   - CSS Flexbox
+   - Event delegation
+   - CSS transitions
+   - Toggle classes
+
+6. **Type Ahead**
+   - Fetch API
+   - Regular expressions
+   - Array filtering
+   - Dynamic content
+
+7. **HTML5 Canvas**
+   - Canvas API
+   - Mouse events
+   - Drawing and painting
+   - Color manipulation
+
+## Key Learning Areas
+- **DOM Manipulation**: querySelector, event listeners, classList
+- **ES6 Features**: arrow functions, destructuring, template literals
+- **APIs**: Fetch, Geolocation, Speech Recognition, Camera
+- **CSS Integration**: Variables, transforms, animations
+- **Data Handling**: JSON, localStorage, array methods
+- **Modern JavaScript**: modules, promises, async/await
+
+## Daily Workflow
+1. Watch the project video
+2. Code along with the instructor
+3. Experiment with variations
+4. Add your own features
+5. Share your version online
+
+## Skills You'll Gain
+- Vanilla JavaScript mastery
+- Problem-solving approach
+- Code debugging skills
+- Project-based thinking
+- Real-world development practices
+
+## Community Aspect
+- Share your solutions on social media
+- Connect with other learners
+- Get feedback on your code
+- Build a portfolio of projects`,
+          keyPoints: [
+            "30 real-world projects using pure JavaScript",
+            "No frameworks or libraries - focus on fundamentals",
+            "Short, focused videos perfect for daily learning",
+            "Covers modern ES6+ JavaScript features",
+            "Strong community of learners sharing solutions"
+          ],
+          prerequisites: ["Basic JavaScript knowledge", "HTML/CSS understanding", "Text editor and browser"]
         },
         
         // INTERACTIVE CSS LEARNING
@@ -208,7 +639,82 @@ export default function LearningResources({
           url: "https://flexboxfroggy.com/",
           description: "Master CSS Flexbox layout through fun, interactive gameplay with step-by-step challenges",
           duration: "1 hour",
-          difficulty: "beginner"
+          difficulty: "beginner",
+          content: `# Flexbox Froggy Learning Notes
+
+## Interactive CSS Flexbox Game
+Learn CSS Flexbox through a fun game where you help Froggy and friends reach their lily pads using flexbox properties.
+
+## Game Progression (24 Levels)
+### Levels 1-6: Basic Alignment
+- **justify-content**: Controls horizontal alignment
+  - flex-start (default): items at start
+  - flex-end: items at end
+  - center: items in center
+  - space-between: equal space between items
+  - space-around: equal space around items
+
+### Levels 7-12: Cross-Axis Alignment
+- **align-items**: Controls vertical alignment
+  - flex-start: items at top
+  - flex-end: items at bottom
+  - center: items in middle
+  - baseline: items aligned to text baseline
+  - stretch: items stretch to fill container
+
+### Levels 13-18: Direction and Wrap
+- **flex-direction**: Changes main axis
+  - row (default): left to right
+  - row-reverse: right to left
+  - column: top to bottom
+  - column-reverse: bottom to top
+
+- **flex-wrap**: Controls wrapping
+  - nowrap (default): all items on one line
+  - wrap: items wrap to new lines
+  - wrap-reverse: items wrap in reverse order
+
+### Levels 19-24: Advanced Properties
+- **flex-flow**: Shorthand for direction + wrap
+- **align-content**: Aligns wrapped lines
+- **align-self**: Aligns individual items
+
+## Key Flexbox Concepts Learned
+1. **Main Axis vs Cross Axis**
+   - Main axis determined by flex-direction
+   - Cross axis perpendicular to main axis
+
+2. **Container vs Item Properties**
+   - Container: justify-content, align-items, flex-direction
+   - Items: align-self, flex-grow, flex-shrink
+
+3. **Common Layout Patterns**
+   - Centering content
+   - Equal height columns
+   - Space distribution
+   - Responsive navigation
+
+## Practical Applications
+- Navigation bars
+- Card layouts
+- Form controls
+- Media objects
+- Responsive grids
+
+## Learning Tips
+- Complete all 24 levels
+- Experiment with different values
+- Practice the concepts in real projects
+- Use browser dev tools to visualize
+- Reference back when building layouts`,
+          keyPoints: [
+            "24 interactive levels teaching Flexbox fundamentals",
+            "Visual feedback helps understand layout behavior",
+            "Covers all major Flexbox properties and values",
+            "Fun, game-like approach to learning CSS",
+            "Perfect introduction to modern CSS layouts"
+          ],
+          prerequisites: ["Basic CSS knowledge", "Understanding of HTML structure"]
         },
         {
           title: "Grid Garden Game",
@@ -216,438 +722,167 @@ export default function LearningResources({
           url: "https://cssgridgarden.com/",
           description: "Learn CSS Grid layout system through interactive gardening-themed coding challenges",
           duration: "1 hour",
-          difficulty: "beginner"
-        },
-        
-        // COMPREHENSIVE GUIDES & REFERENCES
-        // In-depth guides and official documentation for advanced learning
-        {
-          title: "CSS-Tricks Complete Guide",
-          type: "article",
-          url: "https://css-tricks.com/guides/",
-          description: "Comprehensive CSS guides covering Flexbox, Grid, animations, and modern CSS techniques",
-          difficulty: "intermediate"
-        },
-        {
-          title: "Web.dev by Google",
-          type: "documentation",
-          url: "https://web.dev/learn/",
-          description: "Google's official web development curriculum covering performance, accessibility, and modern web APIs",
-          difficulty: "intermediate"
-        },
-        {
-          title: "The Odin Project",
-          type: "tutorial",
-          url: "https://www.theodinproject.com/",
-          description: "Free full-stack web development curriculum with projects, community support, and career guidance",
-          duration: "1000+ hours",
-          difficulty: "beginner"
-        },
-        
-        // DEVELOPMENT TOOLS & COMPATIBILITY
-        // Essential tools for modern web development workflow
-        {
-          title: "Can I Use - Browser Support",
-          type: "documentation",
-          url: "https://caniuse.com/",
-          description: "Essential browser compatibility checker for CSS and JavaScript features across all browsers",
-          difficulty: "intermediate"
-        },
-        {
-          title: "A11Y Project - Accessibility",
-          type: "documentation",
-          url: "https://www.a11yproject.com/",
-          description: "Comprehensive web accessibility guide with practical tips for building inclusive websites",
-          difficulty: "intermediate"
+          difficulty: "beginner",
+          content: `# Grid Garden Learning Notes
+
+## Interactive CSS Grid Game
+Learn CSS Grid by watering your garden! Write CSS code to grow your carrot garden using grid properties.
+
+## Game Progression (28 Levels)
+### Levels 1-7: Basic Grid Positioning
+- **grid-column-start**: Start position on column axis
+- **grid-column-end**: End position on column axis
+- **grid-column**: Shorthand for start/end
+- **grid-row**: Same concept for rows
+
+### Levels 8-14: Spanning and Shortcuts
+- **Spanning**: Use span keyword for relative positioning
+  - grid-column: 2 / span 3 (start at 2, span 3 columns)
+- **Negative values**: Count from the end
+  - grid-column: 1 / -1 (full width)
+
+### Levels 15-21: Grid Areas and Lines
+- **grid-area**: Position in all directions
+  - grid-area: row-start / col-start / row-end / col-end
+- **Named lines**: Use custom line names
+- **Grid template areas**: Named regions
+
+### Levels 22-28: Advanced Grid Features
+- **grid-template-columns**: Define column sizes
+  - Fixed: 100px 200px 100px
+  - Flexible: 1fr 2fr 1fr
+  - Repeat: repeat(3, 1fr)
+- **grid-template-rows**: Define row sizes
+- **fr unit**: Fraction of available space
+
+## Key Grid Concepts Learned
+1. **Grid Container vs Grid Items**
+   - Container defines the grid
+   - Items are placed within the grid
+
+2. **Grid Lines vs Grid Tracks**
+   - Lines are the boundaries
+   - Tracks are the spaces between lines
+
+3. **Explicit vs Implicit Grid**
+   - Explicit: defined with template properties
+   - Implicit: auto-generated for overflow
+
+4. **Grid Areas**
+   - Named regions for easier placement
+   - Semantic layout descriptions
+
+## Grid vs Flexbox
+- **Grid**: Two-dimensional layouts (rows AND columns)
+- **Flexbox**: One-dimensional layouts (row OR column)
+- **Use together**: Grid for page layout, Flexbox for components
+
+## Practical Applications
+- Page layouts (header, sidebar, main, footer)
+- Photo galleries
+- Card grids
+- Magazine-style layouts
+- Dashboard interfaces
+
+## Modern CSS Grid Features
+- **Subgrid**: Inherit parent grid (coming soon)
+- **Container queries**: Responsive to container size
+- **Gap properties**: Space between items
+- **Auto-fit/Auto-fill**: Responsive columns
+
+## Learning Path After Grid Garden
+1. Practice with real layouts
+2. Combine with Flexbox
+3. Learn CSS Grid Level 2 features
+4. Explore grid-based design systems`,
+          keyPoints: [
+            "28 levels covering all essential CSS Grid concepts",
+            "Interactive visual feedback for immediate learning",
+            "Progressive difficulty from basic to advanced",
+            "Covers modern grid features and best practices",
+            "Perfect complement to Flexbox learning"
+          ],
+          prerequisites: ["Basic CSS knowledge", "HTML structure understanding", "Flexbox basics recommended"]
         },
         
         // ========================================================================
-        // SPECIALIZED HTML LEARNING ARTICLES
+        // GITHUB REPOSITORIES & HANDS-ON PROJECTS  
         // ========================================================================
-        // Deep-dive articles for semantic HTML, forms, SEO, and progressive enhancement
-        // Focus on modern HTML5 best practices and accessibility standards
-        {
-          title: "HTML5 Semantic Elements Guide",
-          type: "article",
-          url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element",
-          description: "Comprehensive guide to HTML5 semantic elements for meaningful document structure and SEO",
-          difficulty: "beginner"
-        },
-        {
-          title: "HTML Forms Best Practices",
-          type: "article",
-          url: "https://web.dev/learn/forms/",
-          description: "Build accessible, user-friendly forms with proper validation and UX considerations",
-          difficulty: "intermediate"
-        },
-        {
-          title: "HTML Meta Tags for SEO",
-          type: "article",
-          url: "https://moz.com/blog/meta-data-templates-123",
-          description: "Essential meta tags for search engine optimization, social media, and browser functionality",
-          difficulty: "intermediate"
-        },
-        {
-          title: "Progressive Enhancement with HTML",
-          type: "article",
-          url: "https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement",
-          description: "Build robust websites that work for everyone, starting with solid HTML foundations",
-          difficulty: "intermediate"
-        },
+        // Interactive tutorials and practical projects from GitHub
+        // Focus on building real applications and following along with code
         
-        // ========================================================================
-        // CSS FUNDAMENTALS & ADVANCED TECHNIQUES
-        // ========================================================================
-        // Core CSS concepts, layout systems, and modern styling techniques
-        // Covers box model, Flexbox, Grid, animations, and performance optimization
         {
-          title: "CSS Box Model Explained",
-          type: "article",
-          url: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Box_Model/Introduction_to_the_CSS_box_model",
-          description: "Master the fundamental CSS box model - the foundation of all web layout",
-          difficulty: "beginner"
-        },
-        {
-          title: "CSS Flexbox Complete Guide",
-          type: "article",
-          url: "https://css-tricks.com/snippets/css/a-guide-to-flexbox/",
-          description: "Comprehensive Flexbox reference with visual examples and practical use cases",
-          difficulty: "beginner"
-        },
-        {
-          title: "CSS Grid Garden Tutorial",
+          title: "30 Days of JavaScript",
           type: "tutorial",
-          url: "https://cssgridgarden.com/",
-          description: "Interactive CSS Grid learning through fun gardening-themed coding challenges",
+          url: "https://github.com/Asabeneh/30-Days-Of-JavaScript",
+          description: "30 days step by step guide to learn JavaScript programming language with challenges",
+          duration: "30 days",
           difficulty: "beginner"
         },
         {
-          title: "CSS Custom Properties (Variables)",
-          type: "article",
-          url: "https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties",
-          description: "Dynamic styling with CSS variables for maintainable and themeable designs",
-          difficulty: "intermediate"
-        },
-        {
-          title: "CSS Architecture - BEM Methodology",
-          type: "article",
-          url: "https://css-tricks.com/bem-101/",
-          description: "Organize CSS for large, scalable projects using the Block Element Modifier methodology",
-          difficulty: "intermediate"
-        },
-        {
-          title: "CSS Animation and Transitions",
-          type: "article",
-          url: "https://web.dev/animations/",
-          description: "Create smooth, performant animations and transitions for enhanced user experience",
-          difficulty: "intermediate"
-        },
-        {
-          title: "Responsive Web Design Principles",
-          type: "article",
-          url: "https://web.dev/responsive-web-design-basics/",
-          description: "Build websites that work beautifully on all devices using modern responsive techniques",
-          difficulty: "intermediate"
-        },
-        {
-          title: "CSS Performance Optimization",
-          type: "article",
-          url: "https://web.dev/fast-css/",
-          description: "Advanced CSS optimization techniques for faster loading and rendering performance",
-          difficulty: "advanced"
-        },
-        
-        // JavaScript Fundamentals Articles
-        {
-          title: "JavaScript Fundamentals",
-          type: "article",
-          url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Introduction",
-          description: "Core JavaScript concepts and syntax",
+          title: "30 Days of HTML & CSS",
+          type: "tutorial", 
+          url: "https://github.com/Asabeneh/30-Days-Of-HTML",
+          description: "30 days of HTML and CSS step by step challenges and projects",
+          duration: "30 days",
           difficulty: "beginner"
         },
         {
-          title: "JavaScript ES6+ Features",
-          type: "article",
-          url: "https://github.com/lukehoban/es6features",
-          description: "Modern JavaScript features you should know",
-          difficulty: "intermediate"
-        },
-        {
-          title: "Understanding JavaScript Closures",
-          type: "article",
-          url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures",
-          description: "Master one of JavaScript's most important concepts",
-          difficulty: "intermediate"
-        },
-        {
-          title: "JavaScript Async/Await Guide",
-          type: "article",
-          url: "https://javascript.info/async-await",
-          description: "Handle asynchronous operations elegantly",
-          difficulty: "intermediate"
-        },
-        {
-          title: "DOM Manipulation Best Practices",
-          type: "article",
-          url: "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction",
-          description: "Interact with web pages using JavaScript",
-          difficulty: "intermediate"
-        },
-        {
-          title: "JavaScript Event Handling",
-          type: "article",
-          url: "https://developer.mozilla.org/en-US/docs/Web/Events",
-          description: "Handle user interactions and browser events",
-          difficulty: "intermediate"
-        },
-        {
-          title: "JavaScript Promises Explained",
-          type: "article",
-          url: "https://web.dev/promises/",
-          description: "Master asynchronous JavaScript with Promises",
-          difficulty: "intermediate"
-        },
-        {
-          title: "JavaScript Modules (ES6)",
-          type: "article",
-          url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules",
-          description: "Organize code with JavaScript modules",
-          difficulty: "intermediate"
-        },
-        
-        // Web Performance Articles
-        {
-          title: "Web Performance Fundamentals",
-          type: "article",
-          url: "https://web.dev/why-speed-matters/",
-          description: "Why performance matters for web applications",
-          difficulty: "intermediate"
-        },
-        {
-          title: "Core Web Vitals Explained",
-          type: "article",
-          url: "https://web.dev/vitals/",
-          description: "Google's essential metrics for web performance",
-          difficulty: "intermediate"
-        },
-        {
-          title: "Image Optimization for Web",
-          type: "article",
-          url: "https://web.dev/fast/#optimize-your-images",
-          description: "Optimize images for faster loading",
-          difficulty: "intermediate"
-        },
-        {
-          title: "Critical Rendering Path",
-          type: "article",
-          url: "https://developers.google.com/web/fundamentals/performance/critical-rendering-path",
-          description: "How browsers render web pages",
-          difficulty: "advanced"
-        },
-        {
-          title: "Lazy Loading Images and Content",
-          type: "article",
-          url: "https://web.dev/lazy-loading/",
-          description: "Load content only when needed",
-          difficulty: "intermediate"
-        },
-        
-        // Accessibility Articles
-        {
-          title: "Web Accessibility Guidelines (WCAG)",
-          type: "article",
-          url: "https://www.w3.org/WAI/WCAG21/quickref/",
-          description: "Make your websites accessible to everyone",
-          difficulty: "intermediate"
-        },
-        {
-          title: "ARIA Labels and Attributes",
-          type: "article",
-          url: "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA",
-          description: "Enhance accessibility with ARIA",
-          difficulty: "intermediate"
-        },
-        {
-          title: "Color and Contrast for Accessibility",
-          type: "article",
-          url: "https://web.dev/color-and-contrast-accessibility/",
-          description: "Design with accessible color schemes",
-          difficulty: "intermediate"
-        },
-        {
-          title: "Keyboard Navigation Best Practices",
-          type: "article",
-          url: "https://web.dev/keyboard-access/",
-          description: "Make your site navigable by keyboard",
-          difficulty: "intermediate"
-        },
-        
-        // SEO and Best Practices
-        {
-          title: "SEO Fundamentals for Developers",
-          type: "article",
-          url: "https://developers.google.com/search/docs/beginner/seo-starter-guide",
-          description: "Google's guide to search engine optimization",
-          difficulty: "intermediate"
-        },
-        {
-          title: "Structured Data and Schema.org",
-          type: "article",
-          url: "https://developers.google.com/search/docs/guides/intro-structured-data",
-          description: "Help search engines understand your content",
-          difficulty: "advanced"
-        },
-        {
-          title: "Progressive Web Apps (PWA) Guide",
-          type: "article",
-          url: "https://web.dev/progressive-web-apps/",
-          description: "Build app-like web experiences",
-          difficulty: "advanced"
-        },
-        {
-          title: "Web Security Best Practices",
-          type: "article",
-          url: "https://web.dev/secure/",
-          description: "Protect your web applications",
-          difficulty: "advanced"
-        },
-        
-        // Modern Web Development
-        {
-          title: "Modern CSS Reset and Normalize",
-          type: "article",
-          url: "https://piccalil.li/blog/a-modern-css-reset",
-          description: "Start with a clean CSS foundation",
-          difficulty: "intermediate"
-        },
-        {
-          title: "CSS-in-JS vs Traditional CSS",
-          type: "article",
-          url: "https://css-tricks.com/the-fragmented-but-evolving-state-of-css-in-js/",
-          description: "Compare modern CSS approaches",
-          difficulty: "advanced"
-        },
-        {
-          title: "Web Components Introduction",
-          type: "article",
-          url: "https://developer.mozilla.org/en-US/docs/Web/Web_Components",
-          description: "Create reusable custom elements",
-          difficulty: "advanced"
-        },
-        {
-          title: "JavaScript Build Tools Overview",
-          type: "article",
-          url: "https://blog.logrocket.com/javascript-build-tools-past-and-present/",
-          description: "Understanding modern build processes",
-          difficulty: "advanced"
-        },
-        {
-          title: "Browser Developer Tools Mastery",
-          type: "article",
-          url: "https://developer.chrome.com/docs/devtools/",
-          description: "Master browser debugging tools",
-          difficulty: "intermediate"
-        },
-        
-        // Industry Best Practices
-        {
-          title: "Frontend Development Best Practices",
-          type: "article",
-          url: "https://github.com/bendc/frontend-guidelines",
-          description: "Industry standards for frontend development",
-          difficulty: "intermediate"
-        },
-        {
-          title: "Code Review Guidelines",
-          type: "article",
-          url: "https://google.github.io/eng-practices/review/reviewer/",
-          description: "How to conduct effective code reviews",
-          difficulty: "intermediate"
-        },
-        {
-          title: "Git Workflow Best Practices",
-          type: "article",
-          url: "https://www.atlassian.com/git/tutorials/comparing-workflows",
-          description: "Effective Git workflows for teams",
-          difficulty: "intermediate"
-        },
-        {
-          title: "Documentation Writing for Developers",
-          type: "article",
-          url: "https://www.writethedocs.org/guide/writing/beginners-guide-to-docs/",
-          description: "Write clear and helpful documentation",
-          difficulty: "intermediate"
-        },
-        
-        // Practical Learning Resources
-        {
-          title: "Frontend Mentor Challenges",
+          title: "JavaScript Algorithms and Data Structures",
           type: "tutorial",
-          url: "https://www.frontendmentor.io/",
-          description: "Real-world frontend coding challenges",
+          url: "https://github.com/trekhleb/javascript-algorithms",
+          description: "Algorithms and data structures implemented in JavaScript with explanations",
           difficulty: "intermediate"
         },
         {
-          title: "CSS Battle - CSS Challenges",
+          title: "Web Development for Beginners",
           type: "tutorial",
-          url: "https://cssbattle.dev/",
-          description: "Sharpen CSS skills with coding battles",
-          difficulty: "intermediate"
+          url: "https://github.com/microsoft/Web-Dev-For-Beginners",
+          description: "24-lesson curriculum all about JavaScript, CSS, and HTML basics",
+          duration: "12 weeks",
+          difficulty: "beginner"
         },
         {
-          title: "Codepen Code Examples",
+          title: "Vanilla JavaScript Projects",
+          type: "tutorial",
+          url: "https://github.com/bradtraversy/vanillawebprojects",
+          description: "Mini projects built with HTML5, CSS & JavaScript. No frameworks or libraries",
+          difficulty: "beginner"
+        },
+        {
+          title: "50 Projects in 50 Days",
           type: "example",
-          url: "https://codepen.io/trending",
-          description: "Explore creative code examples and experiments",
+          url: "https://github.com/bradtraversy/50projects50days",
+          description: "50 mini web projects using HTML, CSS & JS",
+          duration: "50 days",
           difficulty: "beginner"
         },
         {
-          title: "Can I Use - Feature Support",
-          type: "documentation",
-          url: "https://caniuse.com/",
-          description: "Check browser support for web technologies",
+          title: "Frontend Project Ideas",
+          type: "example", 
+          url: "https://github.com/florinpop17/app-ideas",
+          description: "Collection of application ideas for improving coding skills",
           difficulty: "beginner"
         },
         {
-          title: "Web Development Roadmap",
-          type: "article",
-          url: "https://roadmap.sh/frontend",
-          description: "Complete roadmap for frontend development",
+          title: "JavaScript Learning Resources",
+          type: "tutorial",
+          url: "https://github.com/micromata/awesome-javascript-learning",
+          description: "Curated list of JavaScript learning resources and projects",
           difficulty: "beginner"
         },
         {
           title: "HTML5 Boilerplate",
           type: "example",
-          url: "https://html5boilerplate.com/",
-          description: "Professional front-end template",
+          url: "https://github.com/h5bp/html5-boilerplate", 
+          description: "Professional front-end template and build system",
           difficulty: "intermediate"
         },
         {
-          title: "CSS Reset vs Normalize",
-          type: "article",
-          url: "https://elad.medium.com/normalize-css-or-css-reset-9d75175c5d1e",
-          description: "Choose the right CSS foundation",
-          difficulty: "intermediate"
-        },
-        {
-          title: "Viewport Meta Tag Guide",
-          type: "article",
-          url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag",
-          description: "Control layout on mobile browsers",
-          difficulty: "beginner"
-        },
-        {
-          title: "HTTP Status Codes Reference",
-          type: "documentation",
-          url: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status",
-          description: "Understanding HTTP response codes",
-          difficulty: "intermediate"
-        },
-        {
-          title: "Web API References",
-          type: "documentation",
-          url: "https://developer.mozilla.org/en-US/docs/Web/API",
-          description: "Complete reference for Web APIs",
+          title: "Developer Portfolio Template",
+          type: "example",
+          url: "https://github.com/saadpasta/developerFolio",
+          description: "Clean and beautiful portfolio template for developers",
           difficulty: "intermediate"
         }
       );
@@ -759,38 +994,10 @@ export default function LearningResources({
     if (technologies.includes('HTML')) {
       resources.push(
         {
-          title: "MDN HTML Basics",
-          type: "documentation",
-          url: "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/HTML_basics",
-          description: "Learn HTML fundamentals from Mozilla Developer Network",
-          difficulty: "beginner"
-        },
-        {
-          title: "HTML Semantic Elements Guide",
-          type: "article",
-          url: "https://developer.mozilla.org/en-US/docs/Glossary/Semantics",
-          description: "Understanding semantic HTML for better accessibility",
-          difficulty: "intermediate"
-        },
-        {
           title: "HTML5 Forms Tutorial",
           type: "tutorial",
           url: "https://developer.mozilla.org/en-US/docs/Learn/Forms",
           description: "Master HTML forms and validation",
-          difficulty: "intermediate"
-        },
-        {
-          title: "HTML Accessibility Guidelines",
-          type: "documentation",
-          url: "https://www.w3.org/WAI/WCAG21/quickref/",
-          description: "Web Content Accessibility Guidelines",
-          difficulty: "advanced"
-        },
-        {
-          title: "HTML Best Practices",
-          type: "article",
-          url: "https://github.com/hail2u/html-best-practices",
-          description: "Writing clean and maintainable HTML",
           difficulty: "intermediate"
         }
       );
@@ -798,13 +1005,6 @@ export default function LearningResources({
     
     if (technologies.includes('CSS')) {
       resources.push(
-        {
-          title: "CSS Grid Complete Guide",
-          type: "article",
-          url: "https://css-tricks.com/snippets/css/complete-guide-grid/",
-          description: "Master CSS Grid for modern layouts",
-          difficulty: "intermediate"
-        },
         {
           title: "Flexbox Froggy",
           type: "tutorial",
@@ -827,24 +1027,10 @@ export default function LearningResources({
           difficulty: "intermediate"
         },
         {
-          title: "CSS-in-JS vs CSS",
-          type: "article",
-          url: "https://css-tricks.com/the-fragmented-but-evolving-state-of-css-in-js/",
-          description: "Modern CSS styling approaches",
-          difficulty: "advanced"
-        },
-        {
           title: "Responsive Web Design",
           type: "tutorial",
           url: "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Responsive_Design",
           description: "Build websites that work on all devices",
-          difficulty: "intermediate"
-        },
-        {
-          title: "CSS Variables (Custom Properties)",
-          type: "article",
-          url: "https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties",
-          description: "Dynamic styling with CSS variables",
           difficulty: "intermediate"
         }
       );
@@ -860,32 +1046,11 @@ export default function LearningResources({
           difficulty: "beginner"
         },
         {
-          title: "Eloquent JavaScript (Free Book)",
-          type: "article",
-          url: "https://eloquentjavascript.net/",
-          description: "Free online book about JavaScript programming",
-          difficulty: "intermediate"
-        },
-        {
-          title: "ES6 Features Guide",
-          type: "article",
-          url: "https://github.com/lukehoban/es6features",
-          description: "Overview of ECMAScript 6 features",
-          difficulty: "intermediate"
-        },
-        {
           title: "Async/Await Tutorial",
           type: "tutorial",
           url: "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await",
           description: "Master asynchronous JavaScript programming",
           difficulty: "intermediate"
-        },
-        {
-          title: "JavaScript Design Patterns",
-          type: "article",
-          url: "https://addyosmani.com/resources/essentialjsdesignpatterns/book/",
-          description: "Essential JavaScript design patterns",
-          difficulty: "advanced"
         },
         {
           title: "DOM Manipulation Guide",
@@ -900,13 +1065,6 @@ export default function LearningResources({
     // Project-specific resources based on title keywords
     if (projectTitle.toLowerCase().includes('landing') || projectTitle.toLowerCase().includes('homepage')) {
       resources.push(
-        {
-          title: "Landing Page Design Principles",
-          type: "article",
-          url: "https://blog.hubspot.com/marketing/landing-page-examples-list",
-          description: "Best practices for effective landing pages",
-          difficulty: "beginner"
-        },
         {
           title: "CSS Hero Sections Tutorial",
           type: "tutorial",
@@ -1288,249 +1446,15 @@ export default function LearningResources({
       );
     }
     
-    // Add comprehensive general resources
-    resources.push(
-      // Development Tools & Environment
-      {
-        title: "VS Code Essential Extensions",
-        type: "article",
-        url: "https://code.visualstudio.com/docs/editor/extension-marketplace",
-        description: "Must-have extensions for web development",
-        difficulty: "beginner"
-      },
-      {
-        title: "Git Version Control Tutorial",
-        type: "tutorial",
-        url: "https://www.atlassian.com/git/tutorials",
-        description: "Master Git for version control and collaboration",
-        difficulty: "beginner"
-      },
-      {
-        title: "Chrome DevTools Guide",
-        type: "tutorial",
-        url: "https://developer.chrome.com/docs/devtools/",
-        description: "Debug and optimize with browser developer tools",
-        difficulty: "intermediate"
-      },
-      {
-        title: "NPM & Package Management",
-        type: "documentation",
-        url: "https://docs.npmjs.com/",
-        description: "Manage JavaScript packages and dependencies",
-        difficulty: "intermediate"
-      },
-      
-      // Code Quality & Best Practices
-      {
-        title: "Clean Code Principles",
-        type: "article",
-        url: "https://blog.cleancoder.com/",
-        description: "Writing maintainable and readable code",
-        difficulty: "intermediate"
-      },
-      {
-        title: "Code Review Best Practices",
-        type: "article",
-        url: "https://google.github.io/eng-practices/review/",
-        description: "Google's guide to effective code reviews",
-        difficulty: "intermediate"
-      },
-      {
-        title: "ESLint Configuration Guide",
-        type: "tutorial",
-        url: "https://eslint.org/docs/latest/user-guide/getting-started",
-        description: "Set up code linting for consistent style",
-        difficulty: "intermediate"
-      },
-      {
-        title: "Prettier Code Formatting",
-        type: "tutorial",
-        url: "https://prettier.io/docs/en/index.html",
-        description: "Automatic code formatting for consistency",
-        difficulty: "beginner"
-      },
-      
-      // Performance & Optimization
-      {
-        title: "Web Performance Optimization",
-        type: "article",
-        url: "https://web.dev/performance/",
-        description: "Google's guide to making websites fast",
-        difficulty: "advanced"
-      },
-      {
-        title: "Lighthouse Performance Audits",
-        type: "tutorial",
-        url: "https://web.dev/lighthouse-performance/",
-        description: "Audit and improve website performance",
-        difficulty: "intermediate"
-      },
-      {
-        title: "Image Optimization Techniques",
-        type: "article",
-        url: "https://web.dev/fast/#optimize-your-images",
-        description: "Optimize images for web performance",
-        difficulty: "intermediate"
-      },
-      {
-        title: "Critical Rendering Path",
-        type: "article",
-        url: "https://web.dev/critical-rendering-path/",
-        description: "Understand how browsers render web pages",
-        difficulty: "advanced"
-      },
-      
-      // Security & Best Practices
-      {
-        title: "Web Security Fundamentals",
-        type: "article",
-        url: "https://web.dev/secure/",
-        description: "Essential security practices for web apps",
-        difficulty: "intermediate"
-      },
-      {
-        title: "HTTPS Implementation Guide",
-        type: "tutorial",
-        url: "https://web.dev/why-https-matters/",
-        description: "Secure your website with HTTPS",
-        difficulty: "intermediate"
-      },
-      {
-        title: "Content Security Policy (CSP)",
-        type: "documentation",
-        url: "https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP",
-        description: "Prevent XSS attacks with CSP headers",
-        difficulty: "advanced"
-      },
-      
-      // Testing & Quality Assurance
-      {
-        title: "JavaScript Testing Introduction",
-        type: "tutorial",
-        url: "https://jestjs.io/docs/getting-started",
-        description: "Write tests for your JavaScript code",
-        difficulty: "intermediate"
-      },
-      {
-        title: "End-to-End Testing with Playwright",
-        type: "tutorial",
-        url: "https://playwright.dev/docs/intro",
-        description: "Automate browser testing for web apps",
-        difficulty: "advanced"
-      },
-      {
-        title: "Accessibility Testing Guide",
-        type: "article",
-        url: "https://web.dev/accessibility/",
-        description: "Test and improve web accessibility",
-        difficulty: "intermediate"
-      },
-      
-      // Modern Development Practices
-      {
-        title: "Progressive Web Apps (PWA)",
-        type: "tutorial",
-        url: "https://web.dev/progressive-web-apps/",
-        description: "Build app-like web experiences",
-        difficulty: "advanced"
-      },
-      {
-        title: "Service Workers Guide",
-        type: "tutorial",
-        url: "https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API",
-        description: "Enable offline functionality and caching",
-        difficulty: "advanced"
-      },
-      {
-        title: "Web Components Standard",
-        type: "documentation",
-        url: "https://developer.mozilla.org/en-US/docs/Web/Web_Components",
-        description: "Create reusable custom elements",
-        difficulty: "advanced"
-      },
-      {
-        title: "CSS Architecture (BEM, SMACSS)",
-        type: "article",
-        url: "https://sass-guidelin.es/#architecture",
-        description: "Organize CSS for large projects",
-        difficulty: "intermediate"
-      },
-      
-      // Deployment & DevOps
-      {
-        title: "Netlify Deployment Guide",
-        type: "tutorial",
-        url: "https://docs.netlify.com/",
-        description: "Deploy static sites with continuous deployment",
-        difficulty: "beginner"
-      },
-      {
-        title: "Vercel Deployment Tutorial",
-        type: "tutorial",
-        url: "https://vercel.com/docs",
-        description: "Deploy modern web applications",
-        difficulty: "beginner"
-      },
-      {
-        title: "GitHub Pages Setup",
-        type: "tutorial",
-        url: "https://pages.github.com/",
-        description: "Host static websites for free on GitHub",
-        difficulty: "beginner"
-      },
-      {
-        title: "Docker for Web Developers",
-        type: "tutorial",
-        url: "https://docs.docker.com/get-started/",
-        description: "Containerize web applications",
-        difficulty: "advanced"
-      },
-      
-      // Career & Learning Resources
-      {
-        title: "freeCodeCamp Full Curriculum",
-        type: "tutorial",
-        url: "https://www.freecodecamp.org/learn/",
-        description: "Complete web development certification",
-        duration: "300+ hours",
-        difficulty: "beginner"
-      },
-      {
-        title: "MDN Learning Area",
-        type: "documentation",
-        url: "https://developer.mozilla.org/en-US/docs/Learn",
-        description: "Comprehensive web development learning path",
-        difficulty: "beginner"
-      },
-      {
-        title: "Web.dev Learn",
-        type: "tutorial",
-        url: "https://web.dev/learn/",
-        description: "Google's structured web development courses",
-        difficulty: "intermediate"
-      },
-      {
-        title: "Frontend Mentor Challenges",
-        type: "tutorial",
-        url: "https://www.frontendmentor.io/",
-        description: "Real-world frontend coding challenges",
-        difficulty: "intermediate"
-      },
-      {
-        title: "Codepen for Inspiration",
-        type: "example",
-        url: "https://codepen.io/",
-        description: "Explore creative code examples and experiments",
-        difficulty: "beginner"
-      },
-      {
-        title: "Stack Overflow Developer Survey",
-        type: "article",
-        url: "https://insights.stackoverflow.com/survey/",
-        description: "Stay updated with industry trends",
-        difficulty: "beginner"
-      }
-    );
+    // Filter to only allow GitHub-based resources for web-fundamentals projects
+    if (language === 'web-fundamentals') {
+      return resources.filter(resource => 
+        (resource.type === 'tutorial' || 
+         resource.type === 'video' || 
+         resource.type === 'example') &&
+        resource.url.includes('github.com')
+      );
+    }
     
     return resources;
   };
@@ -1760,22 +1684,108 @@ export default function LearningResources({
                           {resource.description}
                         </p>
                         
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          className="w-full justify-center text-xs h-7 hover:bg-primary hover:text-primary-foreground"
-                          asChild
-                        >
-                          <a 
-                            href={resource.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2"
+                        <div className="flex gap-2">
+                          {resource.content && (
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button 
+                                  size="sm" 
+                                  variant="default" 
+                                  className="flex-1 justify-center text-xs h-7"
+                                  onClick={() => setSelectedResource(resource)}
+                                >
+                                  <PlayCircle className="h-3 w-3 mr-1" />
+                                  Start Learning
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-4xl max-h-[80vh]">
+                                <DialogHeader>
+                                  <DialogTitle className="flex items-center gap-2">
+                                    {getResourceIcon(resource.type)}
+                                    {resource.title}
+                                    <Badge variant="secondary" className={getDifficultyColor(resource.difficulty)}>
+                                      {resource.difficulty}
+                                    </Badge>
+                                  </DialogTitle>
+                                  <DialogDescription>
+                                    {resource.description}
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <ScrollArea className="h-[60vh] pr-4">
+                                  <div className="space-y-4">
+                                    {resource.prerequisites && resource.prerequisites.length > 0 && (
+                                      <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
+                                        <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                          <Target className="h-4 w-4" />
+                                          Prerequisites
+                                        </h4>
+                                        <ul className="text-sm space-y-1">
+                                          {resource.prerequisites.map((prereq, idx) => (
+                                            <li key={idx} className="flex items-center gap-2">
+                                              <CheckCircle2 className="h-3 w-3 text-green-500" />
+                                              {prereq}
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    )}
+                                    
+                                    {resource.keyPoints && resource.keyPoints.length > 0 && (
+                                      <div className="p-4 bg-green-50 dark:bg-green-950/30 rounded-lg">
+                                        <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                          <Lightbulb className="h-4 w-4" />
+                                          Key Learning Points
+                                        </h4>
+                                        <ul className="text-sm space-y-2">
+                                          {resource.keyPoints.map((point, idx) => (
+                                            <li key={idx} className="flex items-start gap-2">
+                                              <ArrowRight className="h-3 w-3 mt-1 text-green-600 flex-shrink-0" />
+                                              {point}
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    )}
+                                    
+                                    <div className="prose prose-sm max-w-none dark:prose-invert">
+                                      <div className="whitespace-pre-wrap">{resource.content}</div>
+                                    </div>
+                                    
+                                    <div className="flex gap-2 pt-4 border-t">
+                                      <Button asChild className="flex-1">
+                                        <a 
+                                          href={resource.url} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer"
+                                          className="flex items-center gap-2"
+                                        >
+                                          <ExternalLink className="h-4 w-4" />
+                                          Open Original Resource
+                                        </a>
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </ScrollArea>
+                              </DialogContent>
+                            </Dialog>
+                          )}
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className={`${resource.content ? 'flex-1' : 'w-full'} justify-center text-xs h-7 hover:bg-primary hover:text-primary-foreground`}
+                            asChild
                           >
-                            <ExternalLink className="h-3 w-3" />
-                            Open Resource
-                          </a>
-                        </Button>
+                            <a 
+                              href={resource.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              Open Resource
+                            </a>
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </Card>

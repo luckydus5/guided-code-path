@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import DeploymentModal from './DeploymentModal';
+import Editor from '@monaco-editor/react';
 
 interface FileTab {
   id: string;
@@ -49,6 +50,26 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
   initialFiles = [], 
   onSave 
 }) => {
+  // Function to map file language to Monaco Editor language identifier
+  const getMonacoLanguage = (language: string): string => {
+    const languageMap: { [key: string]: string } = {
+      'html': 'html',
+      'css': 'css',
+      'javascript': 'javascript',
+      'typescript': 'typescript',
+      'python': 'python'
+    };
+    return languageMap[language] || 'plaintext';
+  };
+
+  // Get theme based on system preference
+  const getEditorTheme = () => {
+    if (typeof window !== 'undefined') {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return isDark ? 'vs-dark' : 'light';
+    }
+    return 'vs-dark';
+  };
   const { toast } = useToast();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [files, setFiles] = useState<FileTab[]>(initialFiles.length > 0 ? initialFiles : [
@@ -338,13 +359,35 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
                   </span>
                 </div>
                 
-                <textarea
-                  value={activeFile.content}
-                  onChange={(e) => updateFileContent(activeFile.id, e.target.value)}
-                  className="w-full h-5/6 p-4 font-mono text-sm bg-muted border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder={`Enter your ${activeFile.language} code here...`}
-                  spellCheck={false}
-                />
+                <div className="h-full border rounded-lg overflow-hidden">
+                  <Editor
+                    height="calc(100% - 2rem)"
+                    language={getMonacoLanguage(activeFile.language)}
+                    value={activeFile.content}
+                    onChange={(value) => updateFileContent(activeFile.id, value || '')}
+                    theme={getEditorTheme()}
+                    options={{
+                      fontSize: 14,
+                      fontFamily: 'JetBrains Mono, Fira Code, Monaco, Consolas, monospace',
+                      wordWrap: 'on',
+                      minimap: { enabled: false },
+                      scrollBeyondLastLine: false,
+                      automaticLayout: true,
+                      tabSize: 2,
+                      insertSpaces: true,
+                      detectIndentation: false,
+                      renderWhitespace: 'selection',
+                      bracketPairColorization: { enabled: true },
+                      guides: {
+                        bracketPairs: true,
+                        indentation: true
+                      },
+                      suggest: {
+                        snippetsPreventQuickSuggestions: false
+                      }
+                    }}
+                  />
+                </div>
               </div>
             )}
           </div>

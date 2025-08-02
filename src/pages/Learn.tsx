@@ -62,7 +62,13 @@ export default function Learn() {
   // Ensure we have a valid language parameter, handle navigation on refresh
   useEffect(() => {
     if (!language) {
-      // If no language is specified, redirect to default dashboard
+      // Check if there's a saved learning path in sessionStorage
+      const savedPath = sessionStorage.getItem('current-learning-path');
+      if (savedPath && savedPath.startsWith('/learn/')) {
+        navigate(savedPath);
+        return;
+      }
+      // If no saved path, redirect to default dashboard
       navigate('/learn/python');
       return;
     }
