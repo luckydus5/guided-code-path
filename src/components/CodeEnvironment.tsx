@@ -19,9 +19,12 @@ import {
   FileText,
   Palette,
   Zap,
-  RotateCcw
+  RotateCcw,
+  Rocket,
+  Share
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import DeploymentModal from './DeploymentModal';
 
 interface FileTab {
   id: string;
@@ -59,6 +62,7 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
   const [autoRun, setAutoRun] = useState(true);
   const [showPreview, setShowPreview] = useState(true);
   const [showCodeEditor, setShowCodeEditor] = useState(true);
+  const [showDeploymentModal, setShowDeploymentModal] = useState(false);
 
   const activeFile = files.find(f => f.id === activeFileId);
 
@@ -263,6 +267,21 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
             <Download className="h-4 w-4 mr-2" />
             Download
           </Button>
+
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setShowDeploymentModal(true)}
+            className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-blue-700 hover:from-blue-500/20 hover:to-purple-500/20 border-blue-200"
+          >
+            <Rocket className="h-4 w-4 mr-2" />
+            Deploy
+          </Button>
+
+          <Button variant="outline" size="sm" onClick={() => setShowDeploymentModal(true)}>
+            <Share className="h-4 w-4 mr-2" />
+            Share
+          </Button>
         </div>
       </div>
 
@@ -422,6 +441,14 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
           </div>
         )}
       </div>
+
+      {/* Deployment Modal */}
+      <DeploymentModal
+        isOpen={showDeploymentModal}
+        onClose={() => setShowDeploymentModal(false)}
+        projectFiles={files}
+        projectTitle={projectTitle || `Project ${projectId}`}
+      />
     </div>
   );
 };

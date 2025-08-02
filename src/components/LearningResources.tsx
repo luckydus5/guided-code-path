@@ -1,3 +1,23 @@
+/**
+ * Learning Resources Component for Guided Code Path
+ * 
+ * This component provides curated learning resources based on the current project context.
+ * It dynamically generates resources for different programming languages and technologies,
+ * with special focus on Web Development Fundamentals learning path.
+ * 
+ * Features:
+ * - Context-aware resource recommendations
+ * - Filtering by type (video, article, documentation, tutorial, example)
+ * - Difficulty-based filtering (beginner, intermediate, advanced)
+ * - Search functionality across resource titles and descriptions
+ * - Favorites system for bookmarking resources
+ * - Responsive grid layout with detailed resource cards
+ * - External link handling with proper security attributes
+ * 
+ * @version 1.0.0
+ * @author Guided Code Path Team
+ */
+
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +38,17 @@ import {
   Star
 } from "lucide-react";
 
+/**
+ * Represents a learning resource with metadata
+ * 
+ * @interface Resource
+ * @property {string} title - The display title of the resource
+ * @property {'video' | 'article' | 'documentation' | 'tutorial' | 'example'} type - Type of learning resource
+ * @property {string} url - External URL to the resource
+ * @property {string} description - Brief description of what the resource covers
+ * @property {string} [duration] - Optional estimated time to complete (e.g., "2 hours", "30 minutes")
+ * @property {'beginner' | 'intermediate' | 'advanced'} difficulty - Skill level required
+ */
 interface Resource {
   title: string;
   type: 'video' | 'article' | 'documentation' | 'tutorial' | 'example';
@@ -27,6 +58,15 @@ interface Resource {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
 }
 
+/**
+ * Props for the LearningResources component
+ * 
+ * @interface LearningResourcesProps
+ * @property {string} projectTitle - Current project title for context-specific recommendations
+ * @property {string} language - Programming language or learning path (e.g., 'web-fundamentals', 'javascript', 'python')
+ * @property {string} difficulty - Current project difficulty level
+ * @property {string[]} technologies - Array of technologies used in the current project
+ */
 interface LearningResourcesProps {
   projectTitle: string;
   language: string;
@@ -34,36 +74,87 @@ interface LearningResourcesProps {
   technologies: string[];
 }
 
+/**
+ * LearningResources Component
+ * 
+ * Renders a comprehensive learning resources panel that adapts to the current project context.
+ * Provides curated educational content including videos, articles, documentation, tutorials,
+ * and practical examples relevant to the user's current learning path.
+ * 
+ * The component features:
+ * - Dynamic resource generation based on project language and technologies
+ * - Multi-criteria filtering (type, difficulty level, search terms)
+ * - Favorites management with local state
+ * - Responsive tabbed interface for different resource types
+ * - Comprehensive Web Development Fundamentals curriculum integration
+ * 
+ * @param {LearningResourcesProps} props - Component configuration
+ * @param {string} props.projectTitle - Current project title for contextual recommendations
+ * @param {string} props.language - Programming language or learning path identifier
+ * @param {string} props.difficulty - Project difficulty level for appropriate resource filtering
+ * @param {string[]} props.technologies - Technologies stack for targeted resource suggestions
+ * 
+ * @returns {JSX.Element} Rendered learning resources component with filtering and favorites
+ * 
+ * @example
+ * ```tsx
+ * <LearningResources
+ *   projectTitle="Personal Portfolio Website"
+ *   language="web-fundamentals"
+ *   difficulty="beginner"
+ *   technologies={["HTML", "CSS", "JavaScript"]}
+ * />
+ * ```
+ */
 export default function LearningResources({ 
   projectTitle, 
   language, 
   difficulty, 
   technologies 
 }: LearningResourcesProps) {
+  // Component state for filtering and user preferences
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
   const [favorites, setFavorites] = useState<string[]>([]);
   
+  /**
+   * Generates context-aware learning resources based on project parameters
+   * 
+   * This function creates a curated list of educational resources tailored to the
+   * current project's language, difficulty, and technology stack. It includes
+   * comprehensive coverage for Web Development Fundamentals and other programming
+   * languages with appropriate difficulty progression.
+   * 
+   * @returns {Resource[]} Array of learning resources with metadata
+   */
   // Generate resources based on project context
   const getResourcesForProject = (): Resource[] => {
     const resources: Resource[] = [];
     
-    // Web Fundamentals specific resources
+    // ============================================================================
+    // WEB DEVELOPMENT FUNDAMENTALS LEARNING RESOURCES
+    // ============================================================================
+    // Comprehensive curriculum covering HTML, CSS, JavaScript, and modern web development
+    // Organized by skill progression: Foundation → Styling → Interactivity → Advanced Topics
+    // Resources include interactive tutorials, documentation, videos, and practical projects
     if (language === 'web-fundamentals') {
+      
+      // FOUNDATION RESOURCES - HTML & Web Basics
+      // Core documentation and beginner-friendly tutorials for web structure
       resources.push(
         {
           title: "MDN Web Development Guide",
           type: "documentation",
           url: "https://developer.mozilla.org/en-US/docs/Learn",
-          description: "Complete web development learning guide from Mozilla",
+          description: "Complete web development learning guide from Mozilla - the gold standard for web documentation",
           difficulty: "beginner"
         },
         {
           title: "freeCodeCamp Web Development",
           type: "tutorial",
           url: "https://www.freecodecamp.org/learn/responsive-web-design/",
-          description: "Free interactive web development curriculum",
+          description: "Free interactive web development curriculum with hands-on projects and certifications",
           duration: "300 hours",
           difficulty: "beginner"
         },
@@ -71,7 +162,7 @@ export default function LearningResources({
           title: "HTML & CSS Crash Course",
           type: "video",
           url: "https://www.youtube.com/watch?v=UB1O30fR-EE",
-          description: "Learn HTML and CSS basics in one video",
+          description: "Comprehensive beginner-friendly video covering HTML and CSS fundamentals in depth",
           duration: "2 hours",
           difficulty: "beginner"
         },
@@ -79,7 +170,7 @@ export default function LearningResources({
           title: "Codecademy HTML & CSS Course",
           type: "tutorial",
           url: "https://www.codecademy.com/learn/learn-html",
-          description: "Interactive HTML and CSS lessons",
+          description: "Interactive HTML and CSS lessons with immediate feedback and practice exercises",
           duration: "20 hours",
           difficulty: "beginner"
         },
@@ -87,29 +178,35 @@ export default function LearningResources({
           title: "W3Schools Web Development Tutorial",
           type: "tutorial",
           url: "https://www.w3schools.com/html/",
-          description: "Step-by-step web development tutorials",
+          description: "Step-by-step web development tutorials with live examples and try-it-yourself editors",
           difficulty: "beginner"
         },
+        
+        // JAVASCRIPT FUNDAMENTALS
+        // Progressive JavaScript learning from basics to modern ES6+ features
         {
           title: "JavaScript.info - Modern Tutorial",
           type: "tutorial",
           url: "https://javascript.info/",
-          description: "Modern JavaScript tutorial from basics to advanced",
+          description: "Comprehensive modern JavaScript tutorial covering ES6+, async programming, and advanced concepts",
           difficulty: "beginner"
         },
         {
           title: "JavaScript30 - 30 Day Challenge",
           type: "tutorial",
           url: "https://javascript30.com/",
-          description: "Build 30 projects in 30 days with vanilla JavaScript",
+          description: "Build 30 real-world projects in 30 days using vanilla JavaScript - no frameworks, no libraries",
           duration: "30 days",
           difficulty: "intermediate"
         },
+        
+        // INTERACTIVE CSS LEARNING
+        // Gamified learning for complex CSS concepts like Flexbox and Grid
         {
           title: "Flexbox Froggy Game",
           type: "tutorial",
           url: "https://flexboxfroggy.com/",
-          description: "Learn CSS Flexbox through fun gameplay",
+          description: "Master CSS Flexbox layout through fun, interactive gameplay with step-by-step challenges",
           duration: "1 hour",
           difficulty: "beginner"
         },
@@ -117,132 +214,146 @@ export default function LearningResources({
           title: "Grid Garden Game",
           type: "tutorial",
           url: "https://cssgridgarden.com/",
-          description: "Master CSS Grid through interactive challenges",
+          description: "Learn CSS Grid layout system through interactive gardening-themed coding challenges",
           duration: "1 hour",
           difficulty: "beginner"
         },
+        
+        // COMPREHENSIVE GUIDES & REFERENCES
+        // In-depth guides and official documentation for advanced learning
         {
           title: "CSS-Tricks Complete Guide",
           type: "article",
           url: "https://css-tricks.com/guides/",
-          description: "Comprehensive CSS guides and tutorials",
+          description: "Comprehensive CSS guides covering Flexbox, Grid, animations, and modern CSS techniques",
           difficulty: "intermediate"
         },
         {
           title: "Web.dev by Google",
           type: "documentation",
           url: "https://web.dev/learn/",
-          description: "Google's comprehensive web development curriculum",
+          description: "Google's official web development curriculum covering performance, accessibility, and modern web APIs",
           difficulty: "intermediate"
         },
         {
           title: "The Odin Project",
           type: "tutorial",
           url: "https://www.theodinproject.com/",
-          description: "Full-stack web development curriculum",
+          description: "Free full-stack web development curriculum with projects, community support, and career guidance",
           duration: "1000+ hours",
           difficulty: "beginner"
         },
+        
+        // DEVELOPMENT TOOLS & COMPATIBILITY
+        // Essential tools for modern web development workflow
         {
           title: "Can I Use - Browser Support",
           type: "documentation",
           url: "https://caniuse.com/",
-          description: "Check browser support for web technologies",
+          description: "Essential browser compatibility checker for CSS and JavaScript features across all browsers",
           difficulty: "intermediate"
         },
         {
           title: "A11Y Project - Accessibility",
           type: "documentation",
           url: "https://www.a11yproject.com/",
-          description: "Learn web accessibility best practices",
+          description: "Comprehensive web accessibility guide with practical tips for building inclusive websites",
           difficulty: "intermediate"
         },
         
-        // Essential HTML Articles
+        // ========================================================================
+        // SPECIALIZED HTML LEARNING ARTICLES
+        // ========================================================================
+        // Deep-dive articles for semantic HTML, forms, SEO, and progressive enhancement
+        // Focus on modern HTML5 best practices and accessibility standards
         {
           title: "HTML5 Semantic Elements Guide",
           type: "article",
           url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element",
-          description: "Complete guide to HTML5 semantic elements",
+          description: "Comprehensive guide to HTML5 semantic elements for meaningful document structure and SEO",
           difficulty: "beginner"
         },
         {
           title: "HTML Forms Best Practices",
           type: "article",
           url: "https://web.dev/learn/forms/",
-          description: "Build accessible and user-friendly forms",
+          description: "Build accessible, user-friendly forms with proper validation and UX considerations",
           difficulty: "intermediate"
         },
         {
           title: "HTML Meta Tags for SEO",
           type: "article",
           url: "https://moz.com/blog/meta-data-templates-123",
-          description: "Essential meta tags for search engine optimization",
+          description: "Essential meta tags for search engine optimization, social media, and browser functionality",
           difficulty: "intermediate"
         },
         {
           title: "Progressive Enhancement with HTML",
           type: "article",
           url: "https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement",
-          description: "Build websites that work for everyone",
+          description: "Build robust websites that work for everyone, starting with solid HTML foundations",
           difficulty: "intermediate"
         },
         
-        // CSS Fundamentals Articles
+        // ========================================================================
+        // CSS FUNDAMENTALS & ADVANCED TECHNIQUES
+        // ========================================================================
+        // Core CSS concepts, layout systems, and modern styling techniques
+        // Covers box model, Flexbox, Grid, animations, and performance optimization
         {
           title: "CSS Box Model Explained",
           type: "article",
           url: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Box_Model/Introduction_to_the_CSS_box_model",
-          description: "Master the fundamental CSS box model",
+          description: "Master the fundamental CSS box model - the foundation of all web layout",
           difficulty: "beginner"
         },
         {
           title: "CSS Flexbox Complete Guide",
           type: "article",
           url: "https://css-tricks.com/snippets/css/a-guide-to-flexbox/",
-          description: "Everything you need to know about Flexbox",
+          description: "Comprehensive Flexbox reference with visual examples and practical use cases",
           difficulty: "beginner"
         },
         {
           title: "CSS Grid Garden Tutorial",
           type: "tutorial",
           url: "https://cssgridgarden.com/",
-          description: "Learn CSS Grid through interactive gameplay",
+          description: "Interactive CSS Grid learning through fun gardening-themed coding challenges",
           difficulty: "beginner"
         },
         {
           title: "CSS Custom Properties (Variables)",
           type: "article",
           url: "https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties",
-          description: "Dynamic styling with CSS variables",
+          description: "Dynamic styling with CSS variables for maintainable and themeable designs",
           difficulty: "intermediate"
         },
         {
           title: "CSS Architecture - BEM Methodology",
           type: "article",
           url: "https://css-tricks.com/bem-101/",
-          description: "Organize CSS for scalable projects",
+          description: "Organize CSS for large, scalable projects using the Block Element Modifier methodology",
           difficulty: "intermediate"
         },
         {
           title: "CSS Animation and Transitions",
           type: "article",
           url: "https://web.dev/animations/",
-          description: "Create smooth animations for better UX",
+          description: "Create smooth, performant animations and transitions for enhanced user experience",
           difficulty: "intermediate"
         },
         {
           title: "Responsive Web Design Principles",
           type: "article",
           url: "https://web.dev/responsive-web-design-basics/",
-          description: "Build websites that work on all devices",
+          description: "Build websites that work beautifully on all devices using modern responsive techniques",
           difficulty: "intermediate"
         },
         {
           title: "CSS Performance Optimization",
           type: "article",
           url: "https://web.dev/fast-css/",
-          description: "Write CSS that loads and renders quickly",
+          description: "Advanced CSS optimization techniques for faster loading and rendering performance",
           difficulty: "advanced"
         },
         
@@ -1426,6 +1537,11 @@ export default function LearningResources({
 
   const resources = getResourcesForProject();
   
+  /**
+   * Toggles a resource's favorite status in local component state
+   * 
+   * @param {string} resourceTitle - Title of the resource to toggle
+   */
   const toggleFavorite = (resourceTitle: string) => {
     setFavorites(prev => 
       prev.includes(resourceTitle) 
@@ -1434,6 +1550,12 @@ export default function LearningResources({
     );
   };
   
+  /**
+   * Returns the appropriate icon component for a given resource type
+   * 
+   * @param {Resource['type']} type - Type of the resource
+   * @returns {JSX.Element} Lucide icon component
+   */
   const getResourceIcon = (type: Resource['type']) => {
     switch (type) {
       case 'video':
@@ -1451,6 +1573,12 @@ export default function LearningResources({
     }
   };
 
+  /**
+   * Returns Tailwind CSS classes for difficulty badge styling
+   * 
+   * @param {Resource['difficulty']} difficulty - Difficulty level of the resource
+   * @returns {string} Tailwind CSS class string for badge styling
+   */
   const getDifficultyColor = (difficulty: Resource['difficulty']) => {
     switch (difficulty) {
       case 'beginner':
@@ -1464,6 +1592,11 @@ export default function LearningResources({
     }
   };
 
+  /**
+   * Filters resources based on search term, type, difficulty, and project context
+   * Implements progressive difficulty filtering where beginners see all levels,
+   * intermediate users don't see advanced content, and advanced users see everything
+   */
   const filteredResources = resources.filter(resource => {
     // Search filter
     const matchesSearch = searchTerm === "" || 
@@ -1476,7 +1609,7 @@ export default function LearningResources({
     // Difficulty filter
     const matchesDifficulty = selectedDifficulty === "all" || resource.difficulty === selectedDifficulty;
     
-    // Project difficulty filter (original logic)
+    // Project difficulty filter (progressive learning approach)
     const matchesProjectDifficulty = (() => {
       if (difficulty === 'beginner') return true;
       if (difficulty === 'intermediate') return resource.difficulty !== 'advanced';
@@ -1486,6 +1619,10 @@ export default function LearningResources({
     return matchesSearch && matchesType && matchesDifficulty && matchesProjectDifficulty;
   });
 
+  /**
+   * Categorizes filtered resources into different tabs for the UI
+   * Provides quick access to resources by type, difficulty, and favorites
+   */
   const categorizedResources = {
     all: filteredResources,
     favorites: filteredResources.filter(resource => favorites.includes(resource.title)),
@@ -1666,3 +1803,45 @@ export default function LearningResources({
     </Card>
   );
 }
+
+/**
+ * LEARNING RESOURCES COVERAGE SUMMARY
+ * =====================================
+ * 
+ * This component provides comprehensive educational resources for:
+ * 
+ * 🌐 WEB DEVELOPMENT FUNDAMENTALS:
+ *    • HTML5 semantic elements, forms, SEO optimization
+ *    • CSS fundamentals, Flexbox, Grid, animations, responsive design
+ *    • JavaScript basics to advanced, ES6+, DOM manipulation, async programming
+ *    • Interactive learning games (Flexbox Froggy, Grid Garden)
+ *    • Accessibility (A11Y) and inclusive design principles
+ *    • Performance optimization and best practices
+ * 
+ * 🔧 DEVELOPMENT TOOLS:
+ *    • Browser compatibility checking (Can I Use)
+ *    • Code quality and architecture patterns (BEM, CSS organization)
+ *    • Modern development workflows and environments
+ * 
+ * 📚 LEARNING FORMATS:
+ *    • Interactive tutorials with hands-on coding
+ *    • Comprehensive documentation and references
+ *    • Video courses and crash courses
+ *    • Practical articles and guides
+ *    • Real-world project examples
+ * 
+ * 🎯 SKILL PROGRESSION:
+ *    • Beginner: Foundation concepts and basic implementation
+ *    • Intermediate: Advanced techniques and best practices
+ *    • Advanced: Performance optimization and complex patterns
+ * 
+ * 🔄 ADAPTIVE FILTERING:
+ *    • Context-aware resource suggestions based on current project
+ *    • Progressive difficulty filtering (beginners see all levels)
+ *    • Search functionality across titles and descriptions
+ *    • Favorites system for personalized learning paths
+ * 
+ * The component dynamically generates relevant resources ensuring learners
+ * have access to high-quality, up-to-date educational content tailored to
+ * their current learning context and skill level.
+ */

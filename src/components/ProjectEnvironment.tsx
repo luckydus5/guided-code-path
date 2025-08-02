@@ -18,12 +18,15 @@ import {
   Terminal,
   Trophy,
   Eye,
-  EyeOff
+  EyeOff,
+  Rocket,
+  Share
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import MultiLanguageCodeEditor from "./MultiLanguageCodeEditor";
 import LearningResources from "./LearningResources";
+import DeploymentModal from "./DeploymentModal";
 import { getProjectsByLanguage, getWebFundamentalsProjects } from "@/data/projects";
 // Enhanced Learning Components
 import { InteractiveChallenges } from "./InteractiveChallenges";
@@ -54,6 +57,7 @@ export default function ProjectEnvironment() {
   const [resetCount, setResetCount] = useState(0);
   const [isCodeHidden, setIsCodeHidden] = useState(false);
   const [showLearningPath, setShowLearningPath] = useState(false);
+  const [showDeploymentModal, setShowDeploymentModal] = useState(false);
 
   const projects = language === 'web-fundamentals' 
     ? getWebFundamentalsProjects() 
@@ -356,6 +360,66 @@ Good testing practices lead to robust applications.`
     }
   };
 
+  const getDeploymentFiles = () => {
+    // For web projects, include HTML structure
+    if (project?.languages?.includes('html') || project?.languages?.includes('css') || project?.languages?.includes('javascript')) {
+      const htmlContent = codeFiles.html || `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${project?.title || 'My Project'}</title>
+    <style>
+        ${codeFiles.css || '/* Add your CSS here */'}
+    </style>
+</head>
+<body>
+    ${codeFiles.html || '<h1>Hello World!</h1>'}
+    <script>
+        ${codeFiles.js || codeFiles.javascript || '// Add your JavaScript here'}
+    </script>
+</body>
+</html>`;
+
+      return [
+        { name: 'index.html', content: htmlContent, language: 'html' },
+        { name: 'style.css', content: codeFiles.css || '/* Add your CSS here */', language: 'css' },
+        { name: 'script.js', content: codeFiles.js || codeFiles.javascript || '// Add your JavaScript here', language: 'javascript' }
+      ];
+    }
+
+    // For single-language projects
+    const getFileExtension = () => {
+      switch (language) {
+        case 'python': return 'py';
+        case 'javascript': return 'js';
+        case 'typescript': return 'ts';
+        case 'java': return 'java';
+        case 'cpp': return 'cpp';
+        case 'c': return 'c';
+        case 'csharp': return 'cs';
+        case 'go': return 'go';
+        case 'rust': return 'rs';
+        case 'php': return 'php';
+        case 'ruby': return 'rb';
+        case 'swift': return 'swift';
+        case 'kotlin': return 'kt';
+        default: return 'txt';
+      }
+    };
+
+    const fileName = `${project?.title?.toLowerCase().replace(/\s+/g, '_') || 'main'}.${getFileExtension()}`;
+    const currentCode = codeFiles[language] || Object.values(codeFiles)[0] || `// ${project?.title || 'My Project'}\n// Add your code here`;
+    
+    return [
+      { 
+        name: fileName, 
+        content: currentCode, 
+        language: language 
+      }
+    ];
+  };
+
   const nextStep = () => {
     if (currentStep < projectSteps.length - 1) {
       setCurrentStep(prev => prev + 1);
@@ -435,6 +499,25 @@ Good testing practices lead to robust applications.`
               >
                 {isCodeHidden ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                 {isCodeHidden ? 'Show Code' : 'Hide Code'}
+              </Button>
+
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowDeploymentModal(true)}
+                className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-blue-700 hover:from-blue-500/20 hover:to-purple-500/20 border-blue-200"
+              >
+                <Rocket className="h-4 w-4 mr-2" />
+                Deploy
+              </Button>
+
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowDeploymentModal(true)}
+              >
+                <Share className="h-4 w-4 mr-2" />
+                Share
               </Button>
             </div>
           </div>
@@ -812,6 +895,14 @@ Good testing practices lead to robust applications.`
           </div>
         )}
       </div>
+
+      {/* Deployment Modal */}
+      <DeploymentModal
+        isOpen={showDeploymentModal}
+        onClose={() => setShowDeploymentModal(false)}
+        projectFiles={getDeploymentFiles()}
+        projectTitle={project?.title || 'My Project'}
+      />
     </div>
   );
 }
