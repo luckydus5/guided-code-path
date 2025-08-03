@@ -968,6 +968,9 @@ export default function LearningContent({
   const [showHints, setShowHints] = useState(false);
   const [hasRestoredState, setHasRestoredState] = useState(false);
   const [autoSaveIndicator, setAutoSaveIndicator] = useState(false);
+  const [leftPanelWidth, setLeftPanelWidth] = useState(50); // Percentage
+  const [isPracticeMinimized, setIsPracticeMinimized] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
   
   // Determine language based on lesson title or content
   const getLanguageFromTitle = (title: string): string => {
@@ -1309,6 +1312,36 @@ export default function LearningContent({
     }
   }, [currentStepData, currentLanguage]);
 
+  // Handle panel resizing
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsResizing(true);
+    e.preventDefault();
+  };
+
+  React.useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isResizing) {
+        const containerWidth = window.innerWidth - 32; // Account for margins
+        const newLeftWidth = Math.min(Math.max((e.clientX - 16) / containerWidth * 100, 20), 80);
+        setLeftPanelWidth(newLeftWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
+
   // Initialize practice code when step changes
   React.useEffect(() => {
     if (currentStepData) {
@@ -1362,8 +1395,8 @@ export default function LearningContent({
           </Card>
         )}
 
-        {/* Compact Header */}
-        <Card className="mx-4 mt-4 p-3">
+        {/* Header */}
+        <Card className="mx-4 mt-4 p-3 border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Button variant="ghost" size="sm" onClick={onBack}>
@@ -1384,32 +1417,86 @@ export default function LearningContent({
                 </div>
               </div>
             </div>
-            <div className="text-right">
+            <div className="flex items-center gap-4">
               <div className="text-sm text-muted-foreground">Step {currentStep + 1} of {steps.length}</div>
-              <Progress value={progress} className="w-32 mt-1" />
+              <Progress value={progress} className="w-32" />
+              <Button size="sm" onClick={handleStepComplete}>
+                {currentStep === steps.length - 1 ? (
+                  <>
+                    <Award className="h-4 w-4 mr-2" />
+                    Complete
+                  </>
+                ) : (
+                  <>
+                    Next
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </>
+                )}
+              </Button>
             </div>
           </div>
         </Card>
 
-        {/* Main Learning Area - Maximized Layout */}
-        <div className="flex-1 mx-4 mt-4 mb-4 grid grid-cols-1 lg:grid-cols-5 gap-4 min-h-0">
-          {/* Main Content - Takes most space */}
-          <div className="lg:col-span-4 flex flex-col min-h-0">
-            <Card className="flex-1 p-4 overflow-y-auto">
+        {/* Main Split Layout - VS Code Style */}
+        <div className="flex-1 mx-4 mb-4 flex relative" style={{ height: 'calc(100vh - 200px)' }}>
+          {/* Left Panel - Learning Content */}
+          <div 
+            className="flex flex-col bg-card border rounded-l-lg overflow-hidden"
+            style={{ width: `${leftPanelWidth}%` }}
+          >
+            {/* Left Panel Header */}
+            <div className="border-b bg-muted/50 px-4 py-2 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4 text-primary" />
+                <span className="text-sm font-semibold">Learning Content</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newStep = Math.max(0, currentStep - 1);
+                    handleStepChange(newStep);
+                  }}
+                  disabled={currentStep === 0}
+                >
+                  <ArrowLeft className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newStep = Math.min(steps.length - 1, currentStep + 1);
+                    handleStepChange(newStep);
+                  }}
+                  disabled={currentStep === steps.length - 1}
+                >
+                  <ArrowRight className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Left Panel Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-4">
               <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <BookOpen className="h-5 w-5 text-primary" />
-                  <h2 className="text-lg font-semibold">{currentStepData.title}</h2>
+                {/* Step Title */}
+                <div>
+                  <h2 className="text-xl font-bold mb-2">{currentStepData.title}</h2>
+                  <div className="text-sm text-muted-foreground mb-4">
+                    Step {currentStep + 1} of {steps.length}
+                  </div>
                 </div>
-                
+
+                {/* Content */}
                 <div className="prose prose-sm max-w-none">
-                  {currentStepData.content.split('\n').map((paragraph, index) => (
+                  {currentStepData.content.split('\n\n').map((paragraph, index) => (
                     <p key={index} className="mb-3 leading-relaxed text-sm">
                       {paragraph}
                     </p>
                   ))}
                 </div>
 
+                {/* Example Code */}
                 {currentStepData.code && (
                   <div>
                     <div className="flex items-center justify-between mb-2">
@@ -1426,7 +1513,7 @@ export default function LearningContent({
                         {currentLanguage === 'python' ? 'Copy to Practice' : 'Copy'}
                       </Button>
                     </div>
-                    <div className="border rounded-lg overflow-hidden">
+                    <div className="border rounded-lg overflow-hidden h-[200px]">
                       <CodeEditor
                         value={currentStepData.code}
                         onChange={() => {}} // Read-only for examples
@@ -1438,7 +1525,7 @@ export default function LearningContent({
                       <div className="mt-3">
                         <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
                           <Monitor className="h-4 w-4" />
-                          Output
+                          Expected Output
                         </h4>
                         <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-3">
                           <pre className="text-xs text-green-700 dark:text-green-300">
@@ -1450,228 +1537,192 @@ export default function LearningContent({
                   </div>
                 )}
 
-                {/* Interactive Practice Section */}
-                {(currentStepData as LessonStep).practice && (
+                {/* Tips */}
+                {currentStepData.tips && (
                   <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-base font-semibold flex items-center gap-2">
-                        <Target className="h-4 w-4 text-orange-500" />
-                        Practice Challenge
-                      </h3>
-                      <Button 
-                        variant={showPractice ? "secondary" : "default"}
-                        size="sm"
-                        onClick={() => {
-                          setShowPractice(!showPractice);
-                          if (!showPractice) {
-                            initializePractice();
-                          }
-                        }}
-                      >
-                        <Terminal className="h-4 w-4 mr-2" />
-                        {showPractice ? 'Hide Practice' : (currentLanguage === 'python' ? 'Practice Python' : 'Start Practice')}
-                      </Button>
-                    </div>
-
-                    <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-lg p-3 mb-3">
-                      <p className="text-xs text-orange-700 dark:text-orange-300">
-                        <strong>Challenge:</strong> {((currentStepData as LessonStep).practice!).challenge}
-                      </p>
-                      <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
-                        <strong>Expected:</strong> {((currentStepData as LessonStep).practice!).expectedOutput}
-                      </p>
-                      {currentLanguage === 'python' && (
-                        <p className="text-xs text-blue-600 dark:text-blue-400 mt-2 flex items-center gap-1">
-                          <Terminal className="h-3 w-3" />
-                          <strong>Tip:</strong> Copy example code above to get started, then modify it to complete the challenge!
-                        </p>
-                      )}
-                    </div>
-
-                    {showPractice && (
-                      <div className="space-y-3">
-                        <Tabs defaultValue="code" className="w-full">
-                          <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="code">Code Editor</TabsTrigger>
-                            <TabsTrigger value="preview">Live Preview</TabsTrigger>
-                          </TabsList>
-                          
-                          <TabsContent value="code" className="space-y-3">
-                            <div>
-                              <div className="flex items-center justify-between mb-2">
-                                <label className="text-xs font-medium">Your Code:</label>
-                                <div className="flex items-center gap-2">
-                                  {practiceCode && (
-                                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                      <div className={`h-2 w-2 rounded-full ${autoSaveIndicator ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
-                                      {autoSaveIndicator ? 'Saved!' : 'Auto-save'}
-                                    </span>
-                                  )}
-                                  <Button size="sm" variant="outline" onClick={resetPracticeCode}>
-                                    <RefreshCw className="h-3 w-3 mr-1" />
-                                    Reset
-                                  </Button>
-                                  <Button size="sm" onClick={runPracticeCode}>
-                                    <Play className="h-3 w-3 mr-1" />
-                                    Run Code
-                                  </Button>
-                                </div>
-                              </div>
-                              <div className="h-[300px]">
-                                <CodeEditor
-                                  value={practiceCode}
-                                  onChange={setPracticeCode}
-                                  language={currentLanguage}
-                                />
-                              </div>
-                            </div>
-                            
-                            {practiceOutput && (
-                              <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-2">
-                                <p className="text-xs text-green-700 dark:text-green-300">
-                                  {practiceOutput}
-                                </p>
-                              </div>
-                            )}
-                          </TabsContent>
-                          
-                          <TabsContent value="preview">
-                            <div className="border rounded-lg overflow-hidden">
-                              <div className="bg-muted px-3 py-1 text-xs font-medium">Live Preview</div>
-                              <iframe
-                                ref={iframeRef}
-                                className="w-full h-48 bg-white"
-                                title="Code Preview"
-                              />
-                            </div>
-                          </TabsContent>
-                        </Tabs>
-
-                        <div className="flex items-center justify-between">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setShowHints(!showHints)}
-                          >
-                            <Lightbulb className="h-3 w-3 mr-1" />
-                            {showHints ? 'Hide Hints' : 'Show Hints'}
-                          </Button>
-                        </div>
-
-                        {showHints && (
-                          <Card className="p-3 bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
-                            <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-sm">💡 Hints:</h4>
-                            <ul className="space-y-1">
-                              {((currentStepData as LessonStep).practice!).hints.map((hint, index) => (
-                                <li key={index} className="text-xs text-blue-700 dark:text-blue-300">
-                                  {index + 1}. {hint}
-                                </li>
-                              ))}
-                            </ul>
-                          </Card>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {(currentStepData as LessonStep).exercises && (
-                  <div>
-                    <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      Practice Exercises
+                    <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                      <Lightbulb className="h-4 w-4 text-yellow-500" />
+                      Tips & Best Practices
                     </h3>
-                    <ul className="space-y-1">
-                      {(currentStepData as LessonStep).exercises!.map((exercise, index) => (
+                    <ul className="space-y-2">
+                      {currentStepData.tips.map((tip, index) => (
                         <li key={index} className="flex items-start gap-2">
-                          <span className="text-primary font-semibold text-xs">{index + 1}.</span>
-                          <span className="text-xs">{exercise}</span>
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                          <span className="text-xs text-muted-foreground leading-relaxed">{tip}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
                 )}
 
-                <div className="flex items-center justify-between pt-4 border-t">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => {
-                      const newStep = Math.max(0, currentStep - 1);
-                      handleStepChange(newStep);
-                    }}
-                    disabled={currentStep === 0}
-                  >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Previous
-                  </Button>
-                  
-                  <Button size="sm" onClick={handleStepComplete}>
-                    {currentStep === steps.length - 1 ? (
-                      <>
-                        <Award className="h-4 w-4 mr-2" />
-                        Complete Lesson
-                      </>
-                    ) : (
-                      <>
-                        Next Step
-                        <ArrowRight className="h-4 w-4 ml-2" />
-                      </>
-                    )}
-                  </Button>
+                {/* Practice Challenge Description */}
+                {(currentStepData as LessonStep).practice && (
+                  <div>
+                    <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                      <Target className="h-4 w-4 text-orange-500" />
+                      Practice Challenge
+                    </h3>
+                    <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-lg p-3">
+                      <p className="text-xs text-orange-700 dark:text-orange-300 mb-2">
+                        <strong>Challenge:</strong> {((currentStepData as LessonStep).practice!).challenge}
+                      </p>
+                      <p className="text-xs text-orange-600 dark:text-orange-400 mb-2">
+                        <strong>Expected:</strong> {((currentStepData as LessonStep).practice!).expectedOutput}
+                      </p>
+                      {currentLanguage === 'python' && (
+                        <p className="text-xs text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                          <Terminal className="h-3 w-3" />
+                          <strong>Tip:</strong> Copy example code above to get started!
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Hints */}
+                    <div className="mt-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowHints(!showHints)}
+                        className="mb-3"
+                      >
+                        <Lightbulb className="h-3 w-3 mr-1" />
+                        {showHints ? 'Hide Hints' : 'Show Hints'}
+                      </Button>
+
+                      {showHints && (
+                        <Card className="p-3 bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
+                          <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-sm">💡 Hints:</h4>
+                          <ul className="space-y-1">
+                            {((currentStepData as LessonStep).practice!).hints.map((hint, index) => (
+                              <li key={index} className="text-xs text-blue-700 dark:text-blue-300">
+                                {index + 1}. {hint}
+                              </li>
+                            ))}
+                          </ul>
+                        </Card>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step Progress Overview */}
+                <div>
+                  <h3 className="text-sm font-semibold mb-3">Lesson Progress</h3>
+                  <div className="space-y-1">
+                    {steps.map((step, index) => (
+                      <div 
+                        key={step.id}
+                        className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors text-xs ${
+                          index === currentStep 
+                            ? 'bg-primary/10 border border-primary/20' 
+                            : completedSteps.has(step.id)
+                            ? 'bg-green-50 dark:bg-green-950/30'
+                            : 'hover:bg-muted'
+                        }`}
+                        onClick={() => handleStepChange(index)}
+                      >
+                        {completedSteps.has(step.id) ? (
+                          <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
+                        ) : index === currentStep ? (
+                          <Play className="h-3 w-3 text-primary flex-shrink-0" />
+                        ) : (
+                          <div className="h-3 w-3 rounded-full border-2 border-muted-foreground/30 flex-shrink-0" />
+                        )}
+                        <span className={`${index === currentStep ? 'font-medium' : ''} leading-tight`}>
+                          {step.title}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </Card>
+            </div>
           </div>
 
-          {/* Compact Sidebar */}
-          <div className="lg:col-span-1 space-y-4 min-h-0">
-            {/* Progress Overview */}
-            <Card className="p-3 flex-shrink-0">
-              <h3 className="font-semibold mb-3 text-sm">Progress</h3>
-              <div className="space-y-1 max-h-48 overflow-y-auto">
-                {steps.map((step, index) => (
-                  <div 
-                    key={step.id}
-                    className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors text-xs ${
-                      index === currentStep 
-                        ? 'bg-primary/10 border border-primary/20' 
-                        : completedSteps.has(step.id)
-                        ? 'bg-green-50 dark:bg-green-950/30'
-                        : 'hover:bg-muted'
-                    }`}
-                    onClick={() => handleStepChange(index)}
-                  >
-                    {completedSteps.has(step.id) ? (
-                      <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
-                    ) : index === currentStep ? (
-                      <Play className="h-3 w-3 text-primary flex-shrink-0" />
-                    ) : (
-                      <div className="h-3 w-3 rounded-full border-2 border-muted-foreground/30 flex-shrink-0" />
-                    )}
-                    <span className={`${index === currentStep ? 'font-medium' : ''} leading-tight`}>
-                      {step.title}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </Card>
+          {/* Resizer */}
+          <div 
+            className="w-1 bg-border hover:bg-primary/50 cursor-col-resize flex items-center justify-center relative group"
+            onMouseDown={handleMouseDown}
+          >
+            <div className="w-0.5 h-8 bg-muted-foreground/50 group-hover:bg-primary transition-colors"></div>
+          </div>
 
-            {/* Tips */}
-            {currentStepData.tips && (
-              <Card className="p-3 flex-shrink-0">
-                <h3 className="font-semibold mb-3 flex items-center gap-2 text-sm">
-                  <Lightbulb className="h-4 w-4 text-yellow-500" />
-                  Tips
-                </h3>
-                <ul className="space-y-1">
-                  {currentStepData.tips.map((tip, index) => (
-                    <li key={index} className="text-xs text-muted-foreground leading-relaxed">
-                      • {tip}
-                    </li>
-                  ))}
-                </ul>
-              </Card>
+          {/* Right Panel - Practice Environment */}
+          <div 
+            className={`flex flex-col bg-card border rounded-r-lg overflow-hidden transition-all duration-300 ${
+              isPracticeMinimized ? 'w-8' : ''
+            }`}
+            style={{ width: isPracticeMinimized ? '32px' : `${100 - leftPanelWidth}%` }}
+          >
+            {/* Right Panel Header */}
+            <div className="border-b bg-muted/50 px-4 py-2 flex items-center justify-between">
+              {!isPracticeMinimized ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <Terminal className="h-4 w-4 text-green-600" />
+                    <span className="text-sm font-semibold">Python Practice Environment</span>
+                    {currentLanguage === 'python' && practiceCode && (
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <div className={`h-2 w-2 rounded-full ${autoSaveIndicator ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
+                        {autoSaveIndicator ? 'Saved!' : 'Auto-save'}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" variant="outline" onClick={resetPracticeCode}>
+                      <RefreshCw className="h-3 w-3 mr-1" />
+                      Reset
+                    </Button>
+                    <Button size="sm" onClick={runPracticeCode}>
+                      <Play className="h-3 w-3 mr-1" />
+                      Run Code
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="ghost"
+                      onClick={() => setIsPracticeMinimized(true)}
+                    >
+                      ⏷
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <Button 
+                  size="sm" 
+                  variant="ghost"
+                  onClick={() => setIsPracticeMinimized(false)}
+                  className="w-full justify-center"
+                >
+                  ⏵
+                </Button>
+              )}
+            </div>
+
+            {/* Right Panel Content */}
+            {!isPracticeMinimized && (
+              <div className="flex-1 flex flex-col">
+                {/* Code Editor */}
+                <div className="flex-1 min-h-0">
+                  <CodeEditor
+                    value={practiceCode}
+                    onChange={setPracticeCode}
+                    language={currentLanguage}
+                  />
+                </div>
+
+                {/* Output Section */}
+                {practiceOutput && (
+                  <div className="border-t bg-muted/30 p-3 max-h-32 overflow-y-auto">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Monitor className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-semibold">Output</span>
+                    </div>
+                    <pre className="text-xs text-green-700 dark:text-green-300 whitespace-pre-wrap font-mono">
+                      {practiceOutput}
+                    </pre>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
