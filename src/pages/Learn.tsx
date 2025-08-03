@@ -23,6 +23,7 @@ import {
   Award,
   Target,
   Zap,
+  Brain,
   GraduationCap,
   FileText,
   Video,
@@ -176,6 +177,46 @@ export default function Learn() {
   // Mastery score calculation
   const masteryScore = currentLanguageProgress.masteryScore || 
     Math.round((overallProgress * 0.7) + (currentLanguageProgress.skillsEarned?.length || 0) * 2);
+
+  // Helper function to extract skills from resource content
+  const getSkillsFromResource = (resource: any) => {
+    const skillsMap: { [key: string]: string[] } = {
+      'Python Syntax & Variables': ['Variables', 'Data Types', 'Print Statements', 'Comments'],
+      'Data Types & Type Casting': ['Type Conversion', 'int()', 'float()', 'str()', 'bool()'],
+      'Control Structures': ['Conditionals', 'if/elif/else', 'Boolean Logic', 'Comparison'],
+      'Loops': ['For Loops', 'While Loops', 'range()', 'break/continue'],
+      'Functions': ['Function Definition', 'Parameters', 'Return Values', 'Scope'],
+      'Data Structures': ['Lists', 'Dictionaries', 'Tuples', 'Sets', 'Methods'],
+      'Basic Input/Output': ['File Handling', 'input()', 'Reading Files', 'Writing Files'],
+      'Error Handling': ['try/except', 'Exception Handling', 'finally', 'Debugging'],
+      'OOP (Object-Oriented Programming)': ['Classes', 'Objects', 'Inheritance', 'Polymorphism'],
+      'Modules & Packages': ['Import Statements', 'Module Creation', 'Package Structure'],
+      'Working with External Libraries': ['pip', 'requests', 'json', 'datetime'],
+      'File & Directory Management': ['CSV/JSON', 'Path Operations', 'File Systems'],
+      'Virtual Environments & Dependency Management': ['venv', 'requirements.txt', 'pip freeze'],
+      'Debugging & Logging': ['logging', 'pdb', 'Stack Traces', 'Error Analysis'],
+      'Unit Testing': ['unittest', 'pytest', 'TDD', 'Test Cases'],
+      'Data Handling': ['pandas', 'numpy', 'Data Analysis', 'Data Structures'],
+      'Advanced OOP Concepts': ['Encapsulation', '@property', 'classmethods', 'staticmethods'],
+      'Decorators & Generators': ['yield', '@decorator', 'closures', 'functools'],
+      'Concurrency & Parallelism': ['threading', 'multiprocessing', 'asyncio', 'await'],
+      'Design Patterns': ['Singleton', 'Factory', 'Observer', 'Architecture'],
+      'Data Structures & Algorithms': ['Trees', 'Graphs', 'Recursion', 'Big-O Complexity'],
+      'Advanced Libraries: Web': ['Flask', 'FastAPI', 'Web Development'],
+      'Advanced Libraries: Automation': ['Selenium', 'BeautifulSoup', 'Web Scraping'],
+      'Advanced Libraries: Data Science': ['matplotlib', 'seaborn', 'scikit-learn'],
+      'Packaging & Deployment': ['PyPI', 'Package Building', 'CLI Tools'],
+      'Security & Best Practices': ['Code Security', 'Best Practices', 'Secure Coding']
+    };
+
+    // Check for project type
+    if (resource.type === 'project') {
+      return ['Project Building', 'Real-world Application', 'Problem Solving', 'Integration'];
+    }
+
+    // Return skills based on title
+    return skillsMap[resource.title] || ['Programming Concepts', 'Python Skills', 'Development'];
+  };
 
   // Comprehensive learning resources for each language
   const getLanguageLearningResources = (language: string) => {
@@ -577,95 +618,128 @@ export default function Learn() {
                 </div>
               </div>
               
-              <div className="space-y-6">
-                {getLanguageLearningResources(language || 'python').map((resource, index) => {
-                  // Level headers
-                  if (resource.type === 'level') {
-                    return (
-                      <div key={index} className="mb-8">
-                        <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-6 rounded-lg border-l-4 border-primary">
-                          <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 rounded-lg bg-primary/20">
-                              <Target className="h-5 w-5 text-primary" />
-                            </div>
-                            <h2 className="text-xl font-bold">{resource.title}</h2>
-                            <Badge variant="secondary" className="text-xs">
-                              {resource.duration}
+              {/* Level headers stay above the grid */}
+              {getLanguageLearningResources(language || 'python').filter(resource => resource.type === 'level').map((resource, index) => (
+                <div key={index} className="mb-8">
+                  <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-6 rounded-lg border-l-4 border-primary">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="p-2 rounded-lg bg-primary/20">
+                        <Target className="h-5 w-5 text-primary" />
+                      </div>
+                      <h2 className="text-xl font-bold">{resource.title}</h2>
+                      <Badge variant="secondary" className="text-xs">
+                        {resource.duration}
+                      </Badge>
+                    </div>
+                    <p className="text-muted-foreground ml-11">
+                      <strong>Goal:</strong> {(resource as any).goal}
+                    </p>
+                  </div>
+                </div>
+              ))}
+
+              {/* Resources Grid - Projects Style */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {getLanguageLearningResources(language || 'python').filter(resource => resource.type !== 'level').map((resource, index) => {
+                  const getDifficultyColor = (difficulty: string) => {
+                    switch (difficulty) {
+                      case "Beginner": return "bg-success text-success-foreground";
+                      case "Intermediate": return "bg-warning text-warning-foreground";
+                      case "Advanced": return "bg-destructive text-destructive-foreground";
+                      default: return "bg-muted text-muted-foreground";
+                    }
+                  };
+
+                  const getDifficultyIcon = (difficulty: string) => {
+                    switch (difficulty) {
+                      case "Beginner": return <Zap className="h-4 w-4" />;
+                      case "Intermediate": return <Brain className="h-4 w-4" />;
+                      case "Advanced": return <Rocket className="h-4 w-4" />;
+                      default: return <BookOpen className="h-4 w-4" />;
+                    }
+                  };
+
+                  return (
+                    <Card key={index} className="group hover:shadow-xl transition-all duration-300 hover:scale-105 bg-card/80 backdrop-blur-sm border-primary/20">
+                      <div className="p-6 space-y-4">
+                        {/* Header */}
+                        <div className="space-y-2">
+                          <div className="flex items-start justify-between">
+                            <h3 className="text-lg font-semibold group-hover:text-primary transition-colors">
+                              {resource.title}
+                            </h3>
+                            <Badge className={getDifficultyColor(resource.difficulty)}>
+                              <div className="flex items-center gap-1">
+                                {getDifficultyIcon(resource.difficulty)}
+                                {resource.difficulty}
+                              </div>
                             </Badge>
                           </div>
-                          <p className="text-muted-foreground ml-11">
-                            <strong>Goal:</strong> {resource.goal}
+                          <p className="text-sm text-muted-foreground line-clamp-3">
+                            {resource.description || "Master essential concepts and build practical skills"}
                           </p>
                         </div>
-                      </div>
-                    );
-                  }
 
-                  // Regular lessons and projects
-                  return (
-                    <Card key={index} className={`p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer ${
-                      resource.type === 'project' ? 'border-l-4 border-orange-500 bg-orange-50/50 dark:bg-orange-900/10' : ''
-                    }`}>
-                      <div className="flex items-start gap-3 mb-4">
-                        <div className={`p-2 rounded-lg ${
-                          resource.type === 'project' ? 'bg-orange-500/20' : 'bg-primary/10'
-                        }`}>
-                          <ResourceIcon type={resource.type} />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-1">
-                            <Badge variant="outline" className="text-xs capitalize">
-                              {resource.type}
+                        {/* Type */}
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium text-foreground">Type:</div>
+                          <div className="flex flex-wrap gap-1">
+                            <Badge variant="secondary" className="text-xs capitalize">
+                              <ResourceIcon type={resource.type} />
+                              <span className="ml-1">{resource.type}</span>
                             </Badge>
-                            <Badge variant="secondary" className="text-xs">
+                            <Badge variant="outline" className="text-xs flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
                               {resource.duration}
                             </Badge>
                           </div>
-                          <Badge 
-                            variant={resource.difficulty === 'Beginner' ? 'default' : resource.difficulty === 'Intermediate' ? 'secondary' : 'destructive'} 
-                            className="text-xs"
-                          >
-                            {resource.difficulty}
-                          </Badge>
                         </div>
-                      </div>
-                      
-                      <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
-                        {resource.title}
-                      </h3>
-                      
-                      {resource.description && (
-                        <p className="text-sm text-muted-foreground mb-3">
-                          {resource.description}
-                        </p>
-                      )}
-                      
-                      <div className="space-y-3">
-                        <Button 
-                          size="sm" 
-                          className="w-full" 
-                          variant={resource.type === 'project' ? 'default' : 'outline'}
-                          onClick={() => {
-                            setCurrentLearningContent({
-                              title: resource.title,
-                              type: resource.type,
-                              difficulty: resource.difficulty,
-                              description: resource.description
-                            });
-                          }}
-                        >
-                          {resource.type === 'project' ? (
-                            <>
-                              <Code className="h-3 w-3 mr-2" />
-                              Start Project
-                            </>
-                          ) : (
-                            <>
-                              <BookOpen className="h-3 w-3 mr-2" />
-                              Start Lesson
-                            </>
-                          )}
-                        </Button>
+
+                        {/* Skills Preview */}
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium text-foreground">Skills You'll Learn:</div>
+                          <div className="flex flex-wrap gap-1">
+                            {getSkillsFromResource(resource).slice(0, 2).map((skill, idx) => (
+                              <Badge key={idx} variant="outline" className="text-xs">
+                                {skill}
+                              </Badge>
+                            ))}
+                            {getSkillsFromResource(resource).length > 2 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{getSkillsFromResource(resource).length - 2} more
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Action Button */}
+                        <div className="pt-2">
+                          <Button 
+                            size="sm" 
+                            className="w-full justify-center" 
+                            variant={resource.type === 'project' ? 'default' : 'outline'}
+                            onClick={() => {
+                              setCurrentLearningContent({
+                                title: resource.title,
+                                type: resource.type,
+                                difficulty: resource.difficulty,
+                                description: resource.description
+                              });
+                            }}
+                          >
+                            {resource.type === 'project' ? (
+                              <>
+                                <Code className="h-4 w-4 mr-2" />
+                                Start Project
+                              </>
+                            ) : (
+                              <>
+                                <BookOpen className="h-4 w-4 mr-2" />
+                                Start Lesson
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       </div>
                     </Card>
                   );
