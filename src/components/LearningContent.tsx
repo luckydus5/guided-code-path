@@ -1083,6 +1083,8 @@ export default function LearningContent({
     message: string;
     errors?: string[];
   } | null>(null);
+  const [terminalHeight, setTerminalHeight] = useState(200); // Terminal height in pixels
+  const [isTerminalResizing, setIsTerminalResizing] = useState(false);
   
   // Determine language based on lesson title or content
   const getLanguageFromTitle = (title: string): string => {
@@ -1446,19 +1448,30 @@ export default function LearningContent({
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsResizing(true);
     e.preventDefault();
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'col-resize';
   };
 
   React.useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isResizing) {
-        const containerWidth = window.innerWidth - 32; // Account for margins
-        const newLeftWidth = Math.min(Math.max((e.clientX - 16) / containerWidth * 100, 20), 80);
-        setLeftPanelWidth(newLeftWidth);
+        const container = document.querySelector('[data-resize-container]') as HTMLElement;
+        if (container) {
+          const containerRect = container.getBoundingClientRect();
+          const containerWidth = containerRect.width - 4; // Account for resizer width
+          const relativeX = e.clientX - containerRect.left;
+          const newLeftWidth = Math.min(Math.max((relativeX / containerWidth) * 100, 25), 75);
+          setLeftPanelWidth(newLeftWidth);
+        }
       }
     };
 
     const handleMouseUp = () => {
-      setIsResizing(false);
+      if (isResizing) {
+        setIsResizing(false);
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
+      }
     };
 
     if (isResizing) {
@@ -1471,6 +1484,47 @@ export default function LearningContent({
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isResizing]);
+
+  // Handle terminal resizing
+  const handleTerminalMouseDown = (e: React.MouseEvent) => {
+    setIsTerminalResizing(true);
+    e.preventDefault();
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'row-resize';
+  };
+
+  React.useEffect(() => {
+    const handleTerminalMouseMove = (e: MouseEvent) => {
+      if (isTerminalResizing) {
+        const container = document.querySelector('[data-terminal-container]') as HTMLElement;
+        if (container) {
+          const containerRect = container.getBoundingClientRect();
+          const maxHeight = containerRect.height - 100; // Leave space for editor
+          const relativeY = containerRect.bottom - e.clientY;
+          const newHeight = Math.min(Math.max(relativeY, 100), maxHeight);
+          setTerminalHeight(newHeight);
+        }
+      }
+    };
+
+    const handleTerminalMouseUp = () => {
+      if (isTerminalResizing) {
+        setIsTerminalResizing(false);
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
+      }
+    };
+
+    if (isTerminalResizing) {
+      document.addEventListener('mousemove', handleTerminalMouseMove);
+      document.addEventListener('mouseup', handleTerminalMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleTerminalMouseMove);
+      document.removeEventListener('mouseup', handleTerminalMouseUp);
+    };
+  }, [isTerminalResizing]);
 
   // Initialize practice code when step changes
   React.useEffect(() => {
@@ -1499,8 +1553,69 @@ export default function LearningContent({
   }, [currentStepData, practiceCode]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-full h-screen flex flex-col">
+    <div className="min-h-screen bg-background overflow-auto custom-scrollbar">
+      {/* Custom CSS for enhanced scrollbars */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(229, 231, 235, 0.3);
+            border-radius: 4px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgb(156, 163, 175);
+            border-radius: 4px;
+            border: 1px solid rgba(229, 231, 235, 0.3);
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgb(107, 114, 128);
+          }
+          .dark .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(55, 65, 81, 0.3);
+          }
+          .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgb(107, 114, 128);
+            border: 1px solid rgba(55, 65, 81, 0.3);
+          }
+          .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgb(156, 163, 175);
+          }
+          /* Terminal specific scrollbar styling */
+          .terminal-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+          }
+          .terminal-scrollbar::-webkit-scrollbar-track {
+            background: rgb(31, 41, 55);
+          }
+          .terminal-scrollbar::-webkit-scrollbar-thumb {
+            background: rgb(75, 85, 99);
+            border-radius: 3px;
+          }
+          .terminal-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgb(107, 114, 128);
+          }
+          /* Main container scrollbar */
+          body::-webkit-scrollbar {
+            width: 10px;
+          }
+          body::-webkit-scrollbar-track {
+            background: rgba(229, 231, 235, 0.2);
+          }
+          body::-webkit-scrollbar-thumb {
+            background: rgb(156, 163, 175);
+            border-radius: 5px;
+          }
+          body::-webkit-scrollbar-thumb:hover {
+            background: rgb(107, 114, 128);
+          }
+        `
+      }} />
+      
+      <div className="max-w-full h-screen flex flex-col overflow-auto custom-scrollbar">
         {/* Restoration Notification */}
         {hasRestoredState && (
           <Card className="mx-4 mt-4 p-3 bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
@@ -1568,10 +1683,10 @@ export default function LearningContent({
         </Card>
 
         {/* Main Split Layout - VS Code Style */}
-        <div className="flex-1 mx-4 mb-4 flex relative" style={{ height: 'calc(100vh - 200px)' }}>
+        <div className="flex-1 mx-4 mb-4 flex relative overflow-auto custom-scrollbar" style={{ height: 'calc(100vh - 200px)' }} data-resize-container>
           {/* Left Panel - Learning Content */}
           <div 
-            className="flex flex-col bg-card border rounded-l-lg overflow-hidden"
+            className="flex flex-col bg-card border border-r-0 rounded-l-lg overflow-hidden"
             style={{ width: `${leftPanelWidth}%` }}
           >
             {/* Left Panel Header */}
@@ -1607,8 +1722,8 @@ export default function LearningContent({
             </div>
 
             {/* Left Panel Content - Scrollable */}
-            <div className="flex-1 overflow-y-auto p-4">
-              <div className="space-y-4">
+            <div className="flex-1 overflow-y-auto overflow-x-auto custom-scrollbar">
+              <div className="p-4 space-y-4 h-full">
                 {/* Step Title */}
                 <div>
                   <h2 className="text-xl font-bold mb-2">{currentStepData.title}</h2>
@@ -1653,12 +1768,25 @@ export default function LearningContent({
                     
                     {showCodeExample && (
                       <>
-                        <div className="border rounded-lg overflow-hidden h-[200px] mb-3">
-                          <CodeEditor
-                            value={currentStepData.code}
-                            onChange={() => {}} // Read-only for examples
-                            language={currentLanguage}
-                          />
+                        <div className="border rounded-lg overflow-hidden mb-3" style={{ height: '300px' }}>
+                          <div className="bg-gray-800 text-gray-300 px-3 py-1 text-xs border-b flex items-center justify-between">
+                            <span>📄 example.py</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-500">Read-only</span>
+                              <div className="flex gap-1">
+                                <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                                <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="h-full overflow-auto custom-scrollbar">
+                            <CodeEditor
+                              value={currentStepData.code}
+                              onChange={() => {}} // Read-only for examples
+                              language={currentLanguage}
+                            />
+                          </div>
                         </div>
                         
                         {(currentStepData as LessonStep).output && (
@@ -1667,10 +1795,16 @@ export default function LearningContent({
                               <Monitor className="h-4 w-4" />
                               Expected Output
                             </h4>
-                            <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-3">
-                              <pre className="text-xs text-green-700 dark:text-green-300">
-                                {(currentStepData as LessonStep).output}
-                              </pre>
+                            <div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
+                              <div className="bg-gray-800 text-gray-300 px-3 py-1 text-xs border-b flex items-center gap-2">
+                                <Terminal className="h-3 w-3" />
+                                <span>Console Output</span>
+                              </div>
+                              <div className="p-3 max-h-32 overflow-y-auto overflow-x-auto custom-scrollbar">
+                                <pre className="text-xs text-green-400 font-mono whitespace-pre-wrap">
+{(currentStepData as LessonStep).output}
+                                </pre>
+                              </div>
                             </div>
                           </div>
                         )}
@@ -1686,14 +1820,16 @@ export default function LearningContent({
                       <Lightbulb className="h-4 w-4 text-yellow-500" />
                       Tips & Best Practices
                     </h3>
-                    <ul className="space-y-2">
-                      {currentStepData.tips.map((tip, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="text-xs text-muted-foreground leading-relaxed">{tip}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 max-h-48 overflow-y-auto custom-scrollbar">
+                      <ul className="space-y-2">
+                        {currentStepData.tips.map((tip, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-xs text-yellow-700 dark:text-yellow-300 leading-relaxed">{tip}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 )}
 
@@ -1706,7 +1842,7 @@ export default function LearningContent({
                     </h3>
                     
                     {/* Challenge Instructions */}
-                    <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-lg p-4 mb-4">
+                    <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-lg p-4 mb-4 max-h-80 overflow-y-auto custom-scrollbar">
                       <div className="space-y-3">
                         <div>
                           <h4 className="text-sm font-semibold text-orange-900 dark:text-orange-100 mb-2">📝 Your Task:</h4>
@@ -1771,7 +1907,7 @@ export default function LearningContent({
                       </Button>
 
                       {showHints && (
-                        <Card className="p-3 bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
+                        <Card className="p-3 bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800 max-h-64 overflow-y-auto custom-scrollbar">
                           <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-sm">💡 Step-by-Step Hints:</h4>
                           <ul className="space-y-2">
                             {((currentStepData as LessonStep).practice!).hints.map((hint, index) => (
@@ -1792,7 +1928,7 @@ export default function LearningContent({
                 {/* Step Progress Overview */}
                 <div>
                   <h3 className="text-sm font-semibold mb-3">Lesson Progress</h3>
-                  <div className="space-y-1">
+                  <div className="space-y-1 max-h-64 overflow-y-auto border rounded-lg p-2 bg-muted/30 custom-scrollbar">
                     {steps.map((step, index) => (
                       <div 
                         key={step.id}
@@ -1825,46 +1961,52 @@ export default function LearningContent({
 
           {/* Resizer */}
           <div 
-            className="w-1 bg-border hover:bg-primary/50 cursor-col-resize flex items-center justify-center relative group"
+            className="w-1 bg-gray-300 dark:bg-gray-600 hover:bg-primary/70 cursor-col-resize flex items-center justify-center relative group transition-colors z-10"
             onMouseDown={handleMouseDown}
           >
-            <div className="w-0.5 h-8 bg-muted-foreground/50 group-hover:bg-primary transition-colors"></div>
+            <div className="w-0.5 h-8 bg-gray-400 dark:bg-gray-500 group-hover:bg-primary transition-colors rounded-full"></div>
           </div>
 
           {/* Right Panel - Practice Environment */}
           <div 
-            className={`flex flex-col bg-card border rounded-r-lg overflow-hidden transition-all duration-300 ${
+            className={`flex flex-col bg-card border border-l-0 rounded-r-lg overflow-hidden transition-all duration-300 ${
               isPracticeMinimized ? 'w-8' : ''
             }`}
             style={{ width: isPracticeMinimized ? '32px' : `${100 - leftPanelWidth}%` }}
           >
             {/* Right Panel Header */}
-            <div className="border-b bg-muted/50 px-4 py-2 flex items-center justify-between">
+            <div className="border-b bg-gray-800 text-gray-300 px-4 py-2 flex items-center justify-between">
               {!isPracticeMinimized ? (
                 <>
-                  <div className="flex items-center gap-2">
-                    <Terminal className="h-4 w-4 text-green-600" />
-                    <span className="text-sm font-semibold">Python Practice Environment</span>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <Terminal className="h-4 w-4 text-green-500" />
+                      <span className="text-sm font-semibold text-white">Python Practice Environment</span>
+                    </div>
                     {currentLanguage === 'python' && practiceCode && (
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <div className={`h-2 w-2 rounded-full ${autoSaveIndicator ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
-                        {autoSaveIndicator ? 'Saved!' : 'Auto-save'}
-                      </span>
+                      <div className="flex items-center gap-2 text-xs">
+                        <div className={`h-2 w-2 rounded-full ${autoSaveIndicator ? 'bg-green-500 animate-pulse' : 'bg-orange-500'}`}></div>
+                        <span className={autoSaveIndicator ? 'text-green-400' : 'text-orange-400'}>
+                          {autoSaveIndicator ? 'Auto-saved' : 'Editing...'}
+                        </span>
+                      </div>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button size="sm" variant="outline" onClick={resetPracticeCode}>
+                    <Button size="sm" variant="ghost" onClick={resetPracticeCode} className="h-7 text-gray-300 hover:text-white hover:bg-gray-700">
                       <RefreshCw className="h-3 w-3 mr-1" />
                       Reset
                     </Button>
-                    <Button size="sm" onClick={runPracticeCode}>
+                    <Button size="sm" onClick={runPracticeCode} className="h-7 bg-green-600 hover:bg-green-700 text-white">
                       <Play className="h-3 w-3 mr-1" />
                       Run Code
                     </Button>
+                    <div className="w-px h-4 bg-gray-600 mx-1"></div>
                     <Button 
                       size="sm" 
                       variant="ghost"
                       onClick={() => setIsPracticeMinimized(true)}
+                      className="h-7 w-7 p-0 text-gray-400 hover:text-white hover:bg-gray-700"
                     >
                       ⏷
                     </Button>
@@ -1875,7 +2017,7 @@ export default function LearningContent({
                   size="sm" 
                   variant="ghost"
                   onClick={() => setIsPracticeMinimized(false)}
-                  className="w-full justify-center"
+                  className="w-full justify-center h-7 text-gray-400 hover:text-white hover:bg-gray-700"
                 >
                   ⏵
                 </Button>
@@ -1884,88 +2026,165 @@ export default function LearningContent({
 
             {/* Right Panel Content */}
             {!isPracticeMinimized && (
-              <div className="flex-1 flex flex-col">
-                {/* Code Editor */}
-                <div className="flex-1 min-h-0">
-                  <CodeEditor
-                    value={practiceCode}
-                    onChange={setPracticeCode}
-                    language={currentLanguage}
-                  />
+              <div className="flex-1 flex flex-col min-h-0" data-terminal-container>
+                {/* Code Editor with VS Code features */}
+                <div className="flex-1 min-h-0 flex flex-col" style={{ height: `calc(100% - ${(practiceOutput || codeValidationResult) ? terminalHeight : 0}px)` }}>
+                  {/* Editor Tab Bar */}
+                  <div className="bg-gray-800 text-gray-300 px-3 py-1 text-xs border-b border-gray-700 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs">🐍</span>
+                      <span>practice.py</span>
+                      {practiceCode && (
+                        <div className={`w-2 h-2 rounded-full ${autoSaveIndicator ? 'bg-green-500' : 'bg-orange-500'}`}></div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className={`${autoSaveIndicator ? 'text-green-400' : 'text-orange-400'}`}>
+                        {autoSaveIndicator ? '● Saved' : '● Unsaved changes'}
+                      </span>
+                      <span className="text-gray-500">Python 3.12</span>
+                    </div>
+                  </div>
+                  
+                  {/* Editor Area */}
+                  <div className="flex-1 relative overflow-auto custom-scrollbar">
+                    <CodeEditor
+                      value={practiceCode}
+                      onChange={setPracticeCode}
+                      language={currentLanguage}
+                    />
+                    
+                    {/* Line Count Indicator */}
+                    <div className="absolute bottom-2 right-2 bg-gray-800 text-gray-300 px-2 py-1 rounded text-xs">
+                      {practiceCode.split('\n').length} lines
+                    </div>
+                  </div>
                 </div>
 
-                {/* Output Section */}
+                {/* Enhanced Terminal Output Section - Resizable */}
                 {(practiceOutput || codeValidationResult) && (
-                  <div className="border-t bg-muted/30 p-3 max-h-48 overflow-y-auto">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Monitor className="h-4 w-4 text-green-600" />
-                      <span className="text-sm font-semibold">Terminal Output</span>
+                  <>
+                    {/* Terminal Resizer */}
+                    <div 
+                      className="h-1 bg-gray-600 hover:bg-primary/70 cursor-row-resize flex items-center justify-center relative group transition-colors z-10"
+                      onMouseDown={handleTerminalMouseDown}
+                    >
+                      <div className="w-8 h-0.5 bg-gray-400 dark:bg-gray-500 group-hover:bg-primary transition-colors rounded-full"></div>
                     </div>
                     
-                    {/* Code Execution Output */}
-                    {practiceOutput && (
-                      <div className="mb-3">
-                        <pre className="text-xs text-green-700 dark:text-green-300 whitespace-pre-wrap font-mono bg-gray-900 text-green-400 p-2 rounded">
-{practiceOutput}
-                        </pre>
+                    <div 
+                      className="border-t border-gray-700 bg-gray-900 flex flex-col"
+                      style={{ height: `${terminalHeight}px`, minHeight: '100px' }}
+                    >
+                      {/* Terminal Header */}
+                      <div className="bg-gray-800 text-gray-300 px-3 py-2 text-xs border-b border-gray-700 flex items-center justify-between flex-shrink-0">
+                        <div className="flex items-center gap-2">
+                          <Terminal className="h-4 w-4 text-green-500" />
+                          <span>Terminal</span>
+                          <div className="flex gap-1">
+                            <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                            <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="h-6 w-6 p-0" 
+                            onClick={() => {setPracticeOutput(''); setCodeValidationResult(null);}}
+                            title="Clear terminal"
+                          >
+                            <RefreshCw className="h-3 w-3 text-gray-400" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 w-6 p-0"
+                            onClick={() => setTerminalHeight(terminalHeight === 400 ? 200 : 400)}
+                            title="Toggle terminal size"
+                          >
+                            <div className="text-gray-400 text-xs">⇕</div>
+                          </Button>
+                          <span className="text-gray-500">bash</span>
+                        </div>
                       </div>
-                    )}
-                    
-                    {/* Validation Feedback */}
-                    {codeValidationResult && (
-                      <div className={`p-3 rounded-lg border ${
-                        codeValidationResult.isCorrect 
-                          ? 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800' 
-                          : 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800'
-                      }`}>
-                        <div className="flex items-center gap-2 mb-2">
-                          {codeValidationResult.isCorrect ? (
-                            <CheckCircle className="h-4 w-4 text-green-600" />
-                          ) : (
-                            <Target className="h-4 w-4 text-red-600" />
-                          )}
-                          <span className={`text-sm font-semibold ${
-                            codeValidationResult.isCorrect 
-                              ? 'text-green-900 dark:text-green-100' 
-                              : 'text-red-900 dark:text-red-100'
-                          }`}>
-                            Code Validation
-                          </span>
+                      
+                      {/* Terminal Content - Fully Scrollable */}
+                      <div className="flex-1 overflow-y-auto overflow-x-auto p-3 font-mono text-sm min-h-0 terminal-scrollbar">
+                        {/* Command Line */}
+                        <div className="flex items-center text-green-400 mb-2">
+                          <span className="text-blue-400">user@python-env</span>
+                          <span className="text-gray-400">:</span>
+                          <span className="text-purple-400">~/practice</span>
+                          <span className="text-gray-400">$ </span>
+                          <span className="text-green-400">python practice.py</span>
                         </div>
                         
-                        <p className={`text-xs mb-2 ${
-                          codeValidationResult.isCorrect 
-                            ? 'text-green-700 dark:text-green-300' 
-                            : 'text-red-700 dark:text-red-300'
-                        }`}>
-                          {codeValidationResult.message}
-                        </p>
-                        
-                        {codeValidationResult.errors && codeValidationResult.errors.length > 0 && (
-                          <div>
-                            <h5 className="text-xs font-semibold text-red-900 dark:text-red-100 mb-1">
-                              Issues to Fix:
-                            </h5>
-                            <ul className="space-y-1">
-                              {codeValidationResult.errors.map((error, index) => (
-                                <li key={index} className="text-xs text-red-700 dark:text-red-300 flex items-start gap-2">
-                                  <span className="text-red-500 mt-0.5">•</span>
-                                  <span>{error}</span>
-                                </li>
-                              ))}
-                            </ul>
+                        {/* Code Execution Output */}
+                        {practiceOutput && (
+                          <div className="mb-3">
+                            <div className="text-gray-400 text-xs mb-1">Output:</div>
+                            <pre className="text-green-400 whitespace-pre-wrap leading-relaxed">
+{practiceOutput}
+                            </pre>
                           </div>
                         )}
                         
-                        {codeValidationResult.isCorrect && (
-                          <div className="mt-2 flex items-center gap-2 text-xs text-green-700 dark:text-green-300">
-                            <Award className="h-3 w-3" />
-                            <span>Ready to move to the next step!</span>
+                        {/* Validation Feedback */}
+                        {codeValidationResult && (
+                          <div className="mt-3 border-t border-gray-700 pt-3">
+                            <div className="flex items-center gap-2 mb-2">
+                              {codeValidationResult.isCorrect ? (
+                                <CheckCircle className="h-4 w-4 text-green-500" />
+                              ) : (
+                                <Target className="h-4 w-4 text-red-500" />
+                              )}
+                              <span className={`text-sm font-semibold ${
+                                codeValidationResult.isCorrect ? 'text-green-400' : 'text-red-400'
+                              }`}>
+                                Code Analysis
+                              </span>
+                            </div>
+                            
+                            <div className={`text-xs mb-2 ${
+                              codeValidationResult.isCorrect ? 'text-green-300' : 'text-red-300'
+                            }`}>
+                              {codeValidationResult.message}
+                            </div>
+                            
+                            {codeValidationResult.errors && codeValidationResult.errors.length > 0 && (
+                              <div className="space-y-1">
+                                <div className="text-xs text-red-400 font-semibold">Issues Found:</div>
+                                {codeValidationResult.errors.map((error, index) => (
+                                  <div key={index} className="text-xs text-red-300 flex items-start gap-2 pl-2">
+                                    <span className="text-red-500 mt-0.5 flex-shrink-0">❌</span>
+                                    <span className="leading-relaxed">{error}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                            
+                            {codeValidationResult.isCorrect && (
+                              <div className="mt-2 flex items-center gap-2 text-xs text-green-400">
+                                <Award className="h-3 w-3" />
+                                <span>✨ Perfect! Your code meets all requirements. Ready for next step!</span>
+                              </div>
+                            )}
                           </div>
                         )}
+                        
+                        {/* Command Prompt */}
+                        <div className="flex items-center text-green-400 mt-2">
+                          <span className="text-blue-400">user@python-env</span>
+                          <span className="text-gray-400">:</span>
+                          <span className="text-purple-400">~/practice</span>
+                          <span className="text-gray-400">$ </span>
+                          <span className="animate-pulse">_</span>
+                        </div>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  </>
                 )}
               </div>
             )}
