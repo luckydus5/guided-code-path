@@ -953,6 +953,112 @@ for num in range(1, 21):
   }
 };
 
+// Python code validation function
+const validatePythonCode = (code: string, practice: any) => {
+  const errors: string[] = [];
+  let isCorrect = true;
+  
+  // Basic syntax validation
+  const lines = code.split('\n').filter(line => line.trim());
+  
+  // Check for required elements based on the lesson
+  if (practice.challenge.toLowerCase().includes('variable')) {
+    const hasVariable = /\w+\s*=\s*.+/.test(code);
+    if (!hasVariable) {
+      errors.push('Line missing: You need to create a variable assignment (e.g., name = "value")');
+      isCorrect = false;
+    }
+  }
+  
+  if (practice.challenge.toLowerCase().includes('print')) {
+    const hasPrint = /print\s*\(/.test(code);
+    if (!hasPrint) {
+      errors.push('Line missing: You need to use print() function to display output');
+      isCorrect = false;
+    }
+  }
+  
+  if (practice.challenge.toLowerCase().includes('if') || practice.challenge.toLowerCase().includes('condition')) {
+    const hasIf = /if\s+.+:/.test(code);
+    if (!hasIf) {
+      errors.push('Line missing: You need an if statement (if condition:)');
+      isCorrect = false;
+    }
+  }
+  
+  if (practice.challenge.toLowerCase().includes('loop') || practice.challenge.toLowerCase().includes('for')) {
+    const hasLoop = /for\s+\w+\s+in\s+/.test(code) || /while\s+.+:/.test(code);
+    if (!hasLoop) {
+      errors.push('Line missing: You need a loop (for or while statement)');
+      isCorrect = false;
+    }
+  }
+  
+  if (practice.challenge.toLowerCase().includes('function') || practice.challenge.toLowerCase().includes('def')) {
+    const hasFunction = /def\s+\w+\s*\(/.test(code);
+    if (!hasFunction) {
+      errors.push('Line missing: You need to define a function using def');
+      isCorrect = false;
+    }
+  }
+  
+  // Check for basic Python syntax errors
+  lines.forEach((line, index) => {
+    const lineNum = index + 1;
+    
+    // Check for proper indentation in control structures
+    if (line.match(/:\s*$/) && index < lines.length - 1) {
+      const nextLine = lines[index + 1];
+      if (nextLine && !nextLine.startsWith('    ') && !nextLine.startsWith('\t')) {
+        errors.push(`Line ${lineNum + 1}: Missing indentation after colon (:)`);
+        isCorrect = false;
+      }
+    }
+    
+    // Check for missing colons in control structures
+    if (line.trim().match(/^(if|elif|else|for|while|def|class)\s+/) && !line.includes(':')) {
+      errors.push(`Line ${lineNum}: Missing colon (:) at end of statement`);
+      isCorrect = false;
+    }
+    
+    // Check for unmatched parentheses in print statements
+    const printMatch = line.match(/print\s*\(/);
+    if (printMatch) {
+      const openParens = (line.match(/\(/g) || []).length;
+      const closeParens = (line.match(/\)/g) || []).length;
+      if (openParens !== closeParens) {
+        errors.push(`Line ${lineNum}: Unmatched parentheses in print statement`);
+        isCorrect = false;
+      }
+    }
+  });
+  
+  // Check if output matches expected
+  if (practice.expectedOutput && isCorrect) {
+    // Simple check for expected content in output
+    const expectedWords = practice.expectedOutput.toLowerCase().split(/\s+/);
+    const codeWords = code.toLowerCase().split(/\s+/);
+    
+    const hasExpectedContent = expectedWords.some(word => 
+      word.length > 2 && codeWords.includes(word)
+    );
+    
+    if (!hasExpectedContent && !code.includes('input(')) {
+      errors.push('Output mismatch: Your code output may not match the expected result');
+      isCorrect = false;
+    }
+  }
+  
+  let message = '';
+  if (isCorrect) {
+    message = '✅ Excellent! Your code is correct and follows Python best practices.';
+  } else {
+    message = `❌ Your code needs some improvements. Found ${errors.length} issue(s).`;
+  }
+  
+  return { isCorrect, message, errors };
+};
+
 export default function LearningContent({ 
   title, 
   type, 
@@ -971,6 +1077,12 @@ export default function LearningContent({
   const [leftPanelWidth, setLeftPanelWidth] = useState(50); // Percentage
   const [isPracticeMinimized, setIsPracticeMinimized] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
+  const [showCodeExample, setShowCodeExample] = useState(false);
+  const [codeValidationResult, setCodeValidationResult] = useState<{
+    isCorrect: boolean;
+    message: string;
+    errors?: string[];
+  } | null>(null);
   
   // Determine language based on lesson title or content
   const getLanguageFromTitle = (title: string): string => {
@@ -1162,6 +1274,7 @@ export default function LearningContent({
     setShowPractice(false);
     setPracticeOutput('');
     setShowHints(false);
+    setCodeValidationResult(null);
     
     // Load practice code for the new step after a brief delay
     setTimeout(() => {
@@ -1192,6 +1305,10 @@ export default function LearningContent({
     const practice = (currentStepData as LessonStep).practice;
     if (practice) {
       if (currentLanguage === 'python') {
+        // Validate code against expected patterns and requirements
+        const validation = validatePythonCode(practiceCode, practice);
+        setCodeValidationResult(validation);
+        
         // Simulate Python code execution
         try {
           let output = '';
@@ -1232,7 +1349,7 @@ export default function LearningContent({
           
           // Check for common Python patterns
           if (practiceCode.includes('range(')) {
-            output += 'Code executed successfully!\n';
+            output += 'Loop executed successfully!\n';
           }
           
           if (practiceCode.includes('if ') || practiceCode.includes('for ') || practiceCode.includes('while ')) {
@@ -1243,9 +1360,21 @@ export default function LearningContent({
             output = 'Code executed successfully! (No output produced)';
           }
           
+          // Add validation feedback to output
+          if (validation.isCorrect) {
+            output += '\n✅ Great job! Your code meets all requirements.';
+          } else {
+            output += '\n❌ Code needs improvement. Check the feedback below.';
+          }
+          
           setPracticeOutput(output.trim());
         } catch (error) {
           setPracticeOutput(`Error: ${error}`);
+          setCodeValidationResult({
+            isCorrect: false,
+            message: 'Code execution failed',
+            errors: [`Runtime Error: ${error}`]
+          });
         }
       } else {
         // Original HTML/CSS/JavaScript logic
@@ -1288,6 +1417,7 @@ export default function LearningContent({
     const practice = (currentStepData as LessonStep).practice;
     setPracticeCode(practice?.starterCode || '');
     setPracticeOutput('');
+    setCodeValidationResult(null);
   };
 
   const initializePractice = () => {
@@ -1496,43 +1626,55 @@ export default function LearningContent({
                   ))}
                 </div>
 
-                {/* Example Code */}
+                {/* Example Code - Collapsible */}
                 {currentStepData.code && (
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-sm font-semibold flex items-center gap-2">
-                        <Code className="h-4 w-4" />
-                        Example Code
-                      </h3>
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="outline"
                         size="sm"
-                        onClick={() => copyCode(currentStepData.code!)}
+                        onClick={() => setShowCodeExample(!showCodeExample)}
+                        className="text-sm"
                       >
-                        <Copy className="h-3 w-3 mr-1" />
-                        {currentLanguage === 'python' ? 'Copy to Practice' : 'Copy'}
+                        <Code className="h-4 w-4 mr-2" />
+                        {showCodeExample ? 'Hide' : 'Show'} Code Example
                       </Button>
-                    </div>
-                    <div className="border rounded-lg overflow-hidden h-[200px]">
-                      <CodeEditor
-                        value={currentStepData.code}
-                        onChange={() => {}} // Read-only for examples
-                        language={currentLanguage}
-                      />
+                      {showCodeExample && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => copyCode(currentStepData.code!)}
+                        >
+                          <Copy className="h-3 w-3 mr-1" />
+                          {currentLanguage === 'python' ? 'Copy to Practice' : 'Copy'}
+                        </Button>
+                      )}
                     </div>
                     
-                    {(currentStepData as LessonStep).output && (
-                      <div className="mt-3">
-                        <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
-                          <Monitor className="h-4 w-4" />
-                          Expected Output
-                        </h4>
-                        <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-3">
-                          <pre className="text-xs text-green-700 dark:text-green-300">
-                            {(currentStepData as LessonStep).output}
-                          </pre>
+                    {showCodeExample && (
+                      <>
+                        <div className="border rounded-lg overflow-hidden h-[200px] mb-3">
+                          <CodeEditor
+                            value={currentStepData.code}
+                            onChange={() => {}} // Read-only for examples
+                            language={currentLanguage}
+                          />
                         </div>
-                      </div>
+                        
+                        {(currentStepData as LessonStep).output && (
+                          <div>
+                            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                              <Monitor className="h-4 w-4" />
+                              Expected Output
+                            </h4>
+                            <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                              <pre className="text-xs text-green-700 dark:text-green-300">
+                                {(currentStepData as LessonStep).output}
+                              </pre>
+                            </div>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 )}
@@ -1562,23 +1704,62 @@ export default function LearningContent({
                       <Target className="h-4 w-4 text-orange-500" />
                       Practice Challenge
                     </h3>
-                    <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-lg p-3">
-                      <p className="text-xs text-orange-700 dark:text-orange-300 mb-2">
-                        <strong>Challenge:</strong> {((currentStepData as LessonStep).practice!).challenge}
-                      </p>
-                      <p className="text-xs text-orange-600 dark:text-orange-400 mb-2">
-                        <strong>Expected:</strong> {((currentStepData as LessonStep).practice!).expectedOutput}
-                      </p>
-                      {currentLanguage === 'python' && (
-                        <p className="text-xs text-blue-600 dark:text-blue-400 flex items-center gap-1">
-                          <Terminal className="h-3 w-3" />
-                          <strong>Tip:</strong> Copy example code above to get started!
-                        </p>
-                      )}
+                    
+                    {/* Challenge Instructions */}
+                    <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-lg p-4 mb-4">
+                      <div className="space-y-3">
+                        <div>
+                          <h4 className="text-sm font-semibold text-orange-900 dark:text-orange-100 mb-2">📝 Your Task:</h4>
+                          <p className="text-sm text-orange-700 dark:text-orange-300">
+                            {((currentStepData as LessonStep).practice!).challenge}
+                          </p>
+                        </div>
+                        
+                        <div>
+                          <h4 className="text-sm font-semibold text-orange-900 dark:text-orange-100 mb-2">🎯 Expected Result:</h4>
+                          <p className="text-sm text-orange-600 dark:text-orange-400">
+                            {((currentStepData as LessonStep).practice!).expectedOutput}
+                          </p>
+                        </div>
+                        
+                        {/* Approach Examples */}
+                        <div>
+                          <h4 className="text-sm font-semibold text-orange-900 dark:text-orange-100 mb-2">💡 How to Approach:</h4>
+                          <ul className="text-xs text-orange-700 dark:text-orange-300 space-y-1">
+                            {currentLanguage === 'python' && (
+                              <>
+                                {((currentStepData as LessonStep).practice!).challenge.toLowerCase().includes('variable') && (
+                                  <li>• Start by creating variables to store your data</li>
+                                )}
+                                {((currentStepData as LessonStep).practice!).challenge.toLowerCase().includes('print') && (
+                                  <li>• Use print() function to display your output</li>
+                                )}
+                                {((currentStepData as LessonStep).practice!).challenge.toLowerCase().includes('if') && (
+                                  <li>• Use if statements to make decisions in your code</li>
+                                )}
+                                {((currentStepData as LessonStep).practice!).challenge.toLowerCase().includes('loop') && (
+                                  <li>• Consider using a for loop or while loop to repeat actions</li>
+                                )}
+                                <li>• Test your code step by step as you write it</li>
+                                <li>• Make sure your output matches the expected result exactly</li>
+                              </>
+                            )}
+                          </ul>
+                        </div>
+                        
+                        {currentLanguage === 'python' && (
+                          <div className="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded p-3 mt-3">
+                            <p className="text-xs text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                              <Terminal className="h-3 w-3" />
+                              <strong>Getting Started:</strong> {showCodeExample ? 'Modify the code example above' : 'Click "Show Code Example" above for a starting point'}, then customize it for this challenge!
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {/* Hints */}
-                    <div className="mt-3">
+                    <div className="mb-4">
                       <Button
                         variant="outline"
                         size="sm"
@@ -1586,16 +1767,19 @@ export default function LearningContent({
                         className="mb-3"
                       >
                         <Lightbulb className="h-3 w-3 mr-1" />
-                        {showHints ? 'Hide Hints' : 'Show Hints'}
+                        {showHints ? 'Hide Hints' : 'Show Hints'} ({((currentStepData as LessonStep).practice!).hints.length})
                       </Button>
 
                       {showHints && (
                         <Card className="p-3 bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
-                          <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-sm">💡 Hints:</h4>
-                          <ul className="space-y-1">
+                          <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 text-sm">💡 Step-by-Step Hints:</h4>
+                          <ul className="space-y-2">
                             {((currentStepData as LessonStep).practice!).hints.map((hint, index) => (
-                              <li key={index} className="text-xs text-blue-700 dark:text-blue-300">
-                                {index + 1}. {hint}
+                              <li key={index} className="text-xs text-blue-700 dark:text-blue-300 flex items-start gap-2">
+                                <span className="bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded-full w-4 h-4 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                                  {index + 1}
+                                </span>
+                                <span className="leading-relaxed">{hint}</span>
                               </li>
                             ))}
                           </ul>
@@ -1711,15 +1895,76 @@ export default function LearningContent({
                 </div>
 
                 {/* Output Section */}
-                {practiceOutput && (
-                  <div className="border-t bg-muted/30 p-3 max-h-32 overflow-y-auto">
+                {(practiceOutput || codeValidationResult) && (
+                  <div className="border-t bg-muted/30 p-3 max-h-48 overflow-y-auto">
                     <div className="flex items-center gap-2 mb-2">
                       <Monitor className="h-4 w-4 text-green-600" />
-                      <span className="text-sm font-semibold">Output</span>
+                      <span className="text-sm font-semibold">Terminal Output</span>
                     </div>
-                    <pre className="text-xs text-green-700 dark:text-green-300 whitespace-pre-wrap font-mono">
-                      {practiceOutput}
-                    </pre>
+                    
+                    {/* Code Execution Output */}
+                    {practiceOutput && (
+                      <div className="mb-3">
+                        <pre className="text-xs text-green-700 dark:text-green-300 whitespace-pre-wrap font-mono bg-gray-900 text-green-400 p-2 rounded">
+{practiceOutput}
+                        </pre>
+                      </div>
+                    )}
+                    
+                    {/* Validation Feedback */}
+                    {codeValidationResult && (
+                      <div className={`p-3 rounded-lg border ${
+                        codeValidationResult.isCorrect 
+                          ? 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800' 
+                          : 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800'
+                      }`}>
+                        <div className="flex items-center gap-2 mb-2">
+                          {codeValidationResult.isCorrect ? (
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <Target className="h-4 w-4 text-red-600" />
+                          )}
+                          <span className={`text-sm font-semibold ${
+                            codeValidationResult.isCorrect 
+                              ? 'text-green-900 dark:text-green-100' 
+                              : 'text-red-900 dark:text-red-100'
+                          }`}>
+                            Code Validation
+                          </span>
+                        </div>
+                        
+                        <p className={`text-xs mb-2 ${
+                          codeValidationResult.isCorrect 
+                            ? 'text-green-700 dark:text-green-300' 
+                            : 'text-red-700 dark:text-red-300'
+                        }`}>
+                          {codeValidationResult.message}
+                        </p>
+                        
+                        {codeValidationResult.errors && codeValidationResult.errors.length > 0 && (
+                          <div>
+                            <h5 className="text-xs font-semibold text-red-900 dark:text-red-100 mb-1">
+                              Issues to Fix:
+                            </h5>
+                            <ul className="space-y-1">
+                              {codeValidationResult.errors.map((error, index) => (
+                                <li key={index} className="text-xs text-red-700 dark:text-red-300 flex items-start gap-2">
+                                  <span className="text-red-500 mt-0.5">•</span>
+                                  <span>{error}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        
+                        {codeValidationResult.isCorrect && (
+                          <div className="mt-2 flex items-center gap-2 text-xs text-green-700 dark:text-green-300">
+                            <Award className="h-3 w-3" />
+                            <span>Ready to move to the next step!</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
