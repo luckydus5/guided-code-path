@@ -47,6 +47,13 @@ interface CompellingDashboardProps {
   onCloseProfileEdit?: () => void;
 }
 
+interface LearningLevel {
+  name: string;
+  goal: string;
+  topics: string[];
+  project: string;
+}
+
 interface LearningPath {
   id: string;
   name: string;
@@ -60,6 +67,7 @@ interface LearningPath {
   color: string;
   technologies: string[];
   nextLesson?: string;
+  levels?: LearningLevel[];
   resources?: {
     type: "article" | "documentation" | "video";
     title: string;
@@ -100,21 +108,63 @@ const learningPaths: LearningPath[] = [
   },
   {
     id: "python-mastery",
-    name: "Python Programming Mastery",
-    description: "From basics to advanced Python with real-world projects",
+    name: "Python",
+    description: "Master Python from foundations to production-grade code",
     icon: Code2,
     difficulty: "Beginner",
-    estimatedTime: "8-10 weeks",
+    estimatedTime: "12-16 weeks",
     progress: 0,
-    lessons: 32,
-    projects: 12,
+    lessons: 45,
+    projects: 8,
     color: "from-green-500 to-yellow-500",
-    technologies: ["Python", "Django", "FastAPI"],
-    nextLesson: "Python Basics & Variables",
-    resources: [
-      { type: "article", title: "Python Data Structures Explained", url: "https://docs.python.org/3/tutorial/datastructures.html", duration: "18 min", difficulty: "Beginner" },
-      { type: "documentation", title: "Python Standard Library Reference", url: "https://docs.python.org/3/library/", duration: "30 min", difficulty: "Intermediate" },
-      { type: "article", title: "Object-Oriented Programming in Python", url: "https://realpython.com/python3-object-oriented-programming/", duration: "22 min", difficulty: "Intermediate" }
+    technologies: ["Python", "APIs", "Flask/FastAPI", "Data Science"],
+    nextLesson: "Python Syntax & Variables",
+    levels: [
+      {
+        name: "Beginner Level (Foundations)",
+        goal: "Understand syntax, data types, and basic problem-solving",
+        topics: [
+          "Python Syntax & Variables",
+          "Data Types & Type Casting", 
+          "Control Structures (if/elif/else)",
+          "Loops (for/while)",
+          "Functions & Scope",
+          "Data Structures (lists, dicts, sets)",
+          "Basic Input/Output & File handling",
+          "Error Handling (try/except)"
+        ],
+        project: "CLI to-do list or basic calculator"
+      },
+      {
+        name: "Intermediate Level (Core Dev Skills)",
+        goal: "Write reusable, modular, and real-world Python code",
+        topics: [
+          "OOP (Classes, inheritance, polymorphism)",
+          "Modules & Packages",
+          "Working with External Libraries",
+          "File & Directory Management",
+          "Virtual Environments",
+          "Debugging & Logging",
+          "Unit Testing (unittest, pytest)",
+          "Data Handling (pandas, numpy)"
+        ],
+        project: "Weather app using APIs or note manager"
+      },
+      {
+        name: "Advanced Level (Real Engineering)",
+        goal: "Write production-grade, efficient, and scalable Python code",
+        topics: [
+          "Advanced OOP Concepts",
+          "Decorators & Generators",
+          "Concurrency & Parallelism",
+          "Design Patterns",
+          "Data Structures & Algorithms",
+          "Web Development (Flask/FastAPI)",
+          "Automation & Data Science",
+          "Packaging & Deployment"
+        ],
+        project: "REST API or machine learning pipeline"
+      }
     ]
   },
   {
@@ -558,7 +608,7 @@ export default function CompellingDashboard({ user, profile, onProfileUpdate, sh
                             ))}
                           </div>
 
-                          {path.nextLesson && (
+                          {path.nextLesson && path.id !== "python-mastery" && (
                             <div className="mt-4 p-3 bg-muted/30 rounded-lg">
                               <div className="flex items-center space-x-2">
                                 <Play className="h-4 w-4 text-primary" />
@@ -567,7 +617,7 @@ export default function CompellingDashboard({ user, profile, onProfileUpdate, sh
                             </div>
                           )}
 
-                          {path.resources && path.resources.length > 0 && (
+                          {path.resources && path.resources.length > 0 && path.id !== "python-mastery" && (
                             <div className="mt-4 space-y-2">
                               <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                                 <BookOpen className="h-4 w-4" />
