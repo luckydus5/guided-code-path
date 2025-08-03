@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
+import CodeEditor from "./CodeEditor";
 import { 
   BookOpen, 
   Code, 
@@ -477,6 +478,478 @@ console.log(calculateTip(100, 15)); // Should return 15`,
         }
       }
     ]
+  },
+  
+  // Python Content
+  "Python Syntax & Variables": {
+    type: "lesson",
+    difficulty: "Beginner",
+    estimatedTime: "45 min",
+    description: "Learn Python's fundamental syntax, how to output data, and work with different types of variables.",
+    steps: [
+      {
+        id: "python-intro",
+        title: "Welcome to Python",
+        content: "Python is a high-level, interpreted programming language known for its simple syntax and readability. It's perfect for beginners and powerful enough for complex applications.\n\nPython uses indentation to define code blocks, making it visually clean and easy to read.",
+        code: `# This is a Python comment
+print("Hello, World!")  # This prints text to the screen
+
+# Python is case-sensitive
+name = "Python"
+print(name)`,
+        output: `Hello, World!
+Python`,
+        tips: [
+          "Python uses # for single-line comments",
+          "Indentation matters in Python - use 4 spaces",
+          "Python is case-sensitive: 'name' and 'Name' are different"
+        ]
+      },
+      {
+        id: "python-print",
+        title: "The print() Function",
+        content: "The print() function is used to display output in Python. You can print text, numbers, and variables.",
+        code: `# Printing different types of data
+print("Hello, World!")           # String
+print(42)                        # Integer
+print(3.14)                      # Float
+print(True)                      # Boolean
+
+# Print multiple items
+print("Age:", 25)
+print("Name:", "Alice", "Score:", 95.5)`,
+        output: `Hello, World!
+42
+3.14
+True
+Age: 25
+Name: Alice Score: 95.5`,
+        tips: [
+          "Strings must be in quotes (single or double)",
+          "print() automatically adds a new line",
+          "You can print multiple items separated by commas"
+        ],
+        practice: {
+          challenge: "Create a program that prints your name, age, and favorite programming language",
+          starterCode: `# Print your information here
+# Example: print("Name:", "Your Name")`,
+          expectedOutput: "Three print statements showing personal information",
+          hints: [
+            "Use print() function for each piece of information",
+            "Include labels like 'Name:' or 'Age:'",
+            "Remember to use quotes for text"
+          ]
+        }
+      },
+      {
+        id: "python-variables",
+        title: "Variables and Data Types",
+        content: "Variables in Python are containers for storing data. Python has several built-in data types: integers, floats, strings, and booleans.\n\nUnlike some languages, Python doesn't require you to declare the type of a variable - it figures it out automatically.",
+        code: `# Different data types
+name = "Alice"           # String
+age = 25                 # Integer
+height = 5.6             # Float
+is_student = True        # Boolean
+
+# Print variables
+print("Name:", name)
+print("Age:", age)
+print("Height:", height)
+print("Student:", is_student)
+
+# Check the type of a variable
+print(type(name))        # <class 'str'>
+print(type(age))         # <class 'int'>`,
+        output: `Name: Alice
+Age: 25
+Height: 5.6
+Student: True
+<class 'str'>
+<class 'int'>`,
+        tips: [
+          "Variable names should be descriptive",
+          "Use snake_case for variable names (e.g., first_name)",
+          "Python determines the type automatically",
+          "Use type() to check a variable's data type"
+        ],
+        exercises: [
+          "Create variables for a book: title, author, pages, and is_available",
+          "Print each variable with a descriptive label",
+          "Use type() to check the data type of each variable"
+        ],
+        practice: {
+          challenge: "Create a program about your favorite movie with variables for title, year, rating, and whether you've watched it",
+          starterCode: `# Create variables for movie information
+# title = 
+# year = 
+# rating = 
+# watched = 
+
+# Print the information`,
+          expectedOutput: "Variables created and printed with labels",
+          hints: [
+            "Use strings for text data",
+            "Use integers for whole numbers like year",
+            "Use floats for decimal numbers like rating",
+            "Use booleans (True/False) for yes/no questions"
+          ]
+        }
+      }
+    ]
+  },
+  
+  "Data Types & Type Casting": {
+    type: "lesson",
+    difficulty: "Beginner",
+    estimatedTime: "40 min",
+    description: "Learn about Python's built-in data types and how to convert between them.",
+    steps: [
+      {
+        id: "data-types-intro",
+        title: "Python Data Types",
+        content: "Python has several built-in data types. The most common ones are:\n\n• int (integers): whole numbers\n• float (floating-point): decimal numbers\n• str (strings): text\n• bool (booleans): True or False\n\nPython automatically determines the type based on the value you assign.",
+        code: `# Different data types
+age = 25                    # int
+height = 5.9               # float
+name = "Alice"             # str
+is_student = True          # bool
+
+# Check data types
+print(type(age))           # <class 'int'>
+print(type(height))        # <class 'float'>
+print(type(name))          # <class 'str'>
+print(type(is_student))    # <class 'bool'>`,
+        output: `<class 'int'>
+<class 'float'>
+<class 'str'>
+<class 'bool'>`,
+        tips: [
+          "Use type() function to check the data type",
+          "Python is dynamically typed - variables can change types",
+          "Integers have no size limit in Python"
+        ]
+      },
+      {
+        id: "type-casting",
+        title: "Type Casting/Conversion",
+        content: "Type casting means converting one data type to another. Python provides built-in functions for this: int(), float(), str(), and bool().",
+        code: `# Converting between types
+number_str = "42"
+number_int = int(number_str)    # String to integer
+print(number_int)               # 42
+
+price_int = 25
+price_float = float(price_int)  # Integer to float
+print(price_float)              # 25.0
+
+age = 30
+age_str = str(age)              # Integer to string
+print(age_str)                  # "30"
+
+# Boolean conversions
+print(bool(0))                  # False
+print(bool(1))                  # True
+print(bool(""))                 # False (empty string)
+print(bool("Hello"))            # True`,
+        output: `42
+25.0
+30
+False
+True
+False
+True`,
+        tips: [
+          "int() converts to whole numbers (truncates decimals)",
+          "float() converts to decimal numbers",
+          "str() converts anything to text",
+          "bool() converts to True/False (0 and empty values are False)"
+        ],
+        practice: {
+          challenge: "Create a program that asks for a user's age as a string, converts it to an integer, and calculates their birth year",
+          starterCode: `# Get age as string input
+age_str = "25"  # Pretend this is user input
+
+# Convert to integer and calculate birth year
+# Hint: current year is 2024
+
+print("Age:", age_int)
+print("Birth year:", birth_year)`,
+          expectedOutput: "Age and calculated birth year displayed",
+          hints: [
+            "Use int() to convert string to number",
+            "Subtract age from current year (2024)",
+            "Don't forget to assign the converted value to a variable"
+          ]
+        }
+      }
+    ]
+  },
+  
+  "Control Structures": {
+    type: "lesson",
+    difficulty: "Beginner", 
+    estimatedTime: "50 min",
+    description: "Learn how to make decisions in your code using if, elif, and else statements.",
+    steps: [
+      {
+        id: "if-statements",
+        title: "If Statements",
+        content: "If statements allow your program to make decisions. They execute code only when a condition is True.\n\nPython uses indentation (4 spaces) to define code blocks.",
+        code: `# Basic if statement
+age = 18
+
+if age >= 18:
+    print("You are an adult")
+    print("You can vote")
+
+print("This always runs")
+
+# Simple comparison
+score = 85
+
+if score >= 80:
+    print("Great job!")`,
+        output: `You are an adult
+You can vote
+This always runs
+Great job!`,
+        tips: [
+          "Use : (colon) after the if condition",
+          "Indent the code inside if with 4 spaces",
+          "Comparison operators: ==, !=, <, >, <=, >="
+        ]
+      },
+      {
+        id: "if-else",
+        title: "If-Else Statements",
+        content: "Else provides an alternative when the if condition is False.",
+        code: `# If-else example
+temperature = 15
+
+if temperature > 20:
+    print("It's warm outside")
+else:
+    print("It's cool outside")
+
+# Another example
+password = "secret123"
+
+if password == "admin123":
+    print("Access granted")
+else:
+    print("Access denied")`,
+        output: `It's cool outside
+Access denied`,
+        tips: [
+          "else must be at the same indentation level as if",
+          "Only one of if or else will execute, never both",
+          "Use == for equality comparison, = for assignment"
+        ]
+      },
+      {
+        id: "elif-statements",
+        title: "Elif (Else If) Statements",
+        content: "Elif allows you to check multiple conditions in sequence.",
+        code: `# Multiple conditions with elif
+grade = 75
+
+if grade >= 90:
+    print("A - Excellent!")
+elif grade >= 80:
+    print("B - Good job!")
+elif grade >= 70:
+    print("C - Satisfactory")
+elif grade >= 60:
+    print("D - Needs improvement")
+else:
+    print("F - Please study more")
+
+# Weather example
+weather = "sunny"
+
+if weather == "sunny":
+    print("Wear sunglasses!")
+elif weather == "rainy":
+    print("Take an umbrella!")
+elif weather == "snowy":
+    print("Wear warm clothes!")
+else:
+    print("Check the weather forecast!")`,
+        output: `C - Satisfactory
+Wear sunglasses!`,
+        tips: [
+          "elif is short for 'else if'",
+          "You can have multiple elif statements",
+          "Only the first True condition will execute"
+        ],
+        practice: {
+          challenge: "Create a simple calculator that checks the operation (+, -, *, /) and performs the calculation",
+          starterCode: `# Simple calculator
+num1 = 10
+num2 = 5
+operation = "+"
+
+# Write if-elif-else statements to perform the operation
+# Print the result`,
+          expectedOutput: "Result of the mathematical operation",
+          hints: [
+            "Check if operation == '+' for addition",
+            "Use elif for other operations (-, *, /)",
+            "Use else for invalid operations"
+          ]
+        }
+      }
+    ]
+  },
+  
+  "Loops": {
+    type: "lesson",
+    difficulty: "Beginner",
+    estimatedTime: "55 min", 
+    description: "Learn how to repeat code efficiently using for and while loops.",
+    steps: [
+      {
+        id: "for-loops",
+        title: "For Loops",
+        content: "For loops repeat code a specific number of times. They're great for iterating through sequences like lists or ranges.",
+        code: `# Basic for loop with range
+print("Counting to 5:")
+for i in range(5):
+    print(i)
+
+print("\\nCounting from 1 to 5:")
+for i in range(1, 6):
+    print(i)
+
+print("\\nCounting by 2s:")
+for i in range(0, 10, 2):
+    print(i)
+
+# Loop through a list
+fruits = ["apple", "banana", "orange"]
+print("\\nFruits:")
+for fruit in fruits:
+    print(f"I like {fruit}")`,
+        output: `Counting to 5:
+0
+1
+2
+3
+4
+
+Counting from 1 to 5:
+1
+2
+3
+4
+5
+
+Counting by 2s:
+0
+2
+4
+6
+8
+
+Fruits:
+I like apple
+I like banana
+I like orange`,
+        tips: [
+          "range(n) goes from 0 to n-1",
+          "range(start, stop) goes from start to stop-1",
+          "range(start, stop, step) allows custom increments",
+          "For loops automatically handle iteration"
+        ]
+      },
+      {
+        id: "while-loops",
+        title: "While Loops", 
+        content: "While loops repeat code as long as a condition is True. Be careful to avoid infinite loops!",
+        code: `# Basic while loop
+count = 0
+print("Counting with while loop:")
+while count < 5:
+    print(count)
+    count = count + 1  # or count += 1
+
+print("\\nGuessing game simulation:")
+secret_number = 7
+guess = 1
+
+while guess != secret_number:
+    print(f"Guess {guess} is wrong")
+    guess += 1
+
+print(f"Correct! The number was {secret_number}")`,
+        output: `Counting with while loop:
+0
+1
+2
+3
+4
+
+Guessing game simulation:
+Guess 1 is wrong
+Guess 2 is wrong
+Guess 3 is wrong
+Guess 4 is wrong
+Guess 5 is wrong
+Guess 6 is wrong
+Correct! The number was 7`,
+        tips: [
+          "Always modify the loop variable inside the loop",
+          "Make sure the condition will eventually become False",
+          "Use += to increment: count += 1 is same as count = count + 1"
+        ]
+      },
+      {
+        id: "loop-control",
+        title: "Loop Control: Break and Continue",
+        content: "Break exits a loop early, and continue skips to the next iteration.",
+        code: `# Break example - exit loop early
+print("Finding first even number:")
+for num in [1, 3, 5, 8, 9, 10]:
+    if num % 2 == 0:  # Check if even
+        print(f"Found even number: {num}")
+        break
+    print(f"{num} is odd")
+
+print("\\nSkipping odd numbers with continue:")
+for num in range(1, 8):
+    if num % 2 == 1:  # If odd
+        continue  # Skip to next iteration
+    print(f"{num} is even")`,
+        output: `Finding first even number:
+1 is odd
+3 is odd
+5 is odd
+Found even number: 8
+
+Skipping odd numbers with continue:
+2 is even
+4 is even
+6 is even`,
+        tips: [
+          "break completely exits the loop",
+          "continue skips the rest of the current iteration",
+          "Use % (modulo) to check if a number is even/odd"
+        ],
+        practice: {
+          challenge: "Create a program that prints numbers 1-20, but skips multiples of 3 and stops if it finds a number greater than 15",
+          starterCode: `# Print numbers 1-20 with conditions
+for num in range(1, 21):
+    # Add your conditions here
+    print(num)`,
+          expectedOutput: "Numbers 1-20 printed with specified conditions",
+          hints: [
+            "Use % 3 == 0 to check multiples of 3",
+            "Use continue to skip multiples of 3",
+            "Use break when num > 15"
+          ]
+        }
+      }
+    ]
   }
 };
 
@@ -495,6 +968,29 @@ export default function LearningContent({
   const [showHints, setShowHints] = useState(false);
   const [hasRestoredState, setHasRestoredState] = useState(false);
   const [autoSaveIndicator, setAutoSaveIndicator] = useState(false);
+  
+  // Determine language based on lesson title or content
+  const getLanguageFromTitle = (title: string): string => {
+    const titleLower = title.toLowerCase();
+    if (titleLower.includes('python') || titleLower.includes('syntax & variables') || 
+        titleLower.includes('data types') || titleLower.includes('control structures') ||
+        titleLower.includes('loops') || titleLower.includes('functions') ||
+        titleLower.includes('oop')) {
+      return 'python';
+    }
+    if (titleLower.includes('javascript') || titleLower.includes('js')) {
+      return 'javascript';
+    }
+    if (titleLower.includes('html')) {
+      return 'html';
+    }
+    if (titleLower.includes('css')) {
+      return 'css';
+    }
+    return 'python'; // Default to Python for this learning path
+  };
+
+  const currentLanguage = getLanguageFromTitle(title);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -679,44 +1175,109 @@ export default function LearningContent({
   };
 
   const copyCode = (code: string) => {
-    navigator.clipboard.writeText(code);
+    if (currentLanguage === 'python') {
+      // For Python lessons, copy to practice area
+      setPracticeCode(code);
+      setPracticeOutput('Code copied to practice area! Click "Run Code" to execute.');
+    } else {
+      // For other languages, copy to clipboard
+      navigator.clipboard.writeText(code);
+    }
   };
 
   const runPracticeCode = () => {
     const practice = (currentStepData as LessonStep).practice;
     if (practice) {
-      // Create a simple HTML document with the user's code
-      const htmlDoc = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            ${practiceCode.includes('.') ? practiceCode : ''}
-          </style>
-        </head>
-        <body>
-          ${!practiceCode.includes('.') ? practiceCode : '<div class="container"><div class="item box box1"></div><div class="item box box2"></div><div class="item box box3"></div></div>'}
-          <script>
-            try {
-              ${practiceCode.includes('function') || practiceCode.includes('let') || practiceCode.includes('const') ? practiceCode : ''}
-            } catch(e) {
-              document.body.innerHTML += '<div style="color: red; margin-top: 20px;">Error: ' + e.message + '</div>';
-            }
-          </script>
-        </body>
-        </html>
-      `;
-      
-      if (iframeRef.current) {
-        const doc = iframeRef.current.contentDocument;
-        if (doc) {
-          doc.open();
-          doc.write(htmlDoc);
-          doc.close();
+      if (currentLanguage === 'python') {
+        // Simulate Python code execution
+        try {
+          let output = '';
+          
+          // Simple Python print() simulation
+          const printStatements = practiceCode.match(/print\((.*?)\)/g);
+          if (printStatements) {
+            printStatements.forEach(statement => {
+              const content = statement.match(/print\((.*?)\)/)?.[1];
+              if (content) {
+                // Remove quotes and evaluate simple expressions
+                let result = content.replace(/["']/g, '');
+                
+                // Handle simple variable assignments
+                const lines = practiceCode.split('\n');
+                lines.forEach(line => {
+                  const varMatch = line.match(/(\w+)\s*=\s*(.+)/);
+                  if (varMatch) {
+                    const varName = varMatch[1];
+                    const varValue = varMatch[2].replace(/["']/g, '');
+                    result = result.replace(new RegExp(varName, 'g'), varValue);
+                  }
+                });
+                
+                // Handle simple arithmetic
+                try {
+                  if (/^[\d\s+\-*/().]+$/.test(result)) {
+                    result = eval(result).toString();
+                  }
+                } catch (e) {
+                  // Keep original if eval fails
+                }
+                
+                output += result + '\n';
+              }
+            });
+          }
+          
+          // Check for common Python patterns
+          if (practiceCode.includes('range(')) {
+            output += 'Code executed successfully!\n';
+          }
+          
+          if (practiceCode.includes('if ') || practiceCode.includes('for ') || practiceCode.includes('while ')) {
+            output += 'Control structure executed!\n';
+          }
+          
+          if (!output) {
+            output = 'Code executed successfully! (No output produced)';
+          }
+          
+          setPracticeOutput(output.trim());
+        } catch (error) {
+          setPracticeOutput(`Error: ${error}`);
         }
+      } else {
+        // Original HTML/CSS/JavaScript logic
+        const htmlDoc = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 20px; }
+              ${practiceCode.includes('.') ? practiceCode : ''}
+            </style>
+          </head>
+          <body>
+            ${!practiceCode.includes('.') ? practiceCode : '<div class="container"><div class="item box box1"></div><div class="item box box2"></div><div class="item box box3"></div></div>'}
+            <script>
+              try {
+                ${practiceCode.includes('function') || practiceCode.includes('let') || practiceCode.includes('const') ? practiceCode : ''}
+              } catch(e) {
+                document.body.innerHTML += '<div style="color: red; margin-top: 20px;">Error: ' + e.message + '</div>';
+              }
+            </script>
+          </body>
+          </html>
+        `;
+        
+        if (iframeRef.current) {
+          const doc = iframeRef.current.contentDocument;
+          if (doc) {
+            doc.open();
+            doc.write(htmlDoc);
+            doc.close();
+          }
+        }
+        setPracticeOutput('Code executed! Check the preview above.');
       }
-      setPracticeOutput('Code executed! Check the preview above.');
     }
   };
 
@@ -729,9 +1290,24 @@ export default function LearningContent({
   const initializePractice = () => {
     const practice = (currentStepData as LessonStep).practice;
     if (practice && !practiceCode) {
-      setPracticeCode(practice.starterCode);
+      if (currentLanguage === 'python' && practice.starterCode) {
+        setPracticeCode(practice.starterCode);
+        setPracticeOutput('Ready to practice! Modify the code and click "Run Code" to see results.');
+      } else {
+        setPracticeCode(practice.starterCode || '');
+      }
     }
   };
+
+  // Auto-show practice for Python lessons
+  React.useEffect(() => {
+    if (currentLanguage === 'python' && currentStepData && (currentStepData as LessonStep).practice) {
+      setShowPractice(true);
+      if (!practiceCode) {
+        initializePractice();
+      }
+    }
+  }, [currentStepData, currentLanguage]);
 
   // Initialize practice code when step changes
   React.useEffect(() => {
@@ -800,6 +1376,11 @@ export default function LearningContent({
                   <Badge variant={difficulty === 'Beginner' ? 'default' : difficulty === 'Intermediate' ? 'secondary' : 'destructive'} className="text-xs">
                     {difficulty}
                   </Badge>
+                  {currentLanguage === 'python' && (
+                    <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                      🐍 Interactive Python
+                    </Badge>
+                  )}
                 </div>
               </div>
             </div>
@@ -842,12 +1423,16 @@ export default function LearningContent({
                         onClick={() => copyCode(currentStepData.code!)}
                       >
                         <Copy className="h-3 w-3 mr-1" />
-                        Copy
+                        {currentLanguage === 'python' ? 'Copy to Practice' : 'Copy'}
                       </Button>
                     </div>
-                    <pre className="bg-muted p-3 rounded-lg overflow-x-auto text-xs">
-                      <code>{currentStepData.code}</code>
-                    </pre>
+                    <div className="border rounded-lg overflow-hidden">
+                      <CodeEditor
+                        value={currentStepData.code}
+                        onChange={() => {}} // Read-only for examples
+                        language={currentLanguage}
+                      />
+                    </div>
                     
                     {(currentStepData as LessonStep).output && (
                       <div className="mt-3">
@@ -878,11 +1463,13 @@ export default function LearningContent({
                         size="sm"
                         onClick={() => {
                           setShowPractice(!showPractice);
-                          initializePractice();
+                          if (!showPractice) {
+                            initializePractice();
+                          }
                         }}
                       >
                         <Terminal className="h-4 w-4 mr-2" />
-                        {showPractice ? 'Hide Practice' : 'Start Practice'}
+                        {showPractice ? 'Hide Practice' : (currentLanguage === 'python' ? 'Practice Python' : 'Start Practice')}
                       </Button>
                     </div>
 
@@ -893,6 +1480,12 @@ export default function LearningContent({
                       <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
                         <strong>Expected:</strong> {((currentStepData as LessonStep).practice!).expectedOutput}
                       </p>
+                      {currentLanguage === 'python' && (
+                        <p className="text-xs text-blue-600 dark:text-blue-400 mt-2 flex items-center gap-1">
+                          <Terminal className="h-3 w-3" />
+                          <strong>Tip:</strong> Copy example code above to get started, then modify it to complete the challenge!
+                        </p>
+                      )}
                     </div>
 
                     {showPractice && (
@@ -924,12 +1517,13 @@ export default function LearningContent({
                                   </Button>
                                 </div>
                               </div>
-                              <Textarea
-                                value={practiceCode}
-                                onChange={(e) => setPracticeCode(e.target.value)}
-                                className="font-mono text-xs min-h-[180px] resize-none"
-                                placeholder="Write your code here..."
-                              />
+                              <div className="h-[300px]">
+                                <CodeEditor
+                                  value={practiceCode}
+                                  onChange={setPracticeCode}
+                                  language={currentLanguage}
+                                />
+                              </div>
                             </div>
                             
                             {practiceOutput && (

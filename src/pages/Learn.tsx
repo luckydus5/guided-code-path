@@ -91,6 +91,7 @@ export default function Learn() {
     title: string;
     type: string;
     difficulty: string;
+    description?: string;
   } | null>(null);
 
   // Storage key for current learning content
@@ -255,17 +256,101 @@ export default function Learn() {
         { type: "github", title: "JavaScript Algorithms and Data Structures", url: "https://github.com/trekhleb/javascript-algorithms", stars: "183k", difficulty: "Intermediate", description: "Algorithms and data structures implemented in JavaScript with explanations" }
       ],
       python: [
-        { type: "video", title: "Python Data Structures & Algorithms", url: "#", duration: "70 min", difficulty: "Beginner" },
-        { type: "article", title: "Object-Oriented Programming in Python", url: "#", duration: "35 min", difficulty: "Beginner" },
-        { type: "documentation", title: "Python Standard Library Overview", url: "#", duration: "25 min", difficulty: "Intermediate" },
-        { type: "video", title: "Web Development with Flask/Django", url: "#", duration: "80 min", difficulty: "Intermediate" },
-        { type: "article", title: "Machine Learning with Python", url: "#", duration: "45 min", difficulty: "Advanced" },
-        { type: "video", title: "Python Performance & Optimization", url: "#", duration: "50 min", difficulty: "Advanced" },
-        // GitHub Repositories
-        { type: "github", title: "The Algorithms - Python Implementation", url: "https://github.com/TheAlgorithms/Python", stars: "178k", difficulty: "Intermediate", description: "All algorithms implemented in Python with detailed explanations" },
-        { type: "github", title: "Python Programming Exercises", url: "https://github.com/zhiwehu/Python-programming-exercises", stars: "25k", difficulty: "Beginner", description: "100+ Python programming exercises with solutions for skill building" },
-        { type: "github", title: "Real Python Tutorials", url: "https://github.com/realpython/python-guide", stars: "27k", difficulty: "Intermediate", description: "Python best practices guidebook written for humans" },
-        { type: "github", title: "Project-Based Learning Python", url: "https://github.com/practical-tutorials/project-based-learning", stars: "157k", difficulty: "Beginner", description: "Curated list of project-based Python tutorials and learning resources" }
+        // ✅ Beginner Level (Foundations)
+        { type: "level", title: "✅ Beginner Level (Foundations)", goal: "Understand syntax, data types, and basic problem-solving", duration: "4-6 weeks", difficulty: "Beginner" },
+        
+        // Python Syntax & Variables
+        { type: "lesson", title: "Python Syntax & Variables", description: "print(), indentation, comments - Declaring variables (int, float, string, bool)", duration: "45 min", difficulty: "Beginner" },
+        
+        // Data Types & Type Casting
+        { type: "lesson", title: "Data Types & Type Casting", description: "int(), float(), str(), bool()", duration: "40 min", difficulty: "Beginner" },
+        
+        // Control Structures
+        { type: "lesson", title: "Control Structures", description: "if, elif, else - Logical & comparison operators", duration: "50 min", difficulty: "Beginner" },
+        
+        // Loops
+        { type: "lesson", title: "Loops", description: "for and while loops - break, continue, range()", duration: "55 min", difficulty: "Beginner" },
+        
+        // Functions
+        { type: "lesson", title: "Functions", description: "def, return values, arguments, scope", duration: "60 min", difficulty: "Beginner" },
+        
+        // Data Structures
+        { type: "lesson", title: "Data Structures", description: "Lists, tuples, sets, dictionaries - Basic operations and methods (append, pop, keys())", duration: "70 min", difficulty: "Beginner" },
+        
+        // Basic Input/Output
+        { type: "lesson", title: "Basic Input/Output", description: "input(), file reading/writing (open, read, write, with)", duration: "45 min", difficulty: "Beginner" },
+        
+        // Error Handling
+        { type: "lesson", title: "Error Handling", description: "try, except, finally", duration: "40 min", difficulty: "Beginner" },
+        
+        // Beginner Project
+        { type: "project", title: "🔧 Project: Build a CLI to-do list or basic calculator", description: "Apply beginner concepts in a real project", duration: "4-6 hours", difficulty: "Beginner" },
+
+        // ⚙️ Intermediate Level (Core Dev Skills)
+        { type: "level", title: "⚙️ Intermediate Level (Core Dev Skills)", goal: "Write reusable, modular, and real-world Python code", duration: "6-8 weeks", difficulty: "Intermediate" },
+        
+        // OOP (Object-Oriented Programming)
+        { type: "lesson", title: "OOP (Object-Oriented Programming)", description: "Classes, objects, __init__, inheritance, polymorphism", duration: "90 min", difficulty: "Intermediate" },
+        
+        // Modules & Packages
+        { type: "lesson", title: "Modules & Packages", description: "import, creating your own modules - __name__ == '__main__' concept", duration: "60 min", difficulty: "Intermediate" },
+        
+        // Working with External Libraries
+        { type: "lesson", title: "Working with External Libraries", description: "pip, using libraries like requests, datetime, os, json", duration: "75 min", difficulty: "Intermediate" },
+        
+        // File & Directory Management
+        { type: "lesson", title: "File & Directory Management", description: "Handling files, working with CSV/JSON, paths", duration: "65 min", difficulty: "Intermediate" },
+        
+        // Virtual Environments & Dependency Management
+        { type: "lesson", title: "Virtual Environments & Dependency Management", description: "venv, pip freeze, requirements.txt", duration: "50 min", difficulty: "Intermediate" },
+        
+        // Debugging & Logging
+        { type: "lesson", title: "Debugging & Logging", description: "logging, pdb, stack traces", duration: "55 min", difficulty: "Intermediate" },
+        
+        // Unit Testing
+        { type: "lesson", title: "Unit Testing", description: "unittest, pytest, TDD basics", duration: "80 min", difficulty: "Intermediate" },
+        
+        // Data Handling
+        { type: "lesson", title: "Data Handling", description: "Use pandas and numpy for structured data", duration: "85 min", difficulty: "Intermediate" },
+        
+        // Intermediate Project
+        { type: "project", title: "🔧 Project: Build a weather app using an API, or a command-line note manager", description: "Create real-world applications with APIs", duration: "8-12 hours", difficulty: "Intermediate" },
+
+        // 🧠 Advanced Level (Real Engineering)
+        { type: "level", title: "🧠 Advanced Level (Real Engineering)", goal: "Write production-grade, efficient, and scalable Python code", duration: "8-10 weeks", difficulty: "Advanced" },
+        
+        // Advanced OOP Concepts
+        { type: "lesson", title: "Advanced OOP Concepts", description: "Encapsulation, abstraction, classmethods, staticmethods, @property", duration: "95 min", difficulty: "Advanced" },
+        
+        // Decorators & Generators
+        { type: "lesson", title: "Decorators & Generators", description: "yield, @decorator, closures, functools", duration: "90 min", difficulty: "Advanced" },
+        
+        // Concurrency & Parallelism
+        { type: "lesson", title: "Concurrency & Parallelism", description: "threading, multiprocessing, asyncio, await", duration: "100 min", difficulty: "Advanced" },
+        
+        // Design Patterns
+        { type: "lesson", title: "Design Patterns", description: "Singleton, Factory, Observer, etc.", duration: "85 min", difficulty: "Advanced" },
+        
+        // Data Structures & Algorithms
+        { type: "lesson", title: "Data Structures & Algorithms", description: "Trees, graphs, recursion, search & sort, big-O complexity", duration: "120 min", difficulty: "Advanced" },
+        
+        // Advanced Libraries - Web
+        { type: "lesson", title: "Advanced Libraries: Web", description: "Flask, FastAPI", duration: "95 min", difficulty: "Advanced" },
+        
+        // Advanced Libraries - Automation
+        { type: "lesson", title: "Advanced Libraries: Automation", description: "Selenium, BeautifulSoup", duration: "80 min", difficulty: "Advanced" },
+        
+        // Advanced Libraries - Data Science
+        { type: "lesson", title: "Advanced Libraries: Data Science", description: "pandas, matplotlib, seaborn, scikit-learn", duration: "110 min", difficulty: "Advanced" },
+        
+        // Packaging & Deployment
+        { type: "lesson", title: "Packaging & Deployment", description: "Build Python packages, publish to PyPI, create CLI tools", duration: "75 min", difficulty: "Advanced" },
+        
+        // Security & Best Practices
+        { type: "lesson", title: "Security & Best Practices", description: "Handle user input safely, sanitize data, secure APIs", duration: "70 min", difficulty: "Advanced" },
+        
+        // Advanced Project
+        { type: "project", title: "🔧 Project: Build a REST API with Flask/FastAPI, or a machine learning pipeline for a real dataset", description: "Create production-grade applications", duration: "15-20 hours", difficulty: "Advanced" }
       ],
       java: [
         { type: "video", title: "Java Fundamentals & OOP Concepts", url: "#", duration: "75 min", difficulty: "Beginner" },
@@ -362,6 +447,9 @@ export default function Learn() {
       case "video": return <Video className="h-4 w-4" />;
       case "documentation": return <FileText className="h-4 w-4" />;
       case "github": return <Github className="h-4 w-4" />;
+      case "level": return <Target className="h-4 w-4" />;
+      case "lesson": return <BookOpen className="h-4 w-4" />;
+      case "project": return <Code className="h-4 w-4" />;
       default: return <BookOpen className="h-4 w-4" />;
     }
   };
@@ -489,81 +577,99 @@ export default function Learn() {
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {getLanguageLearningResources(language || 'python').map((resource, index) => (
-                  <Card key={index} className="p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer">
-                    <div className="flex items-start gap-3 mb-4">
-                      <div className="p-2 rounded-lg bg-primary/10">
-                        <ResourceIcon type={resource.type} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <Badge variant="outline" className="text-xs capitalize">
-                            {resource.type}
-                          </Badge>
-                          {resource.type === 'github' ? (
-                            <div className="flex items-center gap-1">
-                              <Star className="h-3 w-3 text-yellow-500" />
-                              <span className="text-xs text-muted-foreground">{resource.stars}</span>
+              <div className="space-y-6">
+                {getLanguageLearningResources(language || 'python').map((resource, index) => {
+                  // Level headers
+                  if (resource.type === 'level') {
+                    return (
+                      <div key={index} className="mb-8">
+                        <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-6 rounded-lg border-l-4 border-primary">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="p-2 rounded-lg bg-primary/20">
+                              <Target className="h-5 w-5 text-primary" />
                             </div>
-                          ) : (
+                            <h2 className="text-xl font-bold">{resource.title}</h2>
                             <Badge variant="secondary" className="text-xs">
                               {resource.duration}
                             </Badge>
-                          )}
+                          </div>
+                          <p className="text-muted-foreground ml-11">
+                            <strong>Goal:</strong> {resource.goal}
+                          </p>
                         </div>
-                        <Badge 
-                          variant={resource.difficulty === 'Beginner' ? 'default' : resource.difficulty === 'Intermediate' ? 'secondary' : 'destructive'} 
-                          className="text-xs"
-                        >
-                          {resource.difficulty}
-                        </Badge>
                       </div>
-                    </div>
-                    
-                    <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
-                      {resource.title}
-                    </h3>
-                    
-                    {resource.type === 'github' && resource.description && (
-                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                        {resource.description}
-                      </p>
-                    )}
-                    
-                    <div className="space-y-3">
-                      <Button 
-                        size="sm" 
-                        className="w-full" 
-                        variant="outline"
-                        onClick={() => {
-                          if (resource.type === 'github') {
-                            window.open(resource.url, '_blank');
-                          } else {
-                            // Show learning content for articles and documentation
+                    );
+                  }
+
+                  // Regular lessons and projects
+                  return (
+                    <Card key={index} className={`p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer ${
+                      resource.type === 'project' ? 'border-l-4 border-orange-500 bg-orange-50/50 dark:bg-orange-900/10' : ''
+                    }`}>
+                      <div className="flex items-start gap-3 mb-4">
+                        <div className={`p-2 rounded-lg ${
+                          resource.type === 'project' ? 'bg-orange-500/20' : 'bg-primary/10'
+                        }`}>
+                          <ResourceIcon type={resource.type} />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-1">
+                            <Badge variant="outline" className="text-xs capitalize">
+                              {resource.type}
+                            </Badge>
+                            <Badge variant="secondary" className="text-xs">
+                              {resource.duration}
+                            </Badge>
+                          </div>
+                          <Badge 
+                            variant={resource.difficulty === 'Beginner' ? 'default' : resource.difficulty === 'Intermediate' ? 'secondary' : 'destructive'} 
+                            className="text-xs"
+                          >
+                            {resource.difficulty}
+                          </Badge>
+                        </div>
+                      </div>
+                      
+                      <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
+                        {resource.title}
+                      </h3>
+                      
+                      {resource.description && (
+                        <p className="text-sm text-muted-foreground mb-3">
+                          {resource.description}
+                        </p>
+                      )}
+                      
+                      <div className="space-y-3">
+                        <Button 
+                          size="sm" 
+                          className="w-full" 
+                          variant={resource.type === 'project' ? 'default' : 'outline'}
+                          onClick={() => {
                             setCurrentLearningContent({
                               title: resource.title,
                               type: resource.type,
-                              difficulty: resource.difficulty
+                              difficulty: resource.difficulty,
+                              description: resource.description
                             });
-                          }
-                        }}
-                      >
-                        {resource.type === 'github' ? (
-                          <>
-                            <Github className="h-3 w-3 mr-2" />
-                            View Repository
-                          </>
-                        ) : (
-                          <>
-                            <BookOpen className="h-3 w-3 mr-2" />
-                            Start Learning
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
+                          }}
+                        >
+                          {resource.type === 'project' ? (
+                            <>
+                              <Code className="h-3 w-3 mr-2" />
+                              Start Project
+                            </>
+                          ) : (
+                            <>
+                              <BookOpen className="h-3 w-3 mr-2" />
+                              Start Lesson
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
           </TabsContent>
