@@ -950,10 +950,1176 @@ for num in range(1, 21):
         }
       }
     ]
+  },
+
+  // NEW: Complete Loops System
+  "Advanced Loops": {
+    type: "lesson",
+    difficulty: "Beginner",
+    estimatedTime: "55 min",
+    description: "Master Python loops: for loops, while loops, and loop control with break and continue.",
+    steps: [
+      {
+        id: "for-loops-advanced",
+        title: "For Loops with Lists and Strings",
+        content: "For loops can iterate over any sequence in Python, not just numbers. You can loop through lists, strings, and other collections.\n\nThis makes Python loops very powerful for processing data.",
+        code: `# Loop through a list
+fruits = ["apple", "banana", "orange", "grape"]
+print("My favorite fruits:")
+for fruit in fruits:
+    print(f"- {fruit}")
+
+print("\\nLoop through a string:")
+name = "Python"
+for letter in name:
+    print(f"Letter: {letter}")
+
+# Loop with enumerate (get index and value)
+print("\\nWith index numbers:")
+for index, fruit in enumerate(fruits):
+    print(f"{index + 1}. {fruit}")`,
+        output: `My favorite fruits:
+- apple
+- banana
+- orange
+- grape
+
+Loop through a string:
+Letter: P
+Letter: y
+Letter: t
+Letter: h
+Letter: o
+Letter: n
+
+With index numbers:
+1. apple
+2. banana
+3. orange
+4. grape`,
+        tips: [
+          "for loops work with any sequence (lists, strings, ranges)",
+          "enumerate() gives you both index and value",
+          "Use meaningful variable names in loops"
+        ],
+        practice: {
+          challenge: "Create a program that takes a list of your hobbies and prints each one with a number",
+          starterCode: `# Create a list of your hobbies
+hobbies = ["reading", "gaming", "coding"]
+
+# Use a for loop to print each hobby with its number
+# Example output: "1. reading"`,
+          expectedOutput: "Each hobby printed with a number prefix",
+          hints: [
+            "Use enumerate() to get both index and hobby",
+            "Add 1 to the index to start counting from 1",
+            "Use f-strings for clean formatting"
+          ]
+        }
+      },
+      {
+        id: "while-loops",
+        title: "While Loops",
+        content: "While loops repeat code as long as a condition is True. They're perfect when you don't know exactly how many times to loop.\n\nBe careful to avoid infinite loops by making sure the condition eventually becomes False!",
+        code: `# Basic while loop
+count = 1
+print("Counting to 5:")
+while count <= 5:
+    print(f"Count: {count}")
+    count += 1  # Very important: update the variable!
+
+print("\\nUser input example:")
+password = ""
+while password != "secret":
+    password = input("Enter password: ")
+    if password != "secret":
+        print("Wrong password, try again!")
+print("Access granted!")
+
+# While loop with a counter
+total = 0
+number = 1
+while total < 50:
+    total += number
+    number += 1
+    print(f"Added {number-1}, total is now {total}")`,
+        output: `Counting to 5:
+Count: 1
+Count: 2
+Count: 3
+Count: 4
+Count: 5
+
+User input example:
+Enter password: hello
+Wrong password, try again!
+Enter password: secret
+Access granted!
+
+Added 1, total is now 1
+Added 2, total is now 3
+Added 3, total is now 6
+Added 4, total is now 10
+Added 5, total is now 15
+Added 6, total is now 21
+Added 7, total is now 28
+Added 8, total is now 36
+Added 9, total is now 45
+Added 10, total is now 55`,
+        tips: [
+          "Always update the condition variable inside the loop",
+          "while loops are great for user input validation",
+          "Be careful not to create infinite loops"
+        ],
+        practice: {
+          challenge: "Create a number guessing game where the user keeps guessing until they get the right number (42)",
+          starterCode: `# Number guessing game
+secret_number = 42
+guess = 0
+
+print("I'm thinking of a number between 1 and 100!")
+# Add your while loop here`,
+          expectedOutput: "Loop continues until user guesses 42",
+          hints: [
+            "Use while guess != secret_number:",
+            "Ask for input inside the loop",
+            "Convert input() to int()",
+            "Provide feedback if guess is too high or low"
+          ]
+        }
+      },
+      {
+        id: "loop-control",
+        title: "Loop Control: break and continue",
+        content: "Sometimes you need to control loop execution. `break` exits the loop completely, while `continue` skips to the next iteration.\n\nThese keywords give you fine control over loop behavior.",
+        code: `# Using break to exit early
+print("Finding first even number:")
+numbers = [1, 3, 7, 8, 9, 10]
+for num in numbers:
+    print(f"Checking {num}")
+    if num % 2 == 0:
+        print(f"Found even number: {num}")
+        break
+    print(f"{num} is odd, continuing...")
+
+print("\\nUsing continue to skip iterations:")
+for i in range(1, 11):
+    if i % 3 == 0:
+        continue  # Skip multiples of 3
+    print(f"Number: {i}")
+
+print("\\nPractical example - password validator:")
+attempts = 0
+max_attempts = 3
+
+while attempts < max_attempts:
+    password = input("Enter password: ")
+    attempts += 1
+    
+    if len(password) < 6:
+        print("Password too short!")
+        continue
+    
+    if password == "secure123":
+        print("Login successful!")
+        break
+    
+    print(f"Wrong password. {max_attempts - attempts} attempts left.")
+else:
+    print("Too many failed attempts. Account locked!")`,
+        output: `Finding first even number:
+Checking 1
+1 is odd, continuing...
+Checking 3
+3 is odd, continuing...
+Checking 7
+7 is odd, continuing...
+Checking 8
+Found even number: 8
+
+Using continue to skip iterations:
+Number: 1
+Number: 2
+Number: 4
+Number: 5
+Number: 7
+Number: 8
+Number: 10`,
+        tips: [
+          "break exits the entire loop immediately",
+          "continue skips the rest of the current iteration",
+          "else clause on loops runs if no break occurred"
+        ],
+        practice: {
+          challenge: "Create a program that processes a list of numbers, skips negative numbers, and stops when it finds a number greater than 100",
+          starterCode: `# Process numbers
+numbers = [5, -2, 15, -8, 25, 150, 200]
+
+print("Processing numbers:")
+# Add your loop with break and continue here`,
+          expectedOutput: "Skip negative numbers, stop at first number > 100",
+          hints: [
+            "Use continue for negative numbers",
+            "Use break when number > 100",
+            "Print each processed number"
+          ]
+        }
+      }
+    ]
+  },
+
+  // NEW: Functions
+  "Functions": {
+    type: "lesson",
+    difficulty: "Beginner",
+    estimatedTime: "60 min",
+    description: "Learn to create reusable code with functions, parameters, and return values.",
+    steps: [
+      {
+        id: "basic-functions",
+        title: "Creating and Calling Functions",
+        content: "Functions are reusable blocks of code that perform specific tasks. They help organize your code and avoid repetition.\n\nDefine functions with `def` and call them by name.",
+        code: `# Basic function definition
+def greet():
+    print("Hello, welcome to Python!")
+    print("Functions make code reusable!")
+
+# Call the function
+greet()
+print("\\nCalling it again:")
+greet()
+
+# Function with parameters
+def greet_person(name):
+    print(f"Hello, {name}!")
+    print(f"Nice to meet you, {name}!")
+
+# Call with different arguments
+greet_person("Alice")
+greet_person("Bob")
+
+# Function with multiple parameters
+def introduce(name, age, city):
+    print(f"Hi, I'm {name}")
+    print(f"I'm {age} years old")
+    print(f"I live in {city}")
+
+introduce("Charlie", 25, "New York")`,
+        output: `Hello, welcome to Python!
+Functions make code reusable!
+
+Calling it again:
+Hello, welcome to Python!
+Functions make code reusable!
+Hello, Alice!
+Nice to meet you, Alice!
+Hello, Bob!
+Nice to meet you, Bob!
+Hi, I'm Charlie
+I'm 25 years old
+I live in New York`,
+        tips: [
+          "Function names should describe what they do",
+          "Use def keyword to define functions",
+          "Parameters are like variables that receive values",
+          "Functions can be called multiple times"
+        ],
+        practice: {
+          challenge: "Create a function called 'calculate_area' that takes length and width parameters and prints the area of a rectangle",
+          starterCode: `# Define your calculate_area function here
+def calculate_area(length, width):
+    # Calculate and print the area
+    pass
+
+# Test your function
+calculate_area(5, 3)
+calculate_area(10, 7)`,
+          expectedOutput: "Function that calculates and prints rectangle areas",
+          hints: [
+            "Area = length × width",
+            "Use print() to display the result",
+            "Include the parameters in your output message"
+          ]
+        }
+      },
+      {
+        id: "return-values",
+        title: "Return Values and Using Results",
+        content: "Functions can return values using the `return` keyword. This lets you use the function's result in other parts of your code.\n\nReturned values can be stored in variables or used directly.",
+        code: `# Function that returns a value
+def add_numbers(a, b):
+    result = a + b
+    return result
+
+# Use the returned value
+sum1 = add_numbers(5, 3)
+print(f"5 + 3 = {sum1}")
+
+# Use return value directly
+print(f"10 + 7 = {add_numbers(10, 7)}")
+
+# Function with multiple calculations
+def calculate_circle(radius):
+    area = 3.14159 * radius * radius
+    circumference = 2 * 3.14159 * radius
+    return area, circumference  # Return multiple values
+
+# Unpack multiple return values
+area, circumference = calculate_circle(5)
+print(f"Circle with radius 5:")
+print(f"Area: {area}")
+print(f"Circumference: {circumference}")
+
+# Function that returns different types
+def analyze_number(num):
+    if num > 0:
+        return "positive"
+    elif num < 0:
+        return "negative"
+    else:
+        return "zero"
+
+print(f"10 is {analyze_number(10)}")
+print(f"-5 is {analyze_number(-5)}")
+print(f"0 is {analyze_number(0)}")`,
+        output: `5 + 3 = 8
+10 + 7 = 17
+Circle with radius 5:
+Area: 78.53975
+Circumference: 31.4159
+10 is positive
+-5 is negative
+0 is zero`,
+        tips: [
+          "return sends a value back to the caller",
+          "Functions can return multiple values as tuples",
+          "Without return, functions return None",
+          "Return values can be any data type"
+        ],
+        practice: {
+          challenge: "Create a function 'get_grade' that takes a score (0-100) and returns the letter grade (A, B, C, D, or F)",
+          starterCode: `# Define your get_grade function here
+def get_grade(score):
+    # Return appropriate letter grade
+    # A: 90+, B: 80-89, C: 70-79, D: 60-69, F: below 60
+    pass
+
+# Test your function
+print(f"Score 95: {get_grade(95)}")
+print(f"Score 87: {get_grade(87)}")
+print(f"Score 72: {get_grade(72)}")`,
+          expectedOutput: "Function returns correct letter grades",
+          hints: [
+            "Use if/elif statements to check score ranges",
+            "Return the letter as a string",
+            "Test edge cases like exactly 90, 80, etc."
+          ]
+        }
+      },
+      {
+        id: "function-scope",
+        title: "Variable Scope and Default Parameters",
+        content: "Variables inside functions have local scope - they only exist within that function. You can also set default values for parameters.\n\nUnderstanding scope helps prevent variable conflicts.",
+        code: `# Variable scope example
+global_var = "I'm global!"
+
+def scope_demo():
+    local_var = "I'm local!"
+    print(f"Inside function: {global_var}")
+    print(f"Inside function: {local_var}")
+
+scope_demo()
+print(f"Outside function: {global_var}")
+# print(local_var)  # This would cause an error!
+
+# Default parameters
+def greet_with_title(name, title="Mr./Ms."):
+    return f"Hello, {title} {name}!"
+
+# Call with and without optional parameter
+print(greet_with_title("Smith"))
+print(greet_with_title("Johnson", "Dr."))
+print(greet_with_title("Brown", "Professor"))
+
+# Function with multiple defaults
+def create_profile(name, age=25, city="Unknown", occupation="Student"):
+    return f"{name}, {age} years old, from {city}, works as {occupation}"
+
+print(create_profile("Alice"))
+print(create_profile("Bob", 30))
+print(create_profile("Carol", 28, "Paris"))
+print(create_profile("David", 35, "Tokyo", "Engineer"))`,
+        output: `Inside function: I'm global!
+Inside function: I'm local!
+Outside function: I'm global!
+Hello, Mr./Ms. Smith!
+Hello, Dr. Johnson!
+Hello, Professor Brown!
+Alice, 25 years old, from Unknown, works as Student
+Bob, 30 years old, from Unknown, works as Student
+Carol, 28 years old, from Paris, works as Student
+David, 35 years old, from Tokyo, works as Engineer`,
+        tips: [
+          "Local variables only exist inside their function",
+          "Global variables can be read from anywhere",
+          "Default parameters make functions more flexible",
+          "Put required parameters before optional ones"
+        ],
+        practice: {
+          challenge: "Create a function 'format_money' that takes an amount and optional currency (default 'USD') and returns a formatted string",
+          starterCode: `# Define your format_money function here
+def format_money(amount, currency="USD"):
+    # Return formatted money string like "$50.00 USD"
+    pass
+
+# Test your function
+print(format_money(50))
+print(format_money(75.50, "EUR"))
+print(format_money(1000, "JPY"))`,
+          expectedOutput: "Function returns properly formatted money strings",
+          hints: [
+            "Format amount to 2 decimal places",
+            "Include currency symbol or code",
+            "Use f-strings for formatting"
+          ]
+        }
+      }
+    ]
+  },
+
+  // NEW: Data Structures
+  "Data Structures": {
+    type: "lesson",
+    difficulty: "Beginner", 
+    estimatedTime: "70 min",
+    description: "Master Python's built-in data structures: lists, tuples, dictionaries, and sets.",
+    steps: [
+      {
+        id: "lists-advanced",
+        title: "Lists: Creation and Methods",
+        content: "Lists are ordered, changeable collections that can store multiple items. They're one of the most versatile data structures in Python.\n\nLists have many useful methods for adding, removing, and organizing data.",
+        code: `# Creating and modifying lists
+fruits = ["apple", "banana", "orange"]
+print(f"Original list: {fruits}")
+
+# Adding items
+fruits.append("grape")          # Add to end
+fruits.insert(1, "kiwi")       # Insert at index 1
+print(f"After adding: {fruits}")
+
+# Accessing items
+print(f"First fruit: {fruits[0]}")
+print(f"Last fruit: {fruits[-1]}")
+print(f"Middle fruits: {fruits[1:4]}")
+
+# Removing items
+removed = fruits.pop()          # Remove and return last item
+print(f"Removed: {removed}")
+fruits.remove("kiwi")          # Remove by value
+print(f"After removing: {fruits}")
+
+# List methods
+numbers = [3, 1, 4, 1, 5, 9, 2, 6]
+print(f"Numbers: {numbers}")
+print(f"Length: {len(numbers)}")
+print(f"Max: {max(numbers)}")
+print(f"Min: {min(numbers)}")
+print(f"Sum: {sum(numbers)}")
+
+# Sorting
+numbers.sort()
+print(f"Sorted: {numbers}")
+numbers.reverse()
+print(f"Reversed: {numbers}")`,
+        output: `Original list: ['apple', 'banana', 'orange']
+After adding: ['apple', 'kiwi', 'banana', 'orange', 'grape']
+First fruit: apple
+Last fruit: grape
+Middle fruits: ['kiwi', 'banana', 'orange']
+Removed: grape
+After removing: ['apple', 'banana', 'orange']
+Numbers: [3, 1, 4, 1, 5, 9, 2, 6]
+Length: 8
+Max: 9
+Min: 1
+Sum: 31
+Sorted: [1, 1, 2, 3, 4, 5, 6, 9]
+Reversed: [9, 6, 5, 4, 3, 2, 1, 1]`,
+        tips: [
+          "Lists are ordered and changeable",
+          "Use append() to add to the end",
+          "Use insert() to add at specific position",
+          "Negative indices count from the end"
+        ],
+        practice: {
+          challenge: "Create a shopping list program that can add items, remove items, and display the current list",
+          starterCode: `# Shopping list manager
+shopping_list = []
+
+# Add some items
+# Remove an item
+# Display the final list
+# Show total number of items`,
+          expectedOutput: "Program that manages a shopping list with add/remove operations",
+          hints: [
+            "Use append() to add items",
+            "Use remove() to delete by name",
+            "Use len() to count items",
+            "Print the list at each step"
+          ]
+        }
+      },
+      {
+        id: "dictionaries",
+        title: "Dictionaries: Key-Value Pairs",
+        content: "Dictionaries store data as key-value pairs. They're perfect for organizing related information and creating structured data.\n\nThink of dictionaries like real dictionaries where you look up a word (key) to find its definition (value).",
+        code: `# Creating dictionaries
+student = {
+    "name": "Alice",
+    "age": 20,
+    "major": "Computer Science",
+    "gpa": 3.8
+}
+print(f"Student info: {student}")
+
+# Accessing values
+print(f"Name: {student['name']}")
+print(f"Age: {student['age']}")
+
+# Adding and updating
+student["year"] = "Junior"        # Add new key-value
+student["age"] = 21              # Update existing value
+print(f"Updated: {student}")
+
+# Dictionary methods
+print(f"Keys: {list(student.keys())}")
+print(f"Values: {list(student.values())}")
+print(f"Items: {list(student.items())}")
+
+# Checking if key exists
+if "email" in student:
+    print(f"Email: {student['email']}")
+else:
+    print("No email address found")
+
+# Safe access with get()
+email = student.get("email", "No email provided")
+print(f"Email: {email}")
+
+# Looping through dictionary
+print("\\nStudent details:")
+for key, value in student.items():
+    print(f"{key}: {value}")`,
+        output: `Student info: {'name': 'Alice', 'age': 20, 'major': 'Computer Science', 'gpa': 3.8}
+Name: Alice
+Age: 20
+Updated: {'name': 'Alice', 'age': 21, 'major': 'Computer Science', 'gpa': 3.8, 'year': 'Junior'}
+Keys: ['name', 'age', 'major', 'gpa', 'year']
+Values: ['Alice', 21, 'Computer Science', 3.8, 'Junior']
+Items: [('name', 'Alice'), ('age', 21), ('major', 'Computer Science'), ('gpa', 3.8), ('year', 'Junior')]
+No email address found
+Email: No email provided
+
+Student details:
+name: Alice
+age: 21
+major: Computer Science
+gpa: 3.8
+year: Junior`,
+        tips: [
+          "Keys must be unique and immutable",
+          "Use get() for safe access to avoid errors",
+          "Dictionaries are unordered (in Python 3.7+ insertion order is preserved)",
+          "Perfect for structured data like records"
+        ],
+        practice: {
+          challenge: "Create a phone book dictionary that stores names and phone numbers, then add/lookup contacts",
+          starterCode: `# Phone book dictionary
+phone_book = {}
+
+# Add some contacts
+# Look up a contact
+# Display all contacts
+# Handle missing contacts safely`,
+          expectedOutput: "Dictionary-based phone book with add/lookup functionality",
+          hints: [
+            "Use names as keys, phone numbers as values",
+            "Use get() method to safely lookup contacts",
+            "Loop through items() to display all contacts"
+          ]
+        }
+      },
+      {
+        id: "tuples-sets",
+        title: "Tuples and Sets",
+        content: "Tuples are ordered, unchangeable collections. Sets are unordered collections of unique items.\n\nTuples are great for coordinates, RGB colors, or any data that shouldn't change. Sets are perfect for removing duplicates.",
+        code: `# Tuples - unchangeable sequences
+coordinates = (10, 20)
+rgb_color = (255, 128, 0)
+person = ("Alice", 25, "Engineer")
+
+print(f"Coordinates: {coordinates}")
+print(f"Color RGB: {rgb_color}")
+print(f"Person: {person}")
+
+# Accessing tuple items
+print(f"X coordinate: {coordinates[0]}")
+print(f"Y coordinate: {coordinates[1]}")
+
+# Tuple unpacking
+name, age, job = person
+print(f"Name: {name}, Age: {age}, Job: {job}")
+
+# Sets - unique collections
+fruits = {"apple", "banana", "orange", "apple", "banana"}
+print(f"Fruits set: {fruits}")  # Duplicates removed
+
+# Set operations
+tropical = {"mango", "pineapple", "coconut", "banana"}
+print(f"Tropical fruits: {tropical}")
+
+# Set methods
+fruits.add("grape")
+print(f"After adding grape: {fruits}")
+
+# Set operations
+common = fruits.intersection(tropical)
+all_fruits = fruits.union(tropical)
+only_regular = fruits.difference(tropical)
+
+print(f"Common fruits: {common}")
+print(f"All fruits: {all_fruits}")
+print(f"Only regular fruits: {only_regular}")
+
+# Removing duplicates from list
+numbers = [1, 2, 3, 2, 4, 3, 5, 1]
+unique_numbers = list(set(numbers))
+print(f"Original: {numbers}")
+print(f"Unique: {unique_numbers}")`,
+        output: `Coordinates: (10, 20)
+Color RGB: (255, 128, 0)
+Person: ('Alice', 25, 'Engineer')
+X coordinate: 10
+Y coordinate: 20
+Name: Alice, Age: 25, Job: Engineer
+Fruits set: {'banana', 'apple', 'orange'}
+Tropical fruits: {'banana', 'mango', 'coconut', 'pineapple'}
+After adding grape: {'banana', 'apple', 'orange', 'grape'}
+Common fruits: {'banana'}
+All fruits: {'banana', 'apple', 'orange', 'grape', 'mango', 'coconut', 'pineapple'}
+Only regular fruits: {'apple', 'orange', 'grape'}
+Original: [1, 2, 3, 2, 4, 3, 5, 1]
+Unique: [1, 2, 3, 4, 5]`,
+        tips: [
+          "Tuples use parentheses (), lists use brackets []",
+          "Tuples can't be changed after creation",
+          "Sets automatically remove duplicates",
+          "Use sets for mathematical operations like union/intersection"
+        ],
+        practice: {
+          challenge: "Create a program that takes two lists of student names and finds common students, unique to each class, and all students combined",
+          starterCode: `# Student class analysis
+class_a = ["Alice", "Bob", "Charlie", "Diana", "Alice"]
+class_b = ["Bob", "Eve", "Frank", "Diana", "Grace"]
+
+# Convert to sets and find:
+# 1. Students in both classes
+# 2. Students only in class A
+# 3. Students only in class B  
+# 4. All unique students`,
+          expectedOutput: "Analysis showing common students, unique students, and all students",
+          hints: [
+            "Convert lists to sets first",
+            "Use intersection() for common students",
+            "Use difference() for unique students",
+            "Use union() for all students combined"
+          ]
+        }
+      }
+    ]
+  },
+
+  // NEW: String Operations
+  "String Operations": {
+    type: "lesson",
+    difficulty: "Beginner",
+    estimatedTime: "50 min", 
+    description: "Master string manipulation: formatting, methods, and text processing in Python.",
+    steps: [
+      {
+        id: "string-methods",
+        title: "String Methods and Manipulation",
+        content: "Strings in Python have many built-in methods for manipulation. These methods don't change the original string - they return a new string.\n\nString methods are essential for text processing and data cleaning.",
+        code: `# Basic string methods
+message = "  Hello, Python World!  "
+print(f"Original: '{message}'")
+print(f"Length: {len(message)}")
+
+# Cleaning methods
+clean = message.strip()           # Remove whitespace
+print(f"Stripped: '{clean}'")
+print(f"Lowercase: {clean.lower()}")
+print(f"Uppercase: {clean.upper()}")
+print(f"Title case: {clean.title()}")
+
+# Checking methods
+text = "Python Programming"
+print(f"\\nChecking '{text}':")
+print(f"Starts with 'Python': {text.startswith('Python')}")
+print(f"Ends with 'ing': {text.endswith('ing')}")
+print(f"Contains 'gram': {'gram' in text}")
+print(f"Is alphabetic: {text.isalpha()}")
+print(f"Is alphanumeric: {text.isalnum()}")
+
+# Searching and replacing
+sentence = "I love cats and cats love me"
+print(f"\\nOriginal: {sentence}")
+print(f"Count 'cats': {sentence.count('cats')}")
+print(f"Find 'cats': {sentence.find('cats')}")
+print(f"Replace cats with dogs: {sentence.replace('cats', 'dogs')}")
+
+# Splitting and joining
+fruits = "apple,banana,orange,grape"
+fruit_list = fruits.split(',')
+print(f"\\nSplit fruits: {fruit_list}")
+joined = " | ".join(fruit_list)
+print(f"Joined: {joined}")`,
+        output: `Original: '  Hello, Python World!  '
+Length: 23
+Stripped: 'Hello, Python World!'
+Lowercase: hello, python world!
+Uppercase: HELLO, PYTHON WORLD!
+Title case: Hello, Python World!
+
+Checking 'Python Programming':
+Starts with 'Python': True
+Ends with 'ing': True
+Contains 'gram': True
+Is alphabetic: False
+Is alphanumeric: False
+
+Original: I love cats and cats love me
+Count 'cats': 2
+Find 'cats': 7
+Replace cats with dogs: I love dogs and dogs love me
+
+Split fruits: ['apple', 'banana', 'orange', 'grape']
+Joined: apple | banana | orange | grape`,
+        tips: [
+          "String methods return new strings, don't modify originals",
+          "Use strip() to remove unwanted whitespace",
+          "split() and join() are opposites",
+          "String methods are chainable: text.strip().lower()"
+        ],
+        practice: {
+          challenge: "Create a text processor that cleans and analyzes a user's input text",
+          starterCode: `# Text analyzer
+user_text = "  HELLO world! This is PYTHON programming.  "
+
+# Clean the text (strip whitespace, convert to title case)
+# Count total words
+# Count how many times 'i' appears (case insensitive)
+# Replace 'PYTHON' with 'Python'
+# Display results`,
+          expectedOutput: "Clean and analyze the text with word count and replacements",
+          hints: [
+            "Use strip() and title() for cleaning",
+            "Use split() to count words",
+            "Use lower() before counting characters",
+            "Chain multiple string methods together"
+          ]
+        }
+      },
+      {
+        id: "string-formatting",
+        title: "String Formatting and F-Strings", 
+        content: "Python offers multiple ways to format strings. F-strings (formatted string literals) are the modern, preferred method.\n\nF-strings make it easy to embed variables and expressions in strings.",
+        code: "# F-string formatting (modern way)\n" +
+"name = \"Alice\"\n" +
+"age = 25\n" +
+"height = 5.7\n\n" +
+"# Basic f-string usage\n" +
+"intro = f\"Hi, I'm {name} and I'm {age} years old.\"\n" +
+"print(intro)\n\n" +
+"# Expressions in f-strings\n" +
+"print(f\"Next year I'll be {age + 1}\")\n" +
+"print(f\"My height is {height} feet\")\n\n" +
+"# Formatting numbers\n" +
+"price = 29.99\n" +
+"print(f\"Price: ${price:.2f}\")         # 2 decimal places\n" +
+"print(f\"Price: ${price:.0f}\")         # No decimal places\n\n" +
+"pi = 3.14159265359\n" +
+"print(f\"Pi: {pi:.2f}\")                # 2 decimal places\n" +
+"print(f\"Pi: {pi:.4f}\")                # 4 decimal places\n\n" +
+"# Alignment and padding\n" +
+"items = [\"Apple\", \"Banana\", \"Cherry\"]\n" +
+"prices = [1.20, 0.75, 2.50]\n\n" +
+"print(\"\\nShopping List:\")\n" +
+"print(\"-\" * 20)\n" +
+"for item, price in zip(items, prices):\n" +
+"    print(f\"{item:<10} ${price:>6.2f}\")\n\n" +
+"# Other formatting methods (older but still used)\n" +
+"template = \"Hello, {} you are {} years old\"\n" +
+"print(template.format(name, age))\n\n" +
+"# With placeholders\n" +
+"template2 = \"Hello, {0}! You are {1} years old. Nice to meet you, {0}!\"\n" +
+"print(template2.format(name, age))",
+        output: `Hi, I'm Alice and I'm 25 years old.
+Next year I'll be 26
+My height is 5.7 feet
+Price: $29.99
+Price: $30
+Pi: 3.14
+Pi: 3.1416
+
+Shopping List:
+--------------------
+Apple      $ 1.20
+Banana     $ 0.75
+Cherry     $ 2.50
+Hello, Alice you are 25 years old
+Hello, Alice! You are 25 years old. Nice to meet you, Alice!`,
+        tips: [
+          "F-strings are the most readable and efficient",
+          "Use :.2f for 2 decimal places",
+          "Use :< for left align, :> for right align",
+          "You can put any expression inside {}"
+        ],
+        practice: {
+          challenge: "Create a grade report card formatter that displays student info and grades nicely formatted",
+          starterCode: `# Grade report formatter
+student_name = "John Smith"
+student_id = 12345
+math_grade = 87.5
+science_grade = 92.0
+english_grade = 78.5
+
+# Calculate average grade
+# Create a formatted report card using f-strings
+# Include proper alignment and decimal formatting`,
+          expectedOutput: "Nicely formatted report card with aligned columns and proper decimals",
+          hints: [
+            "Calculate average: (grade1 + grade2 + grade3) / 3",
+            "Use f-strings with alignment (:< and :>)",
+            "Format grades to 1 decimal place (:.1f)",
+            "Add visual separators like dashes"
+          ]
+        }
+      },
+      {
+        id: "string-slicing",
+        title: "String Indexing and Slicing",
+        content: "Strings are sequences of characters. You can access individual characters or slice parts of strings using indexing.\n\nPython uses zero-based indexing and supports negative indices.",
+        code: `# String indexing
+word = "Python"
+print(f"Word: {word}")
+print(f"Length: {len(word)}")
+
+# Positive indexing (0-based)
+print(f"First character: {word[0]}")
+print(f"Second character: {word[1]}")
+print(f"Last character: {word[5]}")
+
+# Negative indexing (from end)
+print(f"Last character: {word[-1]}")
+print(f"Second to last: {word[-2]}")
+print(f"First character: {word[-6]}")
+
+# String slicing [start:end:step]
+text = "Hello, World!"
+print(f"\\nText: {text}")
+print(f"First 5 chars: {text[0:5]}")
+print(f"First 5 chars: {text[:5]}")      # Same as above
+print(f"From index 7: {text[7:]}")
+print(f"Last 6 chars: {text[-6:]}")
+print(f"Middle part: {text[2:10]}")
+
+# Slicing with step
+alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+print(f"\\nAlphabet: {alphabet}")
+print(f"Every 2nd letter: {alphabet[::2]}")
+print(f"Every 3rd letter: {alphabet[::3]}")
+print(f"Reverse: {alphabet[::-1]}")
+print(f"First 10 reversed: {alphabet[9::-1]}")
+
+# Practical examples
+email = "user@example.com"
+username = email[:email.find('@')]
+domain = email[email.find('@')+1:]
+print(f"\\nEmail: {email}")
+print(f"Username: {username}")
+print(f"Domain: {domain}")`,
+        output: `Word: Python
+Length: 6
+First character: P
+Second character: y
+Last character: n
+Last character: n
+Second to last: o
+First character: P
+
+Text: Hello, World!
+First 5 chars: Hello
+First 5 chars: Hello
+From index 7: World!
+Last 6 chars: World!
+Middle part: llo, Wor
+
+Alphabet: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+Every 2nd letter: ACEGIKMOQSUWY
+Every 3rd letter: ADGJMPSVY
+Reverse: ZYXWVUTSRQPONMLKJIHGFEDCBA
+First 10 reversed: JIHGFEDCBA
+
+Email: user@example.com
+Username: user
+Domain: example.com`,
+        tips: [
+          "Negative indices count from the end (-1 is last)",
+          "Slicing creates new strings, doesn't modify original",
+          "Use [::-1] to reverse a string",
+          "Empty start/end means beginning/end of string"
+        ],
+        practice: {
+          challenge: "Create a program that extracts and analyzes parts of a full name",
+          starterCode: `# Name analyzer
+full_name = "Elizabeth Mary Johnson"
+
+# Extract first name, middle name, and last name
+# Display initials (first letter of each name)
+# Create a username (first name + first letter of last name)
+# Show the name in reverse`,
+          expectedOutput: "Extract name parts, create initials and username, show reverse",
+          hints: [
+            "Use split() to separate names",
+            "Use indexing [0] to get first characters",
+            "Use slicing to get parts of strings",
+            "Use [::-1] to reverse"
+          ]
+        }
+      }
+    ]
+  },
+
+  // NEW: Input/Output Operations
+  "Input & Output": {
+    type: "lesson",
+    difficulty: "Beginner",
+    estimatedTime: "45 min",
+    description: "Learn to interact with users through input and create file operations for data persistence.",
+    steps: [
+      {
+        id: "user-input",
+        title: "Getting User Input",
+        content: "The input() function lets your programs interact with users. It always returns a string, so you'll need to convert to other types when needed.\n\nInput validation is important for robust programs.",
+        code: `# Basic input
+name = input("What's your name? ")
+print(f"Hello, {name}!")
+
+# Input always returns strings
+age_str = input("How old are you? ")
+age = int(age_str)  # Convert to integer
+print(f"Next year you'll be {age + 1}")
+
+# Input with type conversion
+height = float(input("Enter your height in feet: "))
+print(f"Your height is {height} feet or {height * 12} inches")
+
+# Multiple inputs
+print("\\nEnter your favorite colors:")
+color1 = input("First color: ")
+color2 = input("Second color: ")
+color3 = input("Third color: ")
+colors = [color1, color2, color3]
+print(f"Your favorite colors are: {', '.join(colors)}")
+
+# Input validation example
+while True:
+    try:
+        number = int(input("Enter a number between 1 and 10: "))
+        if 1 <= number <= 10:
+            print(f"Great! You entered {number}")
+            break
+        else:
+            print("Number must be between 1 and 10!")
+    except ValueError:
+        print("Please enter a valid number!")
+
+# Simple calculator with input
+print("\\nSimple Calculator")
+num1 = float(input("Enter first number: "))
+operator = input("Enter operator (+, -, *, /): ")
+num2 = float(input("Enter second number: "))
+
+if operator == "+":
+    result = num1 + num2
+elif operator == "-":
+    result = num1 - num2
+elif operator == "*":
+    result = num1 * num2
+elif operator == "/":
+    result = num1 / num2 if num2 != 0 else "Error: Division by zero"
+else:
+    result = "Error: Invalid operator"
+
+print(f"Result: {num1} {operator} {num2} = {result}")`,
+        output: `What's your name? Alice
+Hello, Alice!
+How old are you? 25
+Next year you'll be 26
+Enter your height in feet: 5.7
+Your height is 5.7 feet or 68.4 inches
+
+Enter your favorite colors:
+First color: blue
+Second color: green
+Third color: red
+Your favorite colors are: blue, green, red
+Enter a number between 1 and 10: 15
+Number must be between 1 and 10!
+Enter a number between 1 and 10: abc
+Please enter a valid number!
+Enter a number between 1 and 10: 7
+Great! You entered 7
+
+Simple Calculator
+Enter first number: 15
+Enter operator (+, -, *, /): *
+Enter second number: 3
+Result: 15.0 * 3.0 = 45.0`,
+        tips: [
+          "input() always returns a string",
+          "Use int() or float() to convert numbers",
+          "Always validate user input",
+          "Use try/except for error handling"
+        ],
+        practice: {
+          challenge: "Create a personal information collector that gets user's name, age, city, and calculates birth year",
+          starterCode: `# Personal info collector
+print("Personal Information Form")
+print("-" * 25)
+
+# Get user's name, age, and city
+# Calculate and display birth year (current year is 2025)
+# Display a summary of all information`,
+          expectedOutput: "Interactive form that collects and displays personal information",
+          hints: [
+            "Use input() for each piece of information",
+            "Convert age to integer",
+            "Birth year = 2025 - age",
+            "Format output nicely"
+          ]
+        }
+      },
+      {
+        id: "file-operations",
+        title: "Basic File Operations",
+        content: "Files let you save data permanently. Python makes it easy to read from and write to files.\n\nAlways use 'with' statements for file operations - they automatically close files.",
+        code: `# Writing to a file
+data = ["Alice", "Bob", "Charlie", "Diana"]
+
+# Write a simple text file
+with open("names.txt", "w") as file:
+    for name in data:
+        file.write(name + "\\n")
+print("Names written to file!")
+
+# Read the entire file
+with open("names.txt", "r") as file:
+    content = file.read()
+    print("File contents:")
+    print(content)
+
+# Read line by line
+print("Reading line by line:")
+with open("names.txt", "r") as file:
+    for line_number, line in enumerate(file, 1):
+        print(f"Line {line_number}: {line.strip()}")
+
+# Read all lines into a list
+with open("names.txt", "r") as file:
+    lines = file.readlines()
+    print(f"\\nAll lines: {lines}")
+
+# Append to existing file
+with open("names.txt", "a") as file:
+    file.write("Eve\\n")
+    file.write("Frank\\n")
+print("Added more names!")
+
+# Working with CSV-like data
+students = [
+    "Alice,20,Computer Science",
+    "Bob,22,Mathematics", 
+    "Charlie,19,Physics"
+]
+
+with open("students.csv", "w") as file:
+    file.write("Name,Age,Major\\n")  # Header
+    for student in students:
+        file.write(student + "\\n")
+
+# Read and process CSV data
+print("\\nStudent data:")
+with open("students.csv", "r") as file:
+    header = file.readline().strip()
+    print(f"Header: {header}")
+    
+    for line in file:
+        parts = line.strip().split(",")
+        name, age, major = parts
+        print(f"Student: {name}, Age: {age}, Major: {major}")`,
+        output: `Names written to file!
+File contents:
+Alice
+Bob
+Charlie
+Diana
+
+Reading line by line:
+Line 1: Alice
+Line 2: Bob
+Line 3: Charlie
+Line 4: Diana
+
+All lines: ['Alice\\n', 'Bob\\n', 'Charlie\\n', 'Diana\\n']
+Added more names!
+
+Student data:
+Header: Name,Age,Major
+Student: Alice, Age: 20, Major: Computer Science
+Student: Bob, Age: 22, Major: Mathematics
+Student: Charlie, Age: 19, Major: Physics`,
+        tips: [
+          "Use 'with' statements for automatic file closing",
+          "Mode 'w' overwrites, 'a' appends, 'r' reads",
+          "strip() removes newline characters",
+          "split() helps parse CSV-like data"
+        ],
+        practice: {
+          challenge: "Create a simple diary program that saves and reads diary entries",
+          starterCode: `# Simple diary program
+import datetime
+
+# Get today's date
+today = datetime.date.today()
+
+# Get diary entry from user
+# Save entry to a file named "diary.txt"
+# Include the date with the entry
+# Display confirmation message`,
+          expectedOutput: "Diary program that saves dated entries to a file",
+          hints: [
+            "Use input() to get the diary entry",
+            "Format: 'Date: entry_text'",
+            "Use 'a' mode to append entries",
+            "Add \\n for new lines"
+          ]
+        }
+      }
+    ]
   }
 };
-
-// Python code validation function
 const validatePythonCode = (code: string, practice: any) => {
   const errors: string[] = [];
   let isCorrect = true;
