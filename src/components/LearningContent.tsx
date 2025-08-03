@@ -2118,6 +2118,879 @@ today = datetime.date.today()
         }
       }
     ]
+  },
+
+  // Error Handling - Essential for robust programs
+  "Error Handling": {
+    type: "lesson",
+    difficulty: "Beginner",
+    estimatedTime: "40 min",
+    description: "Learn to handle errors gracefully in your Python programs using try, except, and finally blocks.",
+    steps: [
+      {
+        id: "exception-intro",
+        title: "What Are Exceptions?",
+        content: "Exceptions are errors that occur during program execution. Instead of crashing, Python raises exceptions that can be caught and handled.\n\nCommon exceptions include ValueError, TypeError, ZeroDivisionError, and FileNotFoundError.",
+        code: `# Examples of common exceptions
+print("=== Common Python Exceptions ===")
+
+# 1. ValueError - incorrect value type
+try:
+    age = int("not a number")
+except ValueError as e:
+    print(f"ValueError: {e}")
+
+# 2. ZeroDivisionError - division by zero
+try:
+    result = 10 / 0
+except ZeroDivisionError as e:
+    print(f"ZeroDivisionError: {e}")
+
+# 3. TypeError - wrong type operation
+try:
+    text = "hello"
+    number = text + 5
+except TypeError as e:
+    print(f"TypeError: {e}")
+
+# 4. IndexError - index out of range
+try:
+    numbers = [1, 2, 3]
+    print(numbers[10])
+except IndexError as e:
+    print(f"IndexError: {e}")
+
+# 5. KeyError - key doesn't exist in dictionary
+try:
+    person = {"name": "Alice", "age": 30}
+    print(person["height"])
+except KeyError as e:
+    print(f"KeyError: {e}")
+
+print("\\nProgram continues running after handling exceptions!")`,
+        output: `=== Common Python Exceptions ===
+ValueError: invalid literal for int() with base 10: 'not a number'
+ZeroDivisionError: division by zero
+TypeError: can only concatenate str (not "int") to str
+IndexError: list index out of range
+KeyError: 'height'
+
+Program continues running after handling exceptions!`,
+        tips: [
+          "Exceptions prevent programs from crashing unexpectedly",
+          "Use 'as e' to capture the error message",
+          "Different exception types for different error categories",
+          "Programs continue running after handling exceptions"
+        ]
+      },
+      {
+        id: "try-except-basics",
+        title: "Try-Except Blocks",
+        content: "Use try-except blocks to catch and handle specific exceptions. This allows your program to recover from errors gracefully.",
+        code: `# Basic try-except structure
+print("=== Safe Number Input ===")
+
+def safe_input_number(prompt):
+    while True:
+        try:
+            value = float(input(prompt))
+            return value
+        except ValueError:
+            print("Please enter a valid number!")
+
+# Using the safe input function
+# number = safe_input_number("Enter a number: ")
+# print(f"You entered: {number}")
+
+# Multiple exception types
+print("\\n=== Division Calculator ===")
+
+def safe_divide(a, b):
+    try:
+        result = a / b
+        return f"{a} ÷ {b} = {result}"
+    except ZeroDivisionError:
+        return "Error: Cannot divide by zero!"
+    except TypeError:
+        return "Error: Both values must be numbers!"
+
+# Test different scenarios
+print(safe_divide(10, 2))      # Normal division
+print(safe_divide(10, 0))      # Division by zero
+print(safe_divide(10, "2"))    # Type error
+
+# Catching multiple exceptions
+print("\\n=== List Access ===")
+
+def safe_get_item(lst, index):
+    try:
+        return f"Item at index {index}: {lst[index]}"
+    except (IndexError, TypeError) as e:
+        return f"Error accessing list: {e}"
+
+my_list = [10, 20, 30, 40, 50]
+print(safe_get_item(my_list, 2))    # Valid index
+print(safe_get_item(my_list, 10))   # Index out of range
+print(safe_get_item(my_list, "a"))  # Invalid index type`,
+        output: `=== Safe Number Input ===
+
+=== Division Calculator ===
+10 ÷ 2 = 5.0
+Error: Cannot divide by zero!
+Error: Both values must be numbers!
+
+=== List Access ===
+Item at index 2: 30
+Error accessing list: list index out of range
+Error accessing list: list indices must be integers or slices, not str`,
+        tips: [
+          "Use specific exception types when possible",
+          "Handle multiple exceptions with tuple: (Error1, Error2)",
+          "Use 'as e' to get error details",
+          "Create user-friendly error messages"
+        ],
+        practice: {
+          challenge: "Create a safe calculator that handles all possible errors",
+          starterCode: `# Safe calculator function
+def safe_calculator():
+    print("Safe Calculator")
+    print("-" * 15)
+    
+    try:
+        # Get first number
+        # Get operation (+, -, *, /)
+        # Get second number
+        # Perform calculation
+        # Return result
+        pass
+    except:
+        # Handle different types of errors
+        pass
+
+# Test your calculator
+# safe_calculator()`,
+          expectedOutput: "Calculator that gracefully handles all input errors",
+          hints: [
+            "Handle ValueError for invalid number input",
+            "Handle ZeroDivisionError for division by zero",
+            "Validate operator is one of +, -, *, /",
+            "Use specific except blocks for each error type"
+          ]
+        }
+      },
+      {
+        id: "finally-blocks",
+        title: "Finally Blocks and Best Practices",
+        content: "The finally block always executes, whether an exception occurs or not. It's perfect for cleanup operations like closing files.",
+        code: `# Finally block example
+print("=== File Operations with Finally ===")
+
+def read_file_safely(filename):
+    file = None
+    try:
+        print(f"Attempting to open {filename}...")
+        file = open(filename, 'r')
+        content = file.read()
+        print(f"File content: {content[:50]}...")
+        return content
+    except FileNotFoundError:
+        print(f"Error: File '{filename}' not found!")
+        return None
+    except PermissionError:
+        print(f"Error: Permission denied for '{filename}'!")
+        return None
+    finally:
+        if file:
+            file.close()
+            print("File closed successfully.")
+        else:
+            print("No file to close.")
+
+# Test with existing and non-existing files
+read_file_safely("test.txt")
+print()
+read_file_safely("nonexistent.txt")
+
+# Exception handling best practices
+print("\\n=== Exception Handling Best Practices ===")
+
+class UserInputValidator:
+    @staticmethod
+    def get_age():
+        while True:
+            try:
+                age = int(input("Enter your age (1-120): "))
+                if not 1 <= age <= 120:
+                    raise ValueError("Age must be between 1 and 120")
+                return age
+            except ValueError as e:
+                if "invalid literal" in str(e):
+                    print("Please enter a valid number!")
+                else:
+                    print(f"Invalid age: {e}")
+    
+    @staticmethod
+    def get_email():
+        while True:
+            try:
+                email = input("Enter your email: ").strip()
+                if "@" not in email or "." not in email:
+                    raise ValueError("Email must contain @ and . symbols")
+                if len(email) < 5:
+                    raise ValueError("Email too short")
+                return email
+            except ValueError as e:
+                print(f"Invalid email: {e}")
+
+# Using the validator
+# age = UserInputValidator.get_age()
+# email = UserInputValidator.get_email()
+# print(f"Valid input - Age: {age}, Email: {email}")
+
+# Comprehensive error handling example
+def robust_data_processor(data):
+    results = []
+    errors = []
+    
+    for i, item in enumerate(data):
+        try:
+            # Process each item
+            if isinstance(item, str):
+                processed = item.upper().strip()
+            elif isinstance(item, (int, float)):
+                processed = item * 2
+            else:
+                raise TypeError(f"Unsupported type: {type(item)}")
+            
+            results.append(processed)
+            
+        except Exception as e:
+            error_msg = f"Item {i}: {e}"
+            errors.append(error_msg)
+            print(f"Warning: {error_msg}")
+    
+    return results, errors
+
+# Test with mixed data
+test_data = ["hello", 42, 3.14, None, "world", [1, 2, 3]]
+results, errors = robust_data_processor(test_data)
+
+print(f"\\nProcessed {len(results)} items successfully")
+print(f"Encountered {len(errors)} errors")
+print(f"Results: {results}")`,
+        output: `=== File Operations with Finally ===
+Attempting to open test.txt...
+Error: File 'test.txt' not found!
+No file to close.
+
+Attempting to open nonexistent.txt...
+Error: File 'nonexistent.txt' not found!
+No file to close.
+
+=== Exception Handling Best Practices ===
+
+Warning: Item 3: Unsupported type: <class 'NoneType'>
+Warning: Item 5: Unsupported type: <class 'list'>
+
+Processed 4 items successfully
+Encountered 2 errors
+Results: ['HELLO', 84, 6.28, 'WORLD']`,
+        tips: [
+          "Use finally for cleanup operations",
+          "Be specific with exception types",
+          "Create custom error messages for users",
+          "Log errors but don't crash the program",
+          "Validate input early and often"
+        ],
+        practice: {
+          challenge: "Create a robust file manager that handles all file operations safely",
+          starterCode: `# Robust file manager
+class FileManager:
+    def __init__(self):
+        self.operations_log = []
+    
+    def safe_write_file(self, filename, content):
+        # Write content to file with error handling
+        # Log the operation (success or failure)
+        pass
+    
+    def safe_read_file(self, filename):
+        # Read file content with error handling
+        # Log the operation
+        pass
+    
+    def get_operations_log(self):
+        # Return log of all operations
+        return self.operations_log
+
+# Test your file manager
+# fm = FileManager()
+# fm.safe_write_file("test.txt", "Hello, World!")
+# content = fm.safe_read_file("test.txt")
+# print(fm.get_operations_log())`,
+          expectedOutput: "File manager that safely handles all file operations and logs results",
+          hints: [
+            "Use try-except-finally blocks",
+            "Handle FileNotFoundError, PermissionError",
+            "Always close files in finally block",
+            "Log both successful and failed operations",
+            "Return meaningful status messages"
+          ]
+        }
+      }
+    ]
+  },
+
+  // Object-Oriented Programming - Moving to Intermediate
+  "OOP (Object-Oriented Programming)": {
+    type: "lesson",
+    difficulty: "Intermediate",
+    estimatedTime: "90 min",
+    description: "Learn object-oriented programming concepts: classes, objects, inheritance, and encapsulation.",
+    steps: [
+      {
+        id: "classes-objects-intro",
+        title: "Introduction to Classes and Objects",
+        content: "Object-Oriented Programming (OOP) is a programming paradigm that organizes code into classes and objects. A class is a blueprint for creating objects, and an object is an instance of a class.\n\nOOP helps organize complex programs and makes code reusable and maintainable.",
+        code: `# Creating your first class
+class Person:
+    # Class attribute (shared by all instances)
+    species = "Homo sapiens"
+    
+    # Constructor method (__init__)
+    def __init__(self, name, age):
+        # Instance attributes (unique to each object)
+        self.name = name
+        self.age = age
+        self.friends = []
+    
+    # Instance method
+    def introduce(self):
+        return f"Hi, I'm {self.name} and I'm {self.age} years old."
+    
+    # Instance method
+    def add_friend(self, friend_name):
+        self.friends.append(friend_name)
+        return f"{friend_name} is now my friend!"
+    
+    # Instance method
+    def list_friends(self):
+        if self.friends:
+            return f"My friends are: {', '.join(self.friends)}"
+        return "I don't have any friends yet."
+
+# Creating objects (instances)
+person1 = Person("Alice", 25)
+person2 = Person("Bob", 30)
+
+# Using object methods
+print(person1.introduce())
+print(person2.introduce())
+
+# Accessing attributes
+print(f"Person 1 name: {person1.name}")
+print(f"Person 2 age: {person2.age}")
+
+# Using methods
+print(person1.add_friend("Charlie"))
+print(person1.add_friend("Diana"))
+print(person1.list_friends())
+
+# Class attributes are shared
+print(f"Person 1 species: {person1.species}")
+print(f"Person 2 species: {person2.species}")
+
+# Each object has its own instance attributes
+print(f"Person 1 friends: {person1.friends}")
+print(f"Person 2 friends: {person2.friends}")`,
+        output: `Hi, I'm Alice and I'm 25 years old.
+Hi, I'm Bob and I'm 30 years old.
+Person 1 name: Alice
+Person 2 age: 30
+Charlie is now my friend!
+Diana is now my friend!
+My friends are: Charlie, Diana
+Person 1 species: Homo sapiens
+Person 2 species: Homo sapiens
+Person 1 friends: ['Charlie', 'Diana']
+Person 2 friends: []`,
+        tips: [
+          "__init__ is the constructor method called when creating objects",
+          "self refers to the current instance of the class",
+          "Instance attributes are unique to each object",
+          "Class attributes are shared by all instances",
+          "Methods are functions defined inside a class"
+        ]
+      },
+      {
+        id: "class-methods-properties",
+        title: "Advanced Class Features",
+        content: "Learn about class methods, static methods, and properties. These advanced features help create more sophisticated and flexible classes.",
+        code: `# Advanced class features
+class BankAccount:
+    # Class attribute - bank name
+    bank_name = "Python Bank"
+    # Class attribute - total accounts created
+    total_accounts = 0
+    
+    def __init__(self, owner, initial_balance=0):
+        self.owner = owner
+        self.balance = initial_balance
+        self.account_number = f"PB{BankAccount.total_accounts + 1:04d}"
+        BankAccount.total_accounts += 1
+        self.transaction_history = []
+        self._add_transaction("Account opened", initial_balance)
+    
+    # Regular instance method
+    def deposit(self, amount):
+        if amount > 0:
+            self.balance += amount
+            self._add_transaction("Deposit", amount)
+            return "Deposited $" + str(amount) + ". New balance: $" + str(self.balance)
+        return "Deposit amount must be positive"
+    
+    def withdraw(self, amount):
+        if amount > 0 and amount <= self.balance:
+            self.balance -= amount
+            self._add_transaction("Withdrawal", -amount)
+            return "Withdrew $" + str(amount) + ". New balance: $" + str(self.balance)
+        return "Invalid withdrawal amount"
+    
+    # Private method (convention: starts with _)
+    def _add_transaction(self, description, amount):
+        self.transaction_history.append({
+            'description': description,
+            'amount': amount,
+            'balance_after': self.balance
+        })
+    
+    # Property - acts like an attribute but runs code
+    @property
+    def account_info(self):
+        return "Account " + self.account_number + ": " + self.owner + " - Balance: $" + str(self.balance)
+    
+    # Property setter
+    @property
+    def balance_status(self):
+        if self.balance >= 1000:
+            return "Premium Account"
+        elif self.balance >= 100:
+            return "Standard Account"
+        else:
+            return "Basic Account"
+    
+    # Class method - works with the class, not instance
+    @classmethod
+    def get_bank_info(cls):
+        return "Welcome to " + cls.bank_name + "! Total accounts: " + str(cls.total_accounts)
+    
+    # Static method - doesn't need class or instance
+    @staticmethod
+    def calculate_interest(principal, rate, time):
+        return principal * (1 + rate) ** time
+    
+    # String representation
+    def __str__(self):
+        return "BankAccount(" + self.owner + ", $" + str(self.balance) + ")"
+    
+    def __repr__(self):
+        return "BankAccount(owner='" + self.owner + "', initial_balance=" + str(self.balance) + ")"
+
+# Using the advanced features
+print(BankAccount.get_bank_info())
+
+# Create accounts
+account1 = BankAccount("Alice", 500)
+account2 = BankAccount("Bob", 1200)
+
+print("\\nAccount Info:")
+print(account1.account_info)
+print(account2.account_info)
+
+print("\\nBalance Status:")
+print("Alice: " + account1.balance_status)
+print("Bob: " + account2.balance_status)
+
+# Perform transactions
+print("\\nTransactions:")
+print(account1.deposit(300))
+print(account1.withdraw(100))
+print("Updated status: " + account1.balance_status)
+
+# Using static method
+interest = BankAccount.calculate_interest(1000, 0.05, 3)
+print("\\nInterest calculation: $1000 at 5% for 3 years = $" + str(round(interest, 2)))
+
+# String representations
+print("\\nString representations:")
+print("str(): " + str(account1))
+print("repr(): " + repr(account1))
+
+print("\\nBank info: " + BankAccount.get_bank_info())`,
+        output: `Welcome to Python Bank! Total accounts: 0
+
+Account Info:
+Account PB0001: Alice - Balance: $500
+Account PB0002: Bob - Balance: $1200
+
+Balance Status:
+Alice: Standard Account
+Bob: Premium Account
+
+Transactions:
+Deposited $300. New balance: $800
+Withdrew $100. New balance: $700
+Updated status: Standard Account
+
+Interest calculation: $1000 at 5% for 3 years = $1157.63
+
+String representations:
+str(): BankAccount(Alice, $700)
+repr(): BankAccount(owner='Alice', initial_balance=700)
+
+Bank info: Welcome to Python Bank! Total accounts: 2`,
+        tips: [
+          "@property makes methods act like attributes",
+          "@classmethod works with the class, use cls parameter",
+          "@staticmethod doesn't need self or cls",
+          "__str__ for user-friendly string representation",
+          "__repr__ for developer-friendly representation",
+          "Use _ prefix for 'private' methods (convention only)"
+        ],
+        practice: {
+          challenge: "Create a Student class with grades management and GPA calculation",
+          starterCode: `# Student management system
+class Student:
+    school_name = "Python Academy"
+    total_students = 0
+    
+    def __init__(self, name, student_id):
+        # Initialize student with name and ID
+        # Create empty grades list
+        # Increment total_students
+        pass
+    
+    def add_grade(self, subject, grade):
+        # Add a grade for a subject (grade should be 0-100)
+        # Store as dictionary: {'subject': subject, 'grade': grade}
+        pass
+    
+    @property
+    def gpa(self):
+        # Calculate GPA (average of all grades on 4.0 scale)
+        # 90-100: 4.0, 80-89: 3.0, 70-79: 2.0, 60-69: 1.0, below 60: 0.0
+        pass
+    
+    @property
+    def academic_status(self):
+        # Return status based on GPA
+        # 3.5+: "Dean's List", 3.0+: "Good Standing", 2.0+: "Probation", <2.0: "Academic Warning"
+        pass
+    
+    @classmethod
+    def get_school_info(cls):
+        # Return school name and total students
+        pass
+    
+    @staticmethod
+    def grade_to_gpa_point(grade):
+        # Convert numeric grade to GPA point
+        pass
+
+# Test your Student class
+# student1 = Student("Alice", "S001")
+# student1.add_grade("Math", 95)
+# student1.add_grade("Science", 87)
+# print(f"GPA: {student1.gpa}")
+# print(f"Status: {student1.academic_status}")`,
+          expectedOutput: "Complete student management system with grades, GPA calculation, and academic status",
+          hints: [
+            "Store grades as list of dictionaries",
+            "GPA calculation: sum all grades, convert to 4.0 scale, average",
+            "Use grade ranges for GPA point conversion",
+            "Class methods use cls, static methods need no special parameter"
+          ]
+        }
+      },
+      {
+        id: "inheritance-polymorphism",
+        title: "Inheritance and Polymorphism",
+        content: "Inheritance allows classes to inherit attributes and methods from parent classes. Polymorphism allows objects of different classes to be used interchangeably through a common interface.",
+        code: `# Inheritance and Polymorphism Example
+class Animal:
+    def __init__(self, name, species):
+        self.name = name
+        self.species = species
+        self.energy = 100
+    
+    def eat(self):
+        self.energy += 20
+        return self.name + " is eating. Energy: " + str(self.energy)
+    
+    def sleep(self):
+        self.energy += 30
+        return self.name + " is sleeping. Energy: " + str(self.energy)
+    
+    def make_sound(self):
+        return self.name + " makes a sound"
+    
+    def move(self):
+        return self.name + " moves around"
+    
+    def __str__(self):
+        return self.name + " the " + self.species
+
+# Child classes inherit from Animal
+class Dog(Animal):
+    def __init__(self, name, breed):
+        super().__init__(name, "Dog")  # Call parent constructor
+        self.breed = breed
+        self.tricks = []
+    
+    # Override parent method (polymorphism)
+    def make_sound(self):
+        return self.name + " barks: Woof! Woof!"
+    
+    def move(self):
+        return self.name + " runs around playfully"
+    
+    # New method specific to Dog
+    def learn_trick(self, trick):
+        self.tricks.append(trick)
+        return self.name + " learned to " + trick + "!"
+    
+    def perform_tricks(self):
+        if self.tricks:
+            return self.name + " can: " + ", ".join(self.tricks)
+        return self.name + " doesn't know any tricks yet"
+
+class Cat(Animal):
+    def __init__(self, name, indoor=True):
+        super().__init__(name, "Cat")
+        self.indoor = indoor
+        self.mood = "content"
+    
+    def make_sound(self):
+        return self.name + " meows: Meow!"
+    
+    def move(self):
+        return self.name + " gracefully prowls around"
+    
+    def purr(self):
+        self.mood = "happy"
+        return self.name + " is purring contentedly"
+    
+    def scratch_furniture(self):
+        self.mood = "mischievous"
+        return self.name + " is scratching the furniture!"
+
+class Bird(Animal):
+    def __init__(self, name, can_fly=True):
+        super().__init__(name, "Bird")
+        self.can_fly = can_fly
+        self.altitude = 0
+    
+    def make_sound(self):
+        return self.name + " chirps: Tweet tweet!"
+    
+    def move(self):
+        if self.can_fly:
+            return self.name + " flies gracefully"
+        return self.name + " hops around"
+    
+    def fly(self, height):
+        if self.can_fly:
+            self.altitude = height
+            return self.name + " flies to " + str(height) + " feet high!"
+        return self.name + " cannot fly"
+
+# Creating instances
+animals = [
+    Dog("Buddy", "Golden Retriever"),
+    Cat("Whiskers", indoor=True),
+    Bird("Tweety", can_fly=True),
+    Dog("Rex", "German Shepherd")
+]
+
+print("=== Animal Interactions ===")
+for animal in animals:
+    print("\\n" + str(animal))
+    print(animal.make_sound())
+    print(animal.move())
+    print(animal.eat())
+
+# Specific behaviors
+print("\\n=== Specific Behaviors ===")
+buddy = animals[0]  # Dog
+whiskers = animals[1]  # Cat
+tweety = animals[2]  # Bird
+
+print(buddy.learn_trick("sit"))
+print(buddy.learn_trick("fetch"))
+print(buddy.perform_tricks())
+
+print(whiskers.purr())
+print(whiskers.scratch_furniture())
+
+print(tweety.fly(100))
+
+# Polymorphism - same method, different behavior
+print("\\n=== Polymorphism Demo ===")
+def animal_chorus(animal_list):
+    print("All animals make sounds:")
+    for animal in animal_list:
+        print("  " + animal.make_sound())
+
+animal_chorus(animals)
+
+# Method resolution order
+print("\\n=== Class Hierarchy ===")
+print("Dog MRO: " + str(Dog.__mro__))
+print("Cat MRO: " + str(Cat.__mro__))
+
+# Using isinstance and type checking
+print("\\n=== Type Checking ===")
+for animal in animals:
+    print(animal.name + " is Animal: " + str(isinstance(animal, Animal)))
+    print(animal.name + " is Dog: " + str(isinstance(animal, Dog)))
+    print(animal.name + " type: " + type(animal).__name__)`,
+        output: `=== Animal Interactions ===
+
+Buddy the Dog
+Buddy barks: Woof! Woof!
+Buddy runs around playfully
+Buddy is eating. Energy: 120
+
+Whiskers the Cat
+Whiskers meows: Meow!
+Whiskers gracefully prowls around
+Whiskers is eating. Energy: 120
+
+Tweety the Bird
+Tweety chirps: Tweet tweet!
+Tweety flies gracefully
+Tweety is eating. Energy: 120
+
+Rex the Dog
+Rex barks: Woof! Woof!
+Rex runs around playfully
+Rex is eating. Energy: 120
+
+=== Specific Behaviors ===
+Buddy learned to sit!
+Buddy learned to fetch!
+Buddy can: sit, fetch
+Whiskers is purring contentedly
+Whiskers is scratching the furniture!
+Tweety flies to 100 feet high!
+
+=== Polymorphism Demo ===
+All animals make sounds:
+  Buddy barks: Woof! Woof!
+  Whiskers meows: Meow!
+  Tweety chirps: Tweet tweet!
+  Rex barks: Woof! Woof!
+
+=== Class Hierarchy ===
+Dog MRO: (<class '__main__.Dog'>, <class '__main__.Animal'>, <class 'object'>)
+Cat MRO: (<class '__main__.Cat'>, <class '__main__.Animal'>, <class 'object'>)
+
+=== Type Checking ===
+Buddy is Animal: True
+Buddy is Dog: True
+Buddy type: Dog
+Whiskers is Animal: True
+Whiskers is Dog: False
+Whiskers type: Cat
+Tweety is Animal: True
+Tweety is Dog: False
+Tweety type: Bird
+Rex is Animal: True
+Rex is Dog: True
+Rex type: Dog`,
+        tips: [
+          "super() calls the parent class methods",
+          "Child classes can override parent methods",
+          "Polymorphism allows same interface, different implementations",
+          "isinstance() checks if object is instance of a class",
+          "__mro__ shows method resolution order",
+          "All classes inherit from 'object' in Python"
+        ],
+        practice: {
+          challenge: "Create a vehicle hierarchy with different types of vehicles",
+          starterCode: `# Vehicle inheritance system
+class Vehicle:
+    def __init__(self, make, model, year):
+        # Initialize basic vehicle properties
+        # Add fuel_level, max_speed attributes
+        pass
+    
+    def start_engine(self):
+        # Return message about starting engine
+        pass
+    
+    def stop_engine(self):
+        # Return message about stopping engine
+        pass
+    
+    def honk(self):
+        # Generic honk sound
+        pass
+
+class Car(Vehicle):
+    def __init__(self, make, model, year, doors):
+        # Call parent constructor
+        # Add doors attribute
+        pass
+    
+    def honk(self):
+        # Override with car-specific honk
+        pass
+    
+    def open_trunk(self):
+        # Car-specific method
+        pass
+
+class Motorcycle(Vehicle):
+    def __init__(self, make, model, year, engine_size):
+        # Call parent constructor
+        # Add engine_size attribute
+        pass
+    
+    def honk(self):
+        # Override with motorcycle-specific honk
+        pass
+    
+    def wheelie(self):
+        # Motorcycle-specific method
+        pass
+
+class Truck(Vehicle):
+    def __init__(self, make, model, year, cargo_capacity):
+        # Call parent constructor
+        # Add cargo_capacity attribute
+        pass
+    
+    def honk(self):
+        # Override with truck-specific honk
+        pass
+    
+    def load_cargo(self, weight):
+        # Truck-specific method
+        pass
+
+# Test your vehicle hierarchy
+# Create different vehicles and test polymorphism`,
+          expectedOutput: "Complete vehicle hierarchy demonstrating inheritance and polymorphism",
+          hints: [
+            "Use super().__init__() to call parent constructor",
+            "Override honk() method in each child class",
+            "Add vehicle-specific attributes and methods",
+            "Test polymorphism by treating all vehicles the same way"
+          ]
+        }
+      }
+    ]
   }
 };
 const validatePythonCode = (code: string, practice: any) => {
