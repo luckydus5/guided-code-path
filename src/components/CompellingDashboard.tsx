@@ -119,52 +119,10 @@ const learningPaths: LearningPath[] = [
     color: "from-green-500 to-yellow-500",
     technologies: ["Python", "APIs", "Flask/FastAPI", "Data Science"],
     nextLesson: "Python Syntax & Variables",
-    levels: [
-      {
-        name: "Beginner Level (Foundations)",
-        goal: "Understand syntax, data types, and basic problem-solving",
-        topics: [
-          "Python Syntax & Variables",
-          "Data Types & Type Casting", 
-          "Control Structures (if/elif/else)",
-          "Loops (for/while)",
-          "Functions & Scope",
-          "Data Structures (lists, dicts, sets)",
-          "Basic Input/Output & File handling",
-          "Error Handling (try/except)"
-        ],
-        project: "CLI to-do list or basic calculator"
-      },
-      {
-        name: "Intermediate Level (Core Dev Skills)",
-        goal: "Write reusable, modular, and real-world Python code",
-        topics: [
-          "OOP (Classes, inheritance, polymorphism)",
-          "Modules & Packages",
-          "Working with External Libraries",
-          "File & Directory Management",
-          "Virtual Environments",
-          "Debugging & Logging",
-          "Unit Testing (unittest, pytest)",
-          "Data Handling (pandas, numpy)"
-        ],
-        project: "Weather app using APIs or note manager"
-      },
-      {
-        name: "Advanced Level (Real Engineering)",
-        goal: "Write production-grade, efficient, and scalable Python code",
-        topics: [
-          "Advanced OOP Concepts",
-          "Decorators & Generators",
-          "Concurrency & Parallelism",
-          "Design Patterns",
-          "Data Structures & Algorithms",
-          "Web Development (Flask/FastAPI)",
-          "Automation & Data Science",
-          "Packaging & Deployment"
-        ],
-        project: "REST API or machine learning pipeline"
-      }
+    resources: [
+      { type: "article", title: "Python Data Structures Explained", url: "https://docs.python.org/3/tutorial/datastructures.html", duration: "18 min", difficulty: "Beginner" },
+      { type: "documentation", title: "Python Standard Library Reference", url: "https://docs.python.org/3/library/", duration: "30 min", difficulty: "Intermediate" },
+      { type: "article", title: "Object-Oriented Programming in Python", url: "https://realpython.com/python3-object-oriented-programming/", duration: "22 min", difficulty: "Intermediate" }
     ]
   },
   {
@@ -607,79 +565,6 @@ export default function CompellingDashboard({ user, profile, onProfileUpdate, sh
                               </Badge>
                             ))}
                           </div>
-
-                          {path.nextLesson && path.id !== "python-mastery" && (
-                            <div className="mt-4 p-3 bg-muted/30 rounded-lg">
-                              <div className="flex items-center space-x-2">
-                                <Play className="h-4 w-4 text-primary" />
-                                <span className="text-sm font-medium">Next: {path.nextLesson}</span>
-                              </div>
-                            </div>
-                          )}
-
-                          {path.resources && path.resources.length > 0 && path.id !== "python-mastery" && (
-                            <div className="mt-4 space-y-2">
-                              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                                <BookOpen className="h-4 w-4" />
-                                <span>Learning Resources</span>
-                              </div>
-                              <div className="space-y-2 max-h-32 overflow-y-auto">
-                                {path.resources.slice(0, 2).map((resource, index) => (
-                                  <div key={index} className="p-2 bg-muted/20 rounded border border-border/50 hover:bg-muted/40 transition-colors">
-                                    <div className="flex items-start justify-between">
-                                      <div className="min-w-0 flex-1">
-                                        <div className="flex items-center gap-2">
-                                          <div className="flex items-center gap-1">
-                                            {resource.type === 'article' && <File className="h-3 w-3 text-blue-500" />}
-                                            {resource.type === 'documentation' && <FileText className="h-3 w-3 text-green-500" />}
-                                            {resource.type === 'video' && <Play className="h-3 w-3 text-red-500" />}
-                                            <p className="text-xs font-medium text-foreground truncate">
-                                              {resource.title}
-                                            </p>
-                                          </div>
-                                          <Badge variant="outline" className="text-xs px-1 py-0">
-                                            {resource.type}
-                                          </Badge>
-                                        </div>
-                                        <div className="flex items-center gap-2 mt-1">
-                                          <span className="text-xs text-muted-foreground">
-                                            {resource.duration}
-                                          </span>
-                                          <Badge variant="secondary" className="text-xs px-1 py-0">
-                                            {resource.difficulty}
-                                          </Badge>
-                                        </div>
-                                      </div>
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-6 w-6 p-0 ml-2"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          window.open(resource.url, '_blank');
-                                        }}
-                                      >
-                                        <ExternalLink className="h-3 w-3" />
-                                      </Button>
-                                    </div>
-                                  </div>
-                                ))}
-                                {path.resources.length > 2 && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="w-full h-6 text-xs"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      // TODO: Show all resources in a modal or navigate to learn page
-                                    }}
-                                  >
-                                    View {path.resources.length - 2} more resources
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          )}
                         </div>
 
                         <Button 
@@ -697,8 +582,8 @@ export default function CompellingDashboard({ user, profile, onProfileUpdate, sh
                             </>
                           ) : (
                             <>
-                              <Rocket className="h-4 w-4 mr-2" />
-                              Start Learning Path
+                              <Play className="h-4 w-4 mr-2" />
+                              Start Project
                             </>
                           )}
                         </Button>
