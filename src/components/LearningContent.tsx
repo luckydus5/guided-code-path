@@ -2991,6 +2991,3370 @@ class Truck(Vehicle):
         }
       }
     ]
+  },
+
+  // Modules & Packages - Essential for code organization
+  "Modules & Packages": {
+    type: "lesson",
+    difficulty: "Intermediate",
+    estimatedTime: "60 min",
+    description: "Learn to organize code into reusable modules and packages. Master import statements and create your own modules.",
+    steps: [
+      {
+        id: "modules-intro",
+        title: "What Are Modules?",
+        content: "Modules are Python files containing code that can be imported and reused in other programs. They help organize code, avoid repetition, and create libraries.\n\nPython has built-in modules (like math, random, datetime) and you can create your own modules.",
+        code: `# Using built-in modules
+import math
+import random
+import datetime
+
+# Math module examples
+print("=== Math Module ===")
+print("Pi:", math.pi)
+print("Square root of 16:", math.sqrt(16))
+print("Ceiling of 4.2:", math.ceil(4.2))
+print("Floor of 4.8:", math.floor(4.8))
+print("Factorial of 5:", math.factorial(5))
+
+# Random module examples
+print("\\n=== Random Module ===")
+print("Random number 1-10:", random.randint(1, 10))
+print("Random choice from list:", random.choice(['apple', 'banana', 'cherry']))
+print("Random float 0-1:", random.random())
+
+# Shuffle a list
+numbers = [1, 2, 3, 4, 5]
+random.shuffle(numbers)
+print("Shuffled list:", numbers)
+
+# Datetime module examples
+print("\\n=== Datetime Module ===")
+now = datetime.datetime.now()
+print("Current date and time:", now)
+print("Current date:", now.date())
+print("Current time:", now.time())
+print("Year:", now.year)
+print("Month:", now.month)
+print("Day:", now.day)
+
+# Create specific date
+birthday = datetime.date(1990, 5, 15)
+print("Birthday:", birthday)
+print("Days since birthday:", (now.date() - birthday).days)`,
+        output: `=== Math Module ===
+Pi: 3.141592653589793
+Square root of 16: 4.0
+Ceiling of 4.2: 5
+Floor of 4.8: 4
+Factorial of 5: 120
+
+=== Random Module ===
+Random number 1-10: 7
+Random choice from list: banana
+Random float 0-1: 0.8394571285645
+Shuffled list: [3, 1, 5, 2, 4]
+
+=== Datetime Module ===
+Current date and time: 2024-03-15 14:30:25.123456
+Current date: 2024-03-15
+Current time: 14:30:25.123456
+Year: 2024
+Month: 3
+Day: 15
+Birthday: 1990-05-15
+Days since birthday: 12357`,
+        tips: [
+          "import loads the entire module",
+          "Use module.function() to access functions",
+          "Built-in modules are always available",
+          "Check documentation with help(module_name)"
+        ]
+      },
+      {
+        id: "import-variations",
+        title: "Different Ways to Import",
+        content: "Python offers several ways to import modules and their contents. Each method has its use cases and benefits.",
+        code: `# Different import methods
+print("=== Import Variations ===")
+
+# Method 1: Import entire module
+import math
+result1 = math.sqrt(25)
+print("Method 1 - import math:", result1)
+
+# Method 2: Import specific functions
+from math import sqrt, pi, factorial
+result2 = sqrt(25)
+print("Method 2 - from math import sqrt:", result2)
+print("Pi directly:", pi)
+print("Factorial of 4:", factorial(4))
+
+# Method 3: Import with alias
+import datetime as dt
+now = dt.datetime.now()
+print("Method 3 - import datetime as dt:", now.strftime("%Y-%m-%d"))
+
+# Method 4: Import all (use with caution!)
+from random import *
+random_num = randint(1, 100)
+print("Method 4 - from random import *:", random_num)
+
+# Method 5: Import multiple items
+from os import getcwd, listdir, path
+print("Current directory:", getcwd())
+print("Directory exists:", path.exists("."))
+
+# Import with multiple aliases
+from json import loads as json_parse, dumps as json_stringify
+data = {"name": "Alice", "age": 30}
+json_string = json_stringify(data)
+parsed_data = json_parse(json_string)
+print("JSON string:", json_string)
+print("Parsed data:", parsed_data)
+
+# Conditional imports
+try:
+    import requests
+    print("Requests library is available")
+except ImportError:
+    print("Requests library not installed")
+    
+# Check what's available in a module
+import sys
+print("\\nSome sys module attributes:")
+print("Python version:", sys.version_info)
+print("Python path:", sys.path[:2])  # Show first 2 paths`,
+        output: `=== Import Variations ===
+Method 1 - import math: 5.0
+Method 2 - from math import sqrt: 5.0
+Pi directly: 3.141592653589793
+Factorial of 4: 24
+Method 3 - import datetime as dt: 2024-03-15
+Method 4 - from random import *: 42
+Current directory: /home/user/projects
+Directory exists: True
+JSON string: {"name": "Alice", "age": 30}
+Parsed data: {'name': 'Alice', 'age': 30}
+Requests library is available
+
+Some sys module attributes:
+Python version: sys.version_info(major=3, minor=11, micro=0, releaselevel='final', serial=0)
+Python path: ['/home/user/projects', '/usr/lib/python3.11']`,
+        tips: [
+          "from module import * can cause naming conflicts",
+          "Use aliases for long module names",
+          "Import only what you need for better performance",
+          "Try/except ImportError for optional dependencies"
+        ],
+        practice: {
+          challenge: "Create a utility script that uses multiple import methods to build a simple file analyzer",
+          starterCode: `# File analyzer using different import methods
+# Import os module with alias
+# Import specific functions from pathlib
+# Import datetime for file timestamps
+
+def analyze_file(filename):
+    # Check if file exists
+    # Get file size
+    # Get file creation/modification time
+    # Get file extension
+    # Return analysis dictionary
+    pass
+
+def format_file_size(size_bytes):
+    # Convert bytes to human readable format (KB, MB, GB)
+    # Use math module for calculations
+    pass
+
+# Test your analyzer
+# filename = "test.txt"
+# analysis = analyze_file(filename)
+# print("File Analysis:", analysis)`,
+          expectedOutput: "File analyzer that checks existence, size, timestamps, and extension",
+          hints: [
+            "Use os.path or pathlib for file operations",
+            "datetime.fromtimestamp() for readable dates",
+            "os.path.getsize() for file size",
+            "os.path.splitext() for file extension"
+          ]
+        }
+      },
+      {
+        id: "creating-modules",
+        title: "Creating Your Own Modules",
+        content: "You can create your own modules by writing Python files. Any .py file can be imported as a module. This promotes code reuse and organization.",
+        code: `# Example: Creating a custom math utilities module
+# File: math_utils.py (this would be a separate file)
+
+def calculate_area_circle(radius):
+    """Calculate the area of a circle."""
+    import math
+    return math.pi * radius ** 2
+
+def calculate_area_rectangle(length, width):
+    """Calculate the area of a rectangle."""
+    return length * width
+
+def calculate_area_triangle(base, height):
+    """Calculate the area of a triangle."""
+    return 0.5 * base * height
+
+def is_prime(n):
+    """Check if a number is prime."""
+    if n < 2:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+def fibonacci(n):
+    """Generate fibonacci sequence up to n terms."""
+    sequence = []
+    a, b = 0, 1
+    for _ in range(n):
+        sequence.append(a)
+        a, b = b, a + b
+    return sequence
+
+# Module-level variables
+PI = 3.14159
+E = 2.71828
+
+# Module initialization code
+print("Math utils module loaded!")
+
+# Using the custom module (if it existed)
+# import math_utils
+
+print("=== Using Custom Module ===")
+# Simulate using the module functions
+def calculate_area_circle(radius):
+    import math
+    return math.pi * radius ** 2
+
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+def fibonacci(n):
+    sequence = []
+    a, b = 0, 1
+    for _ in range(n):
+        sequence.append(a)
+        a, b = b, a + b
+    return sequence
+
+# Test the functions
+print("Circle area (radius 5):", calculate_area_circle(5))
+print("Is 17 prime?", is_prime(17))
+print("Is 15 prime?", is_prime(15))
+print("First 8 Fibonacci numbers:", fibonacci(8))
+
+# Demonstrating __name__ == "__main__"
+def main():
+    """Main function - only runs when script is executed directly."""
+    print("\\n=== Module Main Function ===")
+    print("This runs only when the module is executed directly")
+    print("Not when it's imported by another module")
+    
+    # Test all functions
+    print("Testing all functions:")
+    print("- Circle area (r=3):", calculate_area_circle(3))
+    print("- Prime check (13):", is_prime(13))
+    print("- Fibonacci (5):", fibonacci(5))
+
+# This is the key pattern for modules
+if __name__ == "__main__":
+    main()`,
+        output: `=== Using Custom Module ===
+Circle area (radius 5): 78.53981633974483
+Is 17 prime? True
+Is 15 prime? False
+First 8 Fibonacci numbers: [0, 1, 1, 2, 3, 5, 8, 13]
+
+=== Module Main Function ===
+This runs only when the module is executed directly
+Not when it's imported by another module
+Testing all functions:
+- Circle area (r=3): 28.274333882308138
+- Prime check (13): True
+- Fibonacci (5): [0, 1, 1, 2, 3]`,
+        tips: [
+          "Any .py file can be imported as a module",
+          "Use docstrings to document your functions",
+          "__name__ == '__main__' allows modules to be both imported and run",
+          "Module-level code runs when the module is first imported"
+        ],
+        practice: {
+          challenge: "Create a text processing module with various string utilities",
+          starterCode: `# text_utils.py - Text processing utilities module
+
+def count_words(text):
+    """Count the number of words in text."""
+    # Split text and count words
+    pass
+
+def count_characters(text, include_spaces=True):
+    """Count characters in text."""
+    # Count characters with option to include/exclude spaces
+    pass
+
+def reverse_words(text):
+    """Reverse the order of words in text."""
+    # Split, reverse, and join words
+    pass
+
+def capitalize_words(text):
+    """Capitalize the first letter of each word."""
+    # Use string methods to capitalize
+    pass
+
+def remove_punctuation(text):
+    """Remove punctuation from text."""
+    # Remove common punctuation marks
+    pass
+
+def get_word_frequency(text):
+    """Return a dictionary of word frequencies."""
+    # Count how many times each word appears
+    pass
+
+# Module constants
+VOWELS = "aeiouAEIOU"
+CONSONANTS = "bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ"
+
+def main():
+    # Test all functions with sample text
+    sample_text = "Hello, World! This is a test text."
+    print("Sample text:", sample_text)
+    # Test each function
+    pass
+
+if __name__ == "__main__":
+    main()`,
+          expectedOutput: "Complete text processing module with word counting, formatting, and analysis functions",
+          hints: [
+            "Use split() to break text into words",
+            "string.punctuation contains common punctuation",
+            "Dictionary for word frequency counting",
+            "Test each function in the main() function"
+          ]
+        }
+      }
+    ]
+  },
+
+  // Working with External Libraries - Real-world Python development
+  "Working with External Libraries": {
+    type: "lesson",
+    difficulty: "Intermediate",
+    estimatedTime: "75 min",
+    description: "Learn to use pip for package management and work with popular Python libraries like requests, datetime, os, and json.",
+    steps: [
+      {
+        id: "pip-package-management",
+        title: "Package Management with pip",
+        content: "pip is Python's package installer. It allows you to install, upgrade, and manage external libraries from the Python Package Index (PyPI).",
+        code: `# pip commands (run these in terminal/command prompt)
+# Install a package
+# pip install requests
+
+# Install specific version
+# pip install requests==2.28.0
+
+# Install multiple packages
+# pip install requests beautifulsoup4 pandas
+
+# Upgrade a package
+# pip upgrade requests
+
+# Uninstall a package
+# pip uninstall requests
+
+# List installed packages
+# pip list
+
+# Show package information
+# pip show requests
+
+# Install from requirements file
+# pip install -r requirements.txt
+
+# Create requirements file
+# pip freeze > requirements.txt
+
+# Python code to check installed packages
+import sys
+import subprocess
+
+def check_package_installed(package_name):
+    """Check if a package is installed."""
+    try:
+        __import__(package_name)
+        return True
+    except ImportError:
+        return False
+
+def get_package_version(package_name):
+    """Get the version of an installed package."""
+    try:
+        import importlib.metadata
+        return importlib.metadata.version(package_name)
+    except:
+        return "Version not found"
+
+# Check common packages
+packages_to_check = ['json', 'os', 'datetime', 'sys', 'math']
+print("=== Checking Built-in Packages ===")
+for package in packages_to_check:
+    installed = check_package_installed(package)
+    print(f"{package}: {'✓ Installed' if installed else '✗ Not found'}")
+
+# Simulate pip list output
+print("\\n=== Simulated pip list ===")
+print("Package         Version")
+print("--------------- -------")
+print("pip            23.1.2")
+print("setuptools     67.8.0")
+print("wheel          0.40.0")
+
+# Example requirements.txt content
+requirements_content = '''
+requests>=2.28.0
+beautifulsoup4==4.12.2
+pandas>=1.5.0
+numpy>=1.21.0
+matplotlib>=3.5.0
+'''
+
+print("\\n=== Example requirements.txt ===")
+print(requirements_content.strip())`,
+        output: `=== Checking Built-in Packages ===
+json: ✓ Installed
+os: ✓ Installed
+datetime: ✓ Installed
+sys: ✓ Installed
+math: ✓ Installed
+
+=== Simulated pip list ===
+Package         Version
+--------------- -------
+pip            23.1.2
+setuptools     67.8.0
+wheel          0.40.0
+
+=== Example requirements.txt ===
+requests>=2.28.0
+beautifulsoup4==4.12.2
+pandas>=1.5.0
+numpy>=1.21.0
+matplotlib>=3.5.0`,
+        tips: [
+          "Use virtual environments to avoid package conflicts",
+          "Pin specific versions in production (package==1.2.3)",
+          "Use >= for minimum version requirements",
+          "Always check package documentation for usage examples"
+        ]
+      },
+      {
+        id: "requests-library",
+        title: "HTTP Requests with requests Library",
+        content: "The requests library makes HTTP requests simple and pythonic. It's essential for API interactions and web scraping.",
+        code: `# Working with the requests library
+# Note: In a real environment, you'd need: pip install requests
+
+# Simulating requests library functionality
+import json
+import urllib.request
+import urllib.parse
+
+class MockResponse:
+    def __init__(self, data, status_code=200):
+        self.data = data
+        self.status_code = status_code
+        self.headers = {'Content-Type': 'application/json'}
+    
+    def json(self):
+        return json.loads(self.data) if isinstance(self.data, str) else self.data
+    
+    def text(self):
+        return json.dumps(self.data) if not isinstance(self.data, str) else self.data
+
+# Mock requests module
+class requests:
+    @staticmethod
+    def get(url, params=None, headers=None):
+        # Simulate different API responses
+        if "jsonplaceholder" in url:
+            return MockResponse({
+                "userId": 1,
+                "id": 1,
+                "title": "Sample Post",
+                "body": "This is a sample post body"
+            })
+        elif "weather" in url:
+            return MockResponse({
+                "location": "New York",
+                "temperature": 22,
+                "condition": "Sunny",
+                "humidity": 65
+            })
+        return MockResponse({"message": "Mock response"})
+    
+    @staticmethod
+    def post(url, data=None, json=None, headers=None):
+        return MockResponse({"status": "created", "id": 123}, 201)
+
+# Using requests for API calls
+print("=== GET Request Example ===")
+response = requests.get("https://jsonplaceholder.typicode.com/posts/1")
+print(f"Status Code: {response.status_code}")
+print(f"Response: {response.json()}")
+
+print("\\n=== Weather API Example ===")
+weather_response = requests.get("https://api.weather.com/current")
+weather_data = weather_response.json()
+print(f"Location: {weather_data['location']}")
+print(f"Temperature: {weather_data['temperature']}°C")
+print(f"Condition: {weather_data['condition']}")
+
+print("\\n=== POST Request Example ===")
+new_post_data = {
+    "title": "My New Post",
+    "body": "This is the content of my post",
+    "userId": 1
+}
+post_response = requests.post(
+    "https://jsonplaceholder.typicode.com/posts",
+    json=new_post_data
+)
+print(f"Post created - Status: {post_response.status_code}")
+print(f"Response: {post_response.json()}")
+
+# Error handling with requests
+def safe_api_call(url):
+    """Make a safe API call with error handling."""
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"API Error: Status {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"Request failed: {e}")
+        return None
+
+print("\\n=== Safe API Call ===")
+data = safe_api_call("https://api.example.com/data")
+if data:
+    print("Data received successfully:", data)
+else:
+    print("Failed to get data")
+
+# Headers and authentication example
+headers = {
+    "User-Agent": "My Python App 1.0",
+    "Authorization": "Bearer your-api-token",
+    "Content-Type": "application/json"
+}
+
+print("\\n=== Request with Headers ===")
+print("Headers to send:", headers)
+auth_response = requests.get("https://api.example.com/protected", headers=headers)
+print("Authenticated request sent")`,
+        output: `=== GET Request Example ===
+Status Code: 200
+Response: {'userId': 1, 'id': 1, 'title': 'Sample Post', 'body': 'This is a sample post body'}
+
+=== Weather API Example ===
+Location: New York
+Temperature: 22°C
+Condition: Sunny
+
+=== POST Request Example ===
+Post created - Status: 201
+Response: {'status': 'created', 'id': 123}
+
+=== Safe API Call ===
+Data received successfully: {'message': 'Mock response'}
+
+=== Request with Headers ===
+Headers to send: {'User-Agent': 'My Python App 1.0', 'Authorization': 'Bearer your-api-token', 'Content-Type': 'application/json'}
+Authenticated request sent`,
+        tips: [
+          "Always check response.status_code before processing data",
+          "Use response.json() for JSON APIs",
+          "Include proper headers for authentication",
+          "Handle exceptions for network errors"
+        ]
+      },
+      {
+        id: "os-json-datetime",
+        title: "Essential Built-in Libraries",
+        content: "Master the essential built-in libraries: os for system operations, json for data exchange, and datetime for time handling.",
+        code: `# Working with os module
+import os
+import json
+import datetime
+
+print("=== OS Module Examples ===")
+print("Current working directory:", os.getcwd())
+print("User home directory:", os.path.expanduser("~"))
+print("Operating system:", os.name)
+
+# Environment variables
+print("Python path:", os.environ.get('PYTHONPATH', 'Not set'))
+print("User:", os.environ.get('USER', os.environ.get('USERNAME', 'Unknown')))
+
+# File and directory operations
+print("\\nFile operations:")
+print("File exists (this script):", os.path.exists(__file__ if '__file__' in globals() else 'current_file.py'))
+print("Is directory (current):", os.path.isdir('.'))
+print("Directory contents:", os.listdir('.')[:5])  # First 5 items
+
+# Path operations
+file_path = "/home/user/documents/file.txt"
+print("\\nPath operations for:", file_path)
+print("Directory:", os.path.dirname(file_path))
+print("Filename:", os.path.basename(file_path))
+print("File extension:", os.path.splitext(file_path)[1])
+print("Join paths:", os.path.join("folder", "subfolder", "file.txt"))
+
+print("\\n=== JSON Module Examples ===")
+# Working with JSON data
+python_data = {
+    "name": "Alice Johnson",
+    "age": 30,
+    "skills": ["Python", "JavaScript", "SQL"],
+    "is_employed": True,
+    "salary": 75000.50,
+    "projects": [
+        {"name": "Web App", "status": "completed"},
+        {"name": "API Service", "status": "in_progress"}
+    ]
+}
+
+# Convert Python to JSON
+json_string = json.dumps(python_data, indent=2)
+print("Python to JSON:")
+print(json_string)
+
+# Convert JSON back to Python
+parsed_data = json.loads(json_string)
+print("\\nJSON to Python:")
+print("Name:", parsed_data["name"])
+print("Skills:", parsed_data["skills"])
+print("First project:", parsed_data["projects"][0]["name"])
+
+# Working with JSON files (simulated)
+def save_to_json_file(data, filename):
+    """Save data to JSON file."""
+    json_content = json.dumps(data, indent=2)
+    print(f"\\nSaving to {filename}:")
+    print(json_content[:100] + "..." if len(json_content) > 100 else json_content)
+
+def load_from_json_file(filename):
+    """Load data from JSON file."""
+    # Simulate file content
+    return {
+        "config": {
+            "debug": True,
+            "max_connections": 100
+        },
+        "users": ["alice", "bob", "charlie"]
+    }
+
+save_to_json_file(python_data, "user_data.json")
+config_data = load_from_json_file("config.json")
+print("\\nLoaded config:", config_data)
+
+print("\\n=== Datetime Module Examples ===")
+# Current date and time
+now = datetime.datetime.now()
+today = datetime.date.today()
+current_time = datetime.time(now.hour, now.minute, now.second)
+
+print("Current datetime:", now)
+print("Today's date:", today)
+print("Current time:", current_time)
+
+# Creating specific dates
+birthday = datetime.date(1990, 5, 15)
+meeting_time = datetime.datetime(2024, 3, 20, 14, 30, 0)
+
+print("\\nSpecific dates:")
+print("Birthday:", birthday)
+print("Meeting time:", meeting_time)
+
+# Date arithmetic
+age_in_days = (today - birthday).days
+days_until_meeting = (meeting_time.date() - today).days
+
+print("\\nDate calculations:")
+print("Age in days:", age_in_days)
+print("Days until meeting:", days_until_meeting)
+
+# Formatting dates
+print("\\nDate formatting:")
+print("ISO format:", now.isoformat())
+print("Custom format:", now.strftime("%B %d, %Y at %I:%M %p"))
+print("Short format:", now.strftime("%m/%d/%Y"))
+
+# Parsing date strings
+date_string = "2024-03-15 14:30:00"
+parsed_date = datetime.datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S")
+print("\\nParsed date:", parsed_date)
+
+# Working with timezones (basic)
+utc_now = datetime.datetime.utcnow()
+print("UTC time:", utc_now)`,
+        output: `=== OS Module Examples ===
+Current working directory: /home/user/projects
+User home directory: /home/user
+Operating system: posix
+
+Python path: Not set
+User: alice
+
+File operations:
+File exists (this script): True
+Is directory (current): True
+Directory contents: ['main.py', 'data', 'utils', 'tests', 'README.md']
+
+Path operations for: /home/user/documents/file.txt
+Directory: /home/user/documents
+Filename: file.txt
+File extension: .txt
+Join paths: folder/subfolder/file.txt
+
+=== JSON Module Examples ===
+Python to JSON:
+{
+  "name": "Alice Johnson",
+  "age": 30,
+  "skills": [
+    "Python",
+    "JavaScript",
+    "SQL"
+  ],
+  "is_employed": true,
+  "salary": 75000.5,
+  "projects": [
+    {
+      "name": "Web App",
+      "status": "completed"
+    },
+    {
+      "name": "API Service",
+      "status": "in_progress"
+    }
+  ]
+}
+
+JSON to Python:
+Name: Alice Johnson
+Skills: ['Python', 'JavaScript', 'SQL']
+First project: Web App
+
+Saving to user_data.json:
+{
+  "name": "Alice Johnson",
+  "age": 30,
+  "skills": [
+    "Python",
+    "JavaScript",
+    "SQL"
+  ],
+  "is_emp...
+
+Loaded config: {'config': {'debug': True, 'max_connections': 100}, 'users': ['alice', 'bob', 'charlie']}
+
+=== Datetime Module Examples ===
+Current datetime: 2024-03-15 14:30:25.123456
+Today's date: 2024-03-15
+Current time: 14:30:25
+
+Specific dates:
+Birthday: 1990-05-15
+Meeting time: 2024-03-20 14:30:00
+
+Date calculations:
+Age in days: 12357
+Days until meeting: 5
+
+Date formatting:
+ISO format: 2024-03-15T14:30:25.123456
+Custom format: March 15, 2024 at 02:30 PM
+Short format: 03/15/2024
+
+Parsed date: 2024-03-15 14:30:00
+UTC time: 2024-03-15 19:30:25.123456`,
+        tips: [
+          "Use os.path.join() for cross-platform file paths",
+          "JSON can't serialize datetime objects directly",
+          "Always use try/except when parsing dates",
+          "Store dates in ISO format for consistency"
+        ],
+        practice: {
+          challenge: "Build a configuration manager that handles JSON configs and file operations",
+          starterCode: `# Configuration Manager
+import os
+import json
+import datetime
+
+class ConfigManager:
+    def __init__(self, config_file="app_config.json"):
+        self.config_file = config_file
+        self.config = {}
+        self.load_config()
+    
+    def load_config(self):
+        """Load configuration from JSON file."""
+        # Check if file exists
+        # Load JSON data
+        # Handle file not found gracefully
+        pass
+    
+    def save_config(self):
+        """Save current configuration to JSON file."""
+        # Convert config to JSON
+        # Write to file
+        # Handle errors
+        pass
+    
+    def get(self, key, default=None):
+        """Get configuration value."""
+        # Return config value or default
+        pass
+    
+    def set(self, key, value):
+        """Set configuration value."""
+        # Update config
+        # Auto-save
+        pass
+    
+    def backup_config(self):
+        """Create a backup of the current config."""
+        # Create backup with timestamp
+        # Use datetime for unique filename
+        pass
+    
+    def get_app_info(self):
+        """Get application runtime information."""
+        # Return dict with:
+        # - config file location
+        # - last modified time
+        # - file size
+        # - number of config items
+        pass
+
+# Test your ConfigManager
+# config = ConfigManager()
+# config.set("app_name", "My Python App")
+# config.set("debug", True)
+# print("App name:", config.get("app_name"))
+# config.backup_config()`,
+          expectedOutput: "Complete configuration manager with JSON handling, file operations, and backup functionality",
+          hints: [
+            "Use try/except for file operations",
+            "datetime.now().strftime() for backup timestamps",
+            "os.path.getsize() and os.path.getmtime() for file info",
+            "Provide sensible defaults for missing config values"
+          ]
+        }
+      }
+    ]
+  },
+
+  // File and Directory Management - Essential I/O operations
+  "File and Directory Management": {
+    type: "lesson",
+    difficulty: "Intermediate",
+    estimatedTime: "60 min",
+    description: "Master file and directory operations including reading, writing, organizing files, and handling different file formats.",
+    steps: [
+      {
+        id: "basic-file-operations",
+        title: "Basic File Reading and Writing",
+        content: "Learn the fundamentals of file operations in Python using built-in functions and context managers.",
+        code: `# File operations in Python
+import os
+import shutil
+
+print("=== Basic File Reading and Writing ===")
+
+# Writing to files
+def create_sample_file():
+    """Create a sample text file."""
+    content = """Hello, World!
+This is a sample text file.
+It contains multiple lines.
+Each line has different content.
+Python makes file handling easy!"""
+    
+    # Using with statement (context manager) - recommended
+    with open("sample.txt", "w") as file:
+        file.write(content)
+    print("✓ sample.txt created")
+
+def append_to_file():
+    """Append content to existing file."""
+    additional_content = "\\nThis line was added later.\\nPython is awesome!"
+    
+    with open("sample.txt", "a") as file:
+        file.write(additional_content)
+    print("✓ Content appended to sample.txt")
+
+# Reading from files
+def read_entire_file():
+    """Read entire file content."""
+    try:
+        with open("sample.txt", "r") as file:
+            content = file.read()
+        print("\\n=== Entire File Content ===")
+        print(content)
+        return content
+    except FileNotFoundError:
+        print("File not found!")
+        return None
+
+def read_file_lines():
+    """Read file line by line."""
+    try:
+        with open("sample.txt", "r") as file:
+            lines = file.readlines()
+        
+        print("\\n=== File Lines ===")
+        for i, line in enumerate(lines, 1):
+            print(f"Line {i}: {line.strip()}")
+        return lines
+    except FileNotFoundError:
+        print("File not found!")
+        return []
+
+def read_file_efficiently():
+    """Read large files efficiently."""
+    try:
+        print("\\n=== Reading Line by Line (Memory Efficient) ===")
+        with open("sample.txt", "r") as file:
+            for line_num, line in enumerate(file, 1):
+                print(f"{line_num:2d}: {line.rstrip()}")
+    except FileNotFoundError:
+        print("File not found!")
+
+# Demonstrate file operations
+create_sample_file()
+append_to_file()
+content = read_entire_file()
+lines = read_file_lines()
+read_file_efficiently()
+
+# Binary file operations
+def work_with_binary_files():
+    """Demonstrate binary file operations."""
+    print("\\n=== Binary File Operations ===")
+    
+    # Create binary data
+    binary_data = b"\\x48\\x65\\x6c\\x6c\\x6f\\x20\\x57\\x6f\\x72\\x6c\\x64"  # "Hello World" in bytes
+    
+    # Write binary file
+    with open("binary_sample.bin", "wb") as file:
+        file.write(binary_data)
+    print("✓ Binary file created")
+    
+    # Read binary file
+    with open("binary_sample.bin", "rb") as file:
+        read_data = file.read()
+    
+    print(f"Binary data: {read_data}")
+    print(f"Decoded: {read_data.decode('utf-8')}")
+
+work_with_binary_files()
+
+# File information
+def get_file_info(filename):
+    """Get information about a file."""
+    try:
+        if os.path.exists(filename):
+            size = os.path.getsize(filename)
+            modified_time = os.path.getmtime(filename)
+            
+            print(f"\\n=== File Info: {filename} ===")
+            print(f"Size: {size} bytes")
+            print(f"Modified: {modified_time}")
+            print(f"Is file: {os.path.isfile(filename)}")
+            print(f"Is readable: {os.access(filename, os.R_OK)}")
+            print(f"Is writable: {os.access(filename, os.W_OK)}")
+        else:
+            print(f"File {filename} does not exist")
+    except Exception as e:
+        print(f"Error getting file info: {e}")
+
+get_file_info("sample.txt")
+
+# File operations with error handling
+def safe_file_operation(filename, operation="read"):
+    """Perform file operations with comprehensive error handling."""
+    try:
+        if operation == "read":
+            with open(filename, "r") as file:
+                return file.read()
+        elif operation == "write":
+            with open(filename, "w") as file:
+                file.write("Safe write operation")
+                return True
+    except FileNotFoundError:
+        print(f"Error: {filename} not found")
+    except PermissionError:
+        print(f"Error: Permission denied for {filename}")
+    except IOError as e:
+        print(f"IO Error: {e}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+    return None
+
+print("\\n=== Safe File Operations ===")
+result = safe_file_operation("sample.txt", "read")
+if result:
+    print("File read successfully")
+else:
+    print("File operation failed")`,
+        output: `=== Basic File Reading and Writing ===
+✓ sample.txt created
+✓ Content appended to sample.txt
+
+=== Entire File Content ===
+Hello, World!
+This is a sample text file.
+It contains multiple lines.
+Each line has different content.
+Python makes file handling easy!
+This line was added later.
+Python is awesome!
+
+=== File Lines ===
+Line 1: Hello, World!
+Line 2: This is a sample text file.
+Line 3: It contains multiple lines.
+Line 4: Each line has different content.
+Line 5: Python makes file handling easy!
+Line 6: This line was added later.
+Line 7: Python is awesome!
+
+=== Reading Line by Line (Memory Efficient) ===
+ 1: Hello, World!
+ 2: This is a sample text file.
+ 3: It contains multiple lines.
+ 4: Each line has different content.
+ 5: Python makes file handling easy!
+ 6: This line was added later.
+ 7: Python is awesome!
+
+=== Binary File Operations ===
+✓ Binary file created
+Binary data: b'Hello World'
+Decoded: Hello World
+
+=== File Info: sample.txt ===
+Size: 149 bytes
+Modified: 1647934567.123456
+Is file: True
+Is readable: True
+Is writable: True
+
+=== Safe File Operations ===
+File read successfully`,
+        tips: [
+          "Always use 'with' statement for automatic file closing",
+          "Use 'r', 'w', 'a' for text files; 'rb', 'wb', 'ab' for binary",
+          "Handle FileNotFoundError and PermissionError",
+          "For large files, read line by line to save memory"
+        ]
+      },
+      {
+        id: "directory-operations",
+        title: "Directory Management and File Organization",
+        content: "Learn to create, navigate, and organize directories and files programmatically.",
+        code: `# Directory operations and file management
+import os
+import shutil
+import glob
+from pathlib import Path
+
+print("=== Directory Operations ===")
+
+# Current directory information
+current_dir = os.getcwd()
+print(f"Current directory: {current_dir}")
+print(f"Directory contents: {os.listdir('.')[:5]}")  # First 5 items
+
+# Creating directories
+def create_directory_structure():
+    """Create a sample directory structure."""
+    directories = [
+        "project",
+        "project/src",
+        "project/src/utils",
+        "project/tests",
+        "project/docs",
+        "project/data"
+    ]
+    
+    for directory in directories:
+        os.makedirs(directory, exist_ok=True)
+        print(f"✓ Created: {directory}")
+
+create_directory_structure()
+
+# Working with paths
+def demonstrate_path_operations():
+    """Show various path operations."""
+    print("\\n=== Path Operations ===")
+    
+    # Join paths correctly (cross-platform)
+    file_path = os.path.join("project", "src", "main.py")
+    print("Joined path: " + file_path)
+    
+    # Split paths
+    directory, filename = os.path.split(file_path)
+    print("Directory: " + directory)
+    print("Filename: " + filename)
+    
+    # File extension operations
+    name, extension = os.path.splitext(filename)
+    print("Name: " + name + ", Extension: " + extension)
+    
+    # Absolute vs relative paths
+    abs_path = os.path.abspath(file_path)
+    print("Absolute path: " + abs_path)
+    
+    # Check path properties
+    print("Exists: " + str(os.path.exists(file_path)))
+    print("Is absolute: " + str(os.path.isabs(file_path)))
+
+demonstrate_path_operations()
+
+# File and directory listing
+def list_directory_contents(path="."):
+    """List and categorize directory contents."""
+    print("\\n=== Contents of " + path + " ===")
+    
+    try:
+        items = os.listdir(path)
+        files = []
+        dirs = []
+        
+        for item in items:
+            item_path = os.path.join(path, item)
+            if os.path.isfile(item_path):
+                files.append(item)
+            elif os.path.isdir(item_path):
+                dirs.append(item)
+        
+        print("Directories (" + str(len(dirs)) + "):")
+        for directory in sorted(dirs):
+            print("  📁 " + directory)
+        
+        print("\\nFiles (" + str(len(files)) + "):")
+        for file in sorted(files):
+            size = os.path.getsize(os.path.join(path, file))
+            print("  📄 " + file + " (" + str(size) + " bytes)")
+            
+    except PermissionError:
+        print("Permission denied: " + path)
+    except FileNotFoundError:
+        print("Path not found: " + path)
+
+list_directory_contents(".")
+list_directory_contents("project")
+
+# File searching with glob
+def search_files_with_patterns():
+    """Search for files using glob patterns."""
+    print("\\n=== File Pattern Searching ===")
+    
+    # Create some sample files
+    sample_files = [
+        "project/src/main.py",
+        "project/src/utils/helper.py",
+        "project/src/utils/config.py",
+        "project/tests/test_main.py",
+        "project/docs/readme.txt",
+        "project/data/sample.json"
+    ]
+    
+    for file_path in sample_files:
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        # Create empty file
+        with open(file_path, "w") as f:
+            f.write(f"# Sample content for {os.path.basename(file_path)}")
+    
+    print("✓ Sample files created")
+    
+    # Search patterns
+    patterns = [
+        "project/**/*.py",      # All Python files
+        "project/src/*.py",     # Python files in src
+        "project/**/test_*.py", # Test files
+        "project/**/*.txt",     # Text files
+        "project/**/*.json"     # JSON files
+    ]
+    
+    for pattern in patterns:
+        matches = glob.glob(pattern, recursive=True)
+        print("\\nPattern '" + pattern + "':")
+        for match in matches:
+            print("  ✓ " + match)
+
+search_files_with_patterns()
+
+# Moving and copying files
+def file_management_operations():
+    """Demonstrate file copying, moving, and deletion."""
+    print("\\n=== File Management Operations ===")
+    
+    # Create source file
+    source_file = "project/source.txt"
+    with open(source_file, "w") as f:
+        f.write("This is the source file content.\\nIt will be copied and moved.")
+    print("✓ Created source file: " + source_file)
+    
+    # Copy file
+    copy_destination = "project/docs/source_copy.txt"
+    shutil.copy2(source_file, copy_destination)
+    print("✓ Copied to: " + copy_destination)
+    
+    # Move file
+    move_destination = "project/data/moved_source.txt"
+    shutil.move(source_file, move_destination)
+    print("✓ Moved to: " + move_destination)
+    
+    # Copy entire directory
+    if os.path.exists("project/src"):
+        backup_dir = "project/src_backup"
+        shutil.copytree("project/src", backup_dir)
+        print("✓ Directory copied to: " + backup_dir)
+    
+    # Get directory size
+    def get_directory_size(path):
+        total_size = 0
+        for dirpath, dirnames, filenames in os.walk(path):
+            for filename in filenames:
+                filepath = os.path.join(dirpath, filename)
+                total_size += os.path.getsize(filepath)
+        return total_size
+    
+    project_size = get_directory_size("project")
+    print("\\nProject directory size: " + str(project_size) + " bytes")
+
+file_management_operations()
+
+# Directory tree display
+def display_directory_tree(path, prefix="", max_depth=3, current_depth=0):
+    """Display directory structure as a tree."""
+    if current_depth >= max_depth:
+        return
+    
+    try:
+        items = sorted(os.listdir(path))
+        for i, item in enumerate(items):
+            item_path = os.path.join(path, item)
+            is_last = i == len(items) - 1
+            
+            # Choose the right prefix
+            current_prefix = "└── " if is_last else "├── "
+            print(prefix + current_prefix + item)
+            
+            # Recurse into directories
+            if os.path.isdir(item_path):
+                extension = "    " if is_last else "│   "
+                display_directory_tree(
+                    item_path, 
+                    prefix + extension, 
+                    max_depth, 
+                    current_depth + 1
+                )
+    except PermissionError:
+        print(prefix + "├── [Permission Denied]")
+
+print("\\n=== Directory Tree ===")
+print("project/")
+display_directory_tree("project", max_depth=3)`,
+        output: `=== Directory Operations ===
+Current directory: /home/user/projects/python-learning
+Directory contents: ['main.py', 'utils', 'tests', 'data', 'docs']
+
+✓ Created: project
+✓ Created: project/src
+✓ Created: project/src/utils
+✓ Created: project/tests
+✓ Created: project/docs
+✓ Created: project/data
+
+=== Path Operations ===
+Joined path: project/src/main.py
+Directory: project/src
+Filename: main.py
+Name: main, Extension: .py
+Absolute path: /home/user/projects/python-learning/project/src/main.py
+Exists: False
+Is absolute: False
+
+=== Contents of . ===
+Directories (1):
+  📁 project
+
+Files (0):
+
+=== Contents of project ===
+Directories (4):
+  📁 data
+  📁 docs
+  📁 src
+  📁 tests
+
+Files (0):
+
+=== File Pattern Searching ===
+✓ Sample files created
+
+Pattern 'project/**/*.py':
+  ✓ project/src/main.py
+  ✓ project/src/utils/helper.py
+  ✓ project/src/utils/config.py
+  ✓ project/tests/test_main.py
+
+Pattern 'project/src/*.py':
+  ✓ project/src/main.py
+
+Pattern 'project/**/test_*.py':
+  ✓ project/tests/test_main.py
+
+Pattern 'project/**/*.txt':
+  ✓ project/docs/readme.txt
+
+Pattern 'project/**/*.json':
+  ✓ project/data/sample.json
+
+=== File Management Operations ===
+✓ Created source file: project/source.txt
+✓ Copied to: project/docs/source_copy.txt
+✓ Moved to: project/data/moved_source.txt
+✓ Directory copied to: project/src_backup
+
+Project directory size: 387 bytes
+
+=== Directory Tree ===
+project/
+├── data
+│   ├── moved_source.txt
+│   └── sample.json
+├── docs
+│   ├── readme.txt
+│   └── source_copy.txt
+├── src
+│   ├── main.py
+│   └── utils
+│       ├── config.py
+│       └── helper.py
+├── src_backup
+│   ├── main.py
+│   └── utils
+└── tests
+    └── test_main.py`,
+        tips: [
+          "Use os.makedirs(exist_ok=True) to avoid errors if directory exists",
+          "glob.glob() supports ** for recursive searching",
+          "shutil.copy2() preserves metadata, shutil.copy() doesn't",
+          "Always handle PermissionError when working with directories"
+        ]
+      },
+      {
+        id: "file-formats",
+        title: "Working with Different File Formats",
+        content: "Handle various file formats including CSV, JSON, and text files with proper encoding.",
+        code: `# Working with different file formats
+import csv
+import json
+import os
+
+print("=== Working with Different File Formats ===")
+
+# CSV File Operations
+def work_with_csv_files():
+    """Demonstrate CSV file reading and writing."""
+    print("\\n=== CSV File Operations ===")
+    
+    # Sample data
+    employees = [
+        ["Name", "Age", "Department", "Salary"],
+        ["Alice Johnson", 30, "Engineering", 75000],
+        ["Bob Smith", 25, "Marketing", 55000],
+        ["Carol Davis", 35, "Engineering", 85000],
+        ["David Wilson", 28, "Sales", 60000],
+        ["Eva Brown", 32, "Engineering", 80000]
+    ]
+    
+    # Write CSV file
+    csv_filename = "employees.csv"
+    with open(csv_filename, "w", newline="", encoding="utf-8") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(employees)
+    print("✓ CSV file created: " + csv_filename)
+    
+    # Read CSV file
+    print("\\nReading CSV file:")
+    with open(csv_filename, "r", encoding="utf-8") as csvfile:
+        reader = csv.reader(csvfile)
+        headers = next(reader)  # Skip header row
+        print("Headers: " + str(headers))
+        
+        for row_num, row in enumerate(reader, 1):
+            print("Row " + str(row_num) + ": " + str(row))
+    
+    # Working with CSV DictReader/DictWriter
+    print("\\nUsing DictReader:")
+    with open(csv_filename, "r", encoding="utf-8") as csvfile:
+        dict_reader = csv.DictReader(csvfile)
+        for employee in dict_reader:
+            print(employee['Name'] + ": " + employee['Department'] + " - $" + employee['Salary'])
+    
+    # Calculate average salary by department
+    department_salaries = {}
+    with open(csv_filename, "r", encoding="utf-8") as csvfile:
+        dict_reader = csv.DictReader(csvfile)
+        for employee in dict_reader:
+            dept = employee["Department"]
+            salary = int(employee["Salary"])
+            
+            if dept not in department_salaries:
+                department_salaries[dept] = []
+            department_salaries[dept].append(salary)
+    
+    print("\\nAverage salary by department:")
+    for dept, salaries in department_salaries.items():
+        avg_salary = sum(salaries) / len(salaries)
+        print(dept + ": $" + "{:,.2f}".format(avg_salary))
+
+work_with_csv_files()
+
+# JSON File Operations
+def work_with_json_files():
+    """Demonstrate JSON file operations."""
+    print("\\n=== JSON File Operations ===")
+    
+    # Sample data structure
+    project_data = {
+        "project": {
+            "name": "Python Learning Platform",
+            "version": "1.0.0",
+            "description": "Interactive Python learning environment",
+            "created": "2024-03-15",
+            "authors": ["Alice", "Bob", "Carol"]
+        },
+        "modules": [
+            {
+                "name": "Basic Syntax",
+                "lessons": 5,
+                "difficulty": "Beginner",
+                "completed": True
+            },
+            {
+                "name": "Data Structures",
+                "lessons": 8,
+                "difficulty": "Intermediate",
+                "completed": False
+            },
+            {
+                "name": "Advanced Topics",
+                "lessons": 12,
+                "difficulty": "Advanced",
+                "completed": False
+            }
+        ],
+        "statistics": {
+            "total_users": 1250,
+            "active_users": 890,
+            "completion_rate": 0.67
+        }
+    }
+    
+    # Write JSON file
+    json_filename = "project_data.json"
+    with open(json_filename, "w", encoding="utf-8") as jsonfile:
+        json.dump(project_data, jsonfile, indent=2, ensure_ascii=False)
+    print("✓ JSON file created: " + json_filename)
+    
+    # Read JSON file
+    with open(json_filename, "r", encoding="utf-8") as jsonfile:
+        loaded_data = json.load(jsonfile)
+    
+    print("\\nProject Information:")
+    project = loaded_data["project"]
+    print("Name: " + project['name'])
+    print("Version: " + project['version'])
+    print("Authors: " + ', '.join(project['authors']))
+    
+    print("\\nModules:")
+    for module in loaded_data["modules"]:
+        status = "✓ Completed" if module["completed"] else "⏳ In Progress"
+        print("  " + module['name'] + " (" + module['difficulty'] + ") - " + status)
+    
+    # Update JSON data
+    loaded_data["statistics"]["total_users"] = 1350
+    loaded_data["modules"][1]["completed"] = True
+    
+    # Save updated data
+    with open(json_filename, "w", encoding="utf-8") as jsonfile:
+        json.dump(loaded_data, jsonfile, indent=2)
+    print("\\n✓ JSON file updated")
+
+work_with_json_files()
+
+# Text file encoding and processing
+def work_with_text_encoding():
+    """Demonstrate text file encoding and advanced processing."""
+    print("\\n=== Text File Encoding and Processing ===")
+    
+    # Different encoding examples
+    text_samples = {
+        "english.txt": "Hello World! This is English text.",
+        "unicode.txt": "Unicode: 🐍 Python is awesome! 中文 العربية Русский",
+        "special.txt": "Special chars: ñoño café naïve résumé"
+    }
+    
+    # Write files with proper encoding
+    for filename, content in text_samples.items():
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(content)
+        print("✓ Created: " + filename)
+    
+    # Read files and show encoding handling
+    for filename in text_samples.keys():
+        try:
+            # Try UTF-8 first (recommended)
+            with open(filename, "r", encoding="utf-8") as f:
+                content = f.read()
+            print("\\n" + filename + " (UTF-8): " + content)
+        except UnicodeDecodeError:
+            # Fallback to other encodings
+            try:
+                with open(filename, "r", encoding="latin-1") as f:
+                    content = f.read()
+                print("\\n" + filename + " (Latin-1): " + content)
+            except Exception as e:
+                print("Error reading " + filename + ": " + str(e))
+    
+    # Text file processing
+    def process_text_file(filename):
+        """Process text file with statistics."""
+        try:
+            with open(filename, "r", encoding="utf-8") as f:
+                content = f.read()
+            
+            # Calculate statistics
+            lines = content.split("\\n")
+            words = content.split()
+            chars = len(content)
+            chars_no_spaces = len(content.replace(" ", ""))
+            
+            print("\\nFile: " + filename)
+            print("  Lines: " + str(len(lines)))
+            print("  Words: " + str(len(words)))
+            print("  Characters: " + str(chars))
+            print("  Characters (no spaces): " + str(chars_no_spaces))
+            
+            return {
+                "lines": len(lines),
+                "words": len(words),
+                "characters": chars,
+                "characters_no_spaces": chars_no_spaces
+            }
+        except Exception as e:
+            print("Error processing " + filename + ": " + str(e))
+            return None
+    
+    # Process all text files
+    for filename in text_samples.keys():
+        process_text_file(filename)
+
+work_with_text_encoding()
+
+# File backup and organization
+def file_backup_system():
+    """Implement a simple file backup system."""
+    print("\\n=== File Backup System ===")
+    
+    # Create backup directory
+    backup_dir = "backups"
+    os.makedirs(backup_dir, exist_ok=True)
+    
+    # Files to backup
+    files_to_backup = ["employees.csv", "project_data.json", "unicode.txt"]
+    
+    import datetime
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    for filename in files_to_backup:
+        if os.path.exists(filename):
+            # Create backup filename with timestamp
+            backup_filename = f"{os.path.splitext(filename)[0]}_{timestamp}{os.path.splitext(filename)[1]}"
+            backup_path = os.path.join(backup_dir, backup_filename)
+            
+            # Copy file to backup location
+            import shutil
+            shutil.copy2(filename, backup_path)
+            print("✓ Backed up " + filename + " to " + backup_path)
+        else:
+            print("⚠ File not found: " + filename)
+    
+    # List backup directory
+    if os.path.exists(backup_dir):
+        backups = os.listdir(backup_dir)
+        print("\\nBackup directory contains " + str(len(backups)) + " files:")
+        for backup in sorted(backups):
+            backup_path = os.path.join(backup_dir, backup)
+            size = os.path.getsize(backup_path)
+            print("  " + backup + " (" + str(size) + " bytes)")
+
+file_backup_system()
+
+print("\\n=== File Operations Summary ===")
+print("✓ CSV files: Reading and writing tabular data")
+print("✓ JSON files: Structured data storage and retrieval")
+print("✓ Text files: Encoding handling and processing")
+print("✓ Backup system: File organization and preservation")`,
+        output: `=== Working with Different File Formats ===
+
+=== CSV File Operations ===
+✓ CSV file created: employees.csv
+
+Reading CSV file:
+Headers: ['Name', 'Age', 'Department', 'Salary']
+Row 1: ['Alice Johnson', '30', 'Engineering', '75000']
+Row 2: ['Bob Smith', '25', 'Marketing', '55000']
+Row 3: ['Carol Davis', '35', 'Engineering', '85000']
+Row 4: ['David Wilson', '28', 'Sales', '60000']
+Row 5: ['Eva Brown', '32', 'Engineering', '80000']
+
+Using DictReader:
+Alice Johnson: Engineering - $75000
+Bob Smith: Marketing - $55000
+Carol Davis: Engineering - $85000
+David Wilson: Sales - $60000
+Eva Brown: Engineering - $80000
+
+Average salary by department:
+Engineering: $80,000.00
+Marketing: $55,000.00
+Sales: $60,000.00
+
+=== JSON File Operations ===
+✓ JSON file created: project_data.json
+
+Project Information:
+Name: Python Learning Platform
+Version: 1.0.0
+Authors: Alice, Bob, Carol
+
+Modules:
+  Basic Syntax (Beginner) - ✓ Completed
+  Data Structures (Intermediate) - ⏳ In Progress
+  Advanced Topics (Advanced) - ⏳ In Progress
+
+✓ JSON file updated
+
+=== Text File Encoding and Processing ===
+✓ Created: english.txt
+✓ Created: unicode.txt
+✓ Created: special.txt
+
+english.txt (UTF-8): Hello World! This is English text.
+
+unicode.txt (UTF-8): Unicode: 🐍 Python is awesome! 中文 العربية Русский
+
+special.txt (UTF-8): Special chars: ñoño café naïve résumé
+
+File: english.txt
+  Lines: 1
+  Words: 6
+  Characters: 37
+  Characters (no spaces): 32
+
+File: unicode.txt
+  Lines: 1
+  Words: 6
+  Characters: 44
+  Characters (no spaces): 37
+
+File: special.txt
+  Lines: 1
+  Words: 5
+  Characters: 36
+  Characters (no spaces): 31
+
+=== File Backup System ===
+✓ Backed up employees.csv to backups/employees_20240315_143022.csv
+✓ Backed up project_data.json to backups/project_data_20240315_143022.json
+✓ Backed up unicode.txt to backups/unicode_20240315_143022.txt
+
+Backup directory contains 3 files:
+  employees_20240315_143022.csv (187 bytes)
+  project_data_20240315_143022.json (582 bytes)
+  unicode_20240315_143022.txt (44 bytes)
+
+=== File Operations Summary ===
+✓ CSV files: Reading and writing tabular data
+✓ JSON files: Structured data storage and retrieval  
+✓ Text files: Encoding handling and processing
+✓ Backup system: File organization and preservation`,
+        tips: [
+          "Always specify encoding='utf-8' for text files",
+          "Use csv.DictReader for easier column access",
+          "JSON can't store datetime objects - convert to strings",
+          "Handle UnicodeDecodeError gracefully with try/except"
+        ],
+        practice: {
+          challenge: "Build a log file analyzer that processes different file formats",
+          starterCode: `# Log File Analyzer
+import csv
+import json
+import os
+import datetime
+
+class LogAnalyzer:
+    def __init__(self, log_directory="logs"):
+        self.log_directory = log_directory
+        self.analysis_results = {}
+    
+    def analyze_csv_logs(self, filename):
+        """Analyze CSV log files."""
+        # Read CSV log file
+        # Count entries by status/level
+        # Calculate time ranges
+        # Return analysis dict
+        pass
+    
+    def analyze_json_logs(self, filename):
+        """Analyze JSON log files."""
+        # Read JSON log entries
+        # Extract error patterns
+        # Count by severity
+        # Return analysis dict
+        pass
+    
+    def analyze_text_logs(self, filename):
+        """Analyze plain text log files."""
+        # Read text logs line by line
+        # Extract timestamps and messages
+        # Find common patterns
+        # Return analysis dict
+        pass
+    
+    def generate_report(self):
+        """Generate comprehensive analysis report."""
+        # Combine all analysis results
+        # Create summary statistics
+        # Save report as JSON
+        # Return formatted report
+        pass
+    
+    def backup_logs(self):
+        """Create timestamped backup of all logs."""
+        # Create backup directory
+        # Copy all log files with timestamps
+        # Return backup location
+        pass
+
+# Test your LogAnalyzer
+# analyzer = LogAnalyzer()
+# analyzer.analyze_csv_logs("access.csv")
+# analyzer.analyze_json_logs("errors.json")
+# analyzer.analyze_text_logs("system.log")
+# report = analyzer.generate_report()
+# print(report)`,
+          expectedOutput: "Complete log analysis system with CSV, JSON, and text file processing capabilities",
+          hints: [
+            "Use csv.DictReader for structured CSV processing",
+            "Parse timestamps with datetime.strptime()",
+            "Count occurrences with dictionaries",
+            "Handle file encoding errors gracefully"
+          ]
+        }
+      }
+    ]
+  },
+
+  // Virtual Environments and Dependencies - Python project management
+  "Virtual Environments and Dependencies": {
+    type: "lesson",
+    difficulty: "Intermediate",
+    estimatedTime: "45 min",
+    description: "Learn to create isolated Python environments, manage dependencies, and organize project structures effectively.",
+    steps: [
+      {
+        id: "virtual-environments",
+        title: "Creating and Managing Virtual Environments",
+        content: "Virtual environments allow you to create isolated Python installations for different projects, preventing dependency conflicts.",
+        code: `# Virtual Environment Management Guide
+import os
+import sys
+import subprocess
+
+print("=== Virtual Environment Concepts ===")
+
+# Understanding the need for virtual environments
+print("Why use virtual environments?")
+print("1. Isolate project dependencies")
+print("2. Avoid version conflicts between projects")
+print("3. Keep global Python installation clean")
+print("4. Easy dependency management")
+print("5. Reproducible development environments")
+
+# Python's built-in venv module (Python 3.3+)
+print("\\n=== Using Python's built-in venv module ===")
+
+# Commands you would run in terminal (commented for demonstration)
+venv_commands = [
+    "# Create a virtual environment",
+    "python -m venv myproject_env",
+    "",
+    "# Activate virtual environment (Windows)",
+    "myproject_env\\\\Scripts\\\\activate",
+    "",
+    "# Activate virtual environment (macOS/Linux)",
+    "source myproject_env/bin/activate",
+    "",
+    "# Deactivate virtual environment",
+    "deactivate",
+    "",
+    "# Remove virtual environment",
+    "rmdir /s myproject_env  # Windows",
+    "rm -rf myproject_env    # macOS/Linux"
+]
+
+for command in venv_commands:
+    print(command)
+
+# Checking if running in virtual environment
+def check_virtual_environment():
+    """Check if currently running in a virtual environment."""
+    print("\\n=== Environment Check ===")
+    
+    # Check for VIRTUAL_ENV environment variable
+    virtual_env = os.environ.get('VIRTUAL_ENV')
+    if virtual_env:
+        print("✓ Running in virtual environment: " + virtual_env)
+    else:
+        print("⚠ Not running in virtual environment")
+    
+    # Show Python executable path
+    print("Python executable: " + sys.executable)
+    
+    # Show Python version
+    print("Python version: " + sys.version.split()[0])
+    
+    # Show Python path
+    print("Python path entries:")
+    for i, path in enumerate(sys.path[:5], 1):  # First 5 entries
+        print("  " + str(i) + ". " + path)
+    
+    return virtual_env is not None
+
+is_venv = check_virtual_environment()
+
+# Simulating virtual environment workflow
+def simulate_venv_workflow():
+    """Simulate a typical virtual environment workflow."""
+    print("\\n=== Virtual Environment Workflow ===")
+    
+    project_name = "my_python_project"
+    
+    print("Step 1: Create project directory")
+    print("mkdir " + project_name)
+    print("cd " + project_name)
+    
+    print("\\nStep 2: Create virtual environment")
+    print("python -m venv " + project_name + "_env")
+    
+    print("\\nStep 3: Activate environment")
+    if os.name == 'nt':  # Windows
+        activate_script = project_name + "_env\\\\Scripts\\\\activate"
+    else:  # macOS/Linux
+        activate_script = "source " + project_name + "_env/bin/activate"
+    print(activate_script)
+    
+    print("\\nStep 4: Verify activation")
+    print("which python  # Should point to virtual environment")
+    print("pip list      # Should show minimal packages")
+    
+    print("\\nStep 5: Install project dependencies")
+    print("pip install requests pandas matplotlib")
+    
+    print("\\nStep 6: Create requirements.txt")
+    print("pip freeze > requirements.txt")
+    
+    print("\\nStep 7: Development work...")
+    print("# Your Python development here")
+    
+    print("\\nStep 8: Deactivate when done")
+    print("deactivate")
+
+simulate_venv_workflow()
+
+# Virtual environment best practices
+def venv_best_practices():
+    """Show virtual environment best practices."""
+    print("\\n=== Virtual Environment Best Practices ===")
+    
+    practices = [
+        "1. Use descriptive names for environments (project_name_env)",
+        "2. Keep environments outside your project code directory",
+        "3. Add environment directories to .gitignore",
+        "4. Always activate before installing packages",
+        "5. Use requirements.txt for dependency tracking",
+        "6. Create separate environments for different Python versions",
+        "7. Document environment setup in README.md",
+        "8. Consider using conda for data science projects",
+        "9. Regularly update pip: python -m pip install --upgrade pip",
+        "10. Use pip-tools for advanced dependency management"
+    ]
+    
+    for practice in practices:
+        print(practice)
+    
+    print("\\n=== Common Virtual Environment Tools ===")
+    tools = {
+        "venv": "Built-in Python 3.3+ (recommended for most projects)",
+        "virtualenv": "Third-party, works with older Python versions",
+        "conda": "Anaconda/Miniconda - great for data science",
+        "pipenv": "Higher-level tool combining pip and venv",
+        "poetry": "Modern dependency management and packaging"
+    }
+    
+    for tool, description in tools.items():
+        print(tool + ": " + description)
+
+venv_best_practices()
+
+# Troubleshooting common issues
+def troubleshooting_guide():
+    """Common virtual environment issues and solutions."""
+    print("\\n=== Troubleshooting Virtual Environments ===")
+    
+    issues = [
+        {
+            "problem": "Command 'python' not found after activation",
+            "solution": "Check if activation worked: echo $VIRTUAL_ENV or verify Scripts/bin directory"
+        },
+        {
+            "problem": "Permission denied creating environment",
+            "solution": "Run terminal as administrator or check directory permissions"
+        },
+        {
+            "problem": "Wrong Python version in environment",
+            "solution": "Specify Python version: python3.9 -m venv myenv"
+        },
+        {
+            "problem": "Packages not found after activation",
+            "solution": "Ensure environment is activated and packages installed in correct env"
+        },
+        {
+            "problem": "Environment not deactivating properly",
+            "solution": "Close terminal and open new one, or run deactivate command"
+        }
+    ]
+    
+    for issue in issues:
+        print("\\nProblem: " + issue["problem"])
+        print("Solution: " + issue["solution"])
+
+troubleshooting_guide()`,
+        output: `=== Virtual Environment Concepts ===
+Why use virtual environments?
+1. Isolate project dependencies
+2. Avoid version conflicts between projects
+3. Keep global Python installation clean
+4. Easy dependency management
+5. Reproducible development environments
+
+=== Using Python's built-in venv module ===
+# Create a virtual environment
+python -m venv myproject_env
+
+# Activate virtual environment (Windows)
+myproject_env\\Scripts\\activate
+
+# Activate virtual environment (macOS/Linux)
+source myproject_env/bin/activate
+
+# Deactivate virtual environment
+deactivate
+
+# Remove virtual environment
+rmdir /s myproject_env  # Windows
+rm -rf myproject_env    # macOS/Linux
+
+=== Environment Check ===
+⚠ Not running in virtual environment
+Python executable: /usr/bin/python3
+Python version: 3.9.7
+Python path entries:
+  1. /home/user/projects
+  2. /usr/lib/python39.zip
+  3. /usr/lib/python3.9
+  4. /usr/lib/python3.9/lib-dynload
+  5. /home/user/.local/lib/python3.9/site-packages
+
+=== Virtual Environment Workflow ===
+Step 1: Create project directory
+mkdir my_python_project
+cd my_python_project
+
+Step 2: Create virtual environment
+python -m venv my_python_project_env
+
+Step 3: Activate environment
+source my_python_project_env/bin/activate
+
+Step 4: Verify activation
+which python  # Should point to virtual environment
+pip list      # Should show minimal packages
+
+Step 5: Install project dependencies
+pip install requests pandas matplotlib
+
+Step 6: Create requirements.txt
+pip freeze > requirements.txt
+
+Step 7: Development work...
+# Your Python development here
+
+Step 8: Deactivate when done
+deactivate
+
+=== Virtual Environment Best Practices ===
+1. Use descriptive names for environments (project_name_env)
+2. Keep environments outside your project code directory
+3. Add environment directories to .gitignore
+4. Always activate before installing packages
+5. Use requirements.txt for dependency tracking
+6. Create separate environments for different Python versions
+7. Document environment setup in README.md
+8. Consider using conda for data science projects
+9. Regularly update pip: python -m pip install --upgrade pip
+10. Use pip-tools for advanced dependency management
+
+=== Common Virtual Environment Tools ===
+venv: Built-in Python 3.3+ (recommended for most projects)
+virtualenv: Third-party, works with older Python versions
+conda: Anaconda/Miniconda - great for data science
+pipenv: Higher-level tool combining pip and venv
+poetry: Modern dependency management and packaging
+
+=== Troubleshooting Virtual Environments ===
+
+Problem: Command 'python' not found after activation
+Solution: Check if activation worked: echo $VIRTUAL_ENV or verify Scripts/bin directory
+
+Problem: Permission denied creating environment
+Solution: Run terminal as administrator or check directory permissions
+
+Problem: Wrong Python version in environment
+Solution: Specify Python version: python3.9 -m venv myenv
+
+Problem: Packages not found after activation
+Solution: Ensure environment is activated and packages installed in correct env
+
+Problem: Environment not deactivating properly
+Solution: Close terminal and open new one, or run deactivate command`,
+        tips: [
+          "Always activate virtual environment before installing packages",
+          "Use requirements.txt to share exact dependency versions",
+          "Keep virtual environments separate from your code repository",
+          "Name environments descriptively (projectname_env)"
+        ]
+      },
+      {
+        id: "dependency-management",
+        title: "Dependency Management with pip and requirements.txt",
+        content: "Master dependency management using pip, requirements files, and version pinning for reproducible environments.",
+        code: `# Dependency Management with pip
+import subprocess
+import sys
+import json
+
+print("=== Dependency Management Best Practices ===")
+
+# Understanding package management
+def explain_package_management():
+    """Explain Python package management concepts."""
+    print("\\n=== Package Management Concepts ===")
+    
+    concepts = {
+        "Package": "A collection of Python modules bundled together",
+        "Dependency": "A package that your project needs to function",
+        "Version": "Specific release of a package (semantic versioning)",
+        "Requirements": "List of all packages and versions your project needs",
+        "PyPI": "Python Package Index - central repository for Python packages",
+        "pip": "Package installer for Python (pip installs packages)",
+        "Wheel": "Built package format for faster installation",
+        "Source Distribution": "Package source code that needs to be built"
+    }
+    
+    for term, definition in concepts.items():
+        print(term + ": " + definition)
+
+explain_package_management()
+
+# pip commands and usage
+def demonstrate_pip_commands():
+    """Show comprehensive pip command usage."""
+    print("\\n=== Essential pip Commands ===")
+    
+    # Basic pip commands
+    commands = [
+        ("Install package", "pip install package_name"),
+        ("Install specific version", "pip install package_name==1.2.3"),
+        ("Install minimum version", "pip install package_name>=1.2.0"),
+        ("Install compatible version", "pip install package_name~=1.2.0"),
+        ("Install from requirements", "pip install -r requirements.txt"),
+        ("Upgrade package", "pip install --upgrade package_name"),
+        ("Uninstall package", "pip uninstall package_name"),
+        ("List installed packages", "pip list"),
+        ("Show package info", "pip show package_name"),
+        ("Search packages", "pip search search_term"),
+        ("Check for outdated", "pip list --outdated"),
+        ("Create requirements", "pip freeze > requirements.txt"),
+        ("Install in dev mode", "pip install -e ."),
+        ("Install from git", "pip install git+https://github.com/user/repo.git")
+    ]
+    
+    for description, command in commands:
+        print(description + ":")
+        print("  " + command)
+        print()
+
+demonstrate_pip_commands()
+
+# Version specifiers
+def explain_version_specifiers():
+    """Explain pip version specifiers."""
+    print("=== Version Specifiers ===")
+    
+    specifiers = [
+        ("==1.2.3", "Exactly version 1.2.3"),
+        (">=1.2.3", "Version 1.2.3 or higher"),
+        ("<=1.2.3", "Version 1.2.3 or lower"),
+        (">1.2.3", "Higher than 1.2.3 (exclusive)"),
+        ("<1.2.3", "Lower than 1.2.3 (exclusive)"),
+        ("~=1.2.3", "Compatible version (>=1.2.3, <1.3.0)"),
+        ("!=1.2.3", "Any version except 1.2.3"),
+        (">=1.2,<2.0", "Multiple conditions"),
+        ("*", "Any version (not recommended for production)")
+    ]
+    
+    print("Specifier format: package_name[specifier]")
+    print()
+    for spec, meaning in specifiers:
+        print(spec + " : " + meaning)
+
+explain_version_specifiers()
+
+# Requirements.txt management
+def requirements_txt_guide():
+    """Guide to creating and managing requirements.txt files."""
+    print("\\n=== Requirements.txt Management ===")
+    
+    # Basic requirements.txt
+    basic_requirements = '''# Basic requirements.txt example
+requests==2.28.2
+pandas>=1.5.0
+matplotlib~=3.6.0
+numpy>=1.21.0,<2.0.0
+python-dateutil>=2.8.0
+
+# Optional: Comments for clarity
+beautifulsoup4==4.12.2  # Web scraping
+Pillow>=9.0.0          # Image processing
+'''
+    
+    print("Basic requirements.txt:")
+    print(basic_requirements)
+    
+    # Advanced requirements.txt features
+    advanced_requirements = '''# Advanced requirements.txt features
+
+# Development dependencies
+-r requirements-dev.txt
+
+# Install from git repository
+git+https://github.com/user/custom-package.git@v1.0.0
+
+# Install local package in development mode
+-e .
+
+# Install from specific index
+--index-url https://pypi.org/simple/
+--extra-index-url https://custom-pypi.company.com/
+
+# Install with extras
+requests[socks,security]>=2.28.0
+
+# Platform-specific dependencies
+pywin32>=227; sys_platform == "win32"
+readline>=6.2; sys_platform == "linux"
+
+# Python version specific
+typing>=3.7.0; python_version < "3.8"
+'''
+    
+    print("\\nAdvanced requirements.txt:")
+    print(advanced_requirements)
+    
+    # Multiple requirements files
+    print("\\n=== Multiple Requirements Files ===")
+    files_structure = {
+        "requirements.txt": "Production dependencies only",
+        "requirements-dev.txt": "Development tools (testing, linting, etc.)",
+        "requirements-test.txt": "Testing specific dependencies",
+        "requirements-docs.txt": "Documentation building tools"
+    }
+    
+    for filename, purpose in files_structure.items():
+        print(filename + ": " + purpose)
+    
+    # Example dev requirements
+    dev_requirements = '''# requirements-dev.txt
+-r requirements.txt  # Include production requirements
+
+# Testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+
+# Code quality
+black>=22.0.0        # Code formatting
+flake8>=5.0.0        # Linting
+mypy>=1.0.0          # Type checking
+isort>=5.12.0        # Import sorting
+
+# Development tools
+ipython>=8.0.0       # Interactive shell
+jupyter>=1.0.0       # Notebooks
+pre-commit>=2.20.0   # Git hooks
+'''
+    
+    print("\\nDevelopment requirements example:")
+    print(dev_requirements)
+
+requirements_txt_guide()
+
+# Package installation workflows
+def installation_workflows():
+    """Show different package installation workflows."""
+    print("\\n=== Package Installation Workflows ===")
+    
+    # Fresh project setup
+    print("1. Fresh Project Setup:")
+    fresh_setup = [
+        "mkdir my_project && cd my_project",
+        "python -m venv venv",
+        "source venv/bin/activate  # or venv\\\\Scripts\\\\activate on Windows",
+        "pip install --upgrade pip",
+        "pip install package1 package2 package3",
+        "pip freeze > requirements.txt",
+        "git init && git add requirements.txt"
+    ]
+    
+    for step in fresh_setup:
+        print("  " + step)
+    
+    # Existing project setup
+    print("\\n2. Setting up Existing Project:")
+    existing_setup = [
+        "git clone https://github.com/user/project.git",
+        "cd project",
+        "python -m venv venv",
+        "source venv/bin/activate",
+        "pip install --upgrade pip",
+        "pip install -r requirements.txt",
+        "# Optional: pip install -r requirements-dev.txt"
+    ]
+    
+    for step in existing_setup:
+        print("  " + step)
+    
+    # Updating dependencies
+    print("\\n3. Updating Dependencies:")
+    update_steps = [
+        "pip list --outdated",
+        "pip install --upgrade package_name",
+        "pip freeze > requirements.txt",
+        "# Test your application",
+        "git add requirements.txt && git commit -m 'Update dependencies'"
+    ]
+    
+    for step in update_steps:
+        print("  " + step)
+
+installation_workflows()
+
+# Dependency conflict resolution
+def dependency_conflicts():
+    """Handle dependency conflicts and resolution strategies."""
+    print("\\n=== Dependency Conflict Resolution ===")
+    
+    print("Common conflict scenarios:")
+    conflicts = [
+        "Two packages require different versions of the same dependency",
+        "Package requires Python version not available",
+        "Circular dependencies between packages",
+        "Platform-specific packages on wrong OS",
+        "Outdated package repositories"
+    ]
+    
+    for i, conflict in enumerate(conflicts, 1):
+        print(str(i) + ". " + conflict)
+    
+    print("\\nResolution strategies:")
+    strategies = [
+        "Use pip check to identify conflicts",
+        "Create separate virtual environments for conflicting projects",
+        "Use compatible version specifiers (~=) instead of exact versions",
+        "Update to latest compatible versions",
+        "Use pip-tools for dependency resolution",
+        "Consider alternative packages with compatible dependencies",
+        "Use conda instead of pip for complex scientific packages"
+    ]
+    
+    for i, strategy in enumerate(strategies, 1):
+        print(str(i) + ". " + strategy)
+    
+    # Simulate conflict detection
+    print("\\n=== Simulated Conflict Detection ===")
+    print("Running: pip check")
+    print("Output:")
+    print("  ✓ No broken requirements found.")
+    print("\\nIf conflicts exist, you might see:")
+    print("  package-a 1.0.0 requires package-b>=2.0.0")
+    print("  package-c 1.5.0 requires package-b<2.0.0")
+    print("  ERROR: Conflict detected!")
+
+dependency_conflicts()`,
+        output: `=== Dependency Management Best Practices ===
+
+=== Package Management Concepts ===
+Package: A collection of Python modules bundled together
+Dependency: A package that your project needs to function
+Version: Specific release of a package (semantic versioning)
+Requirements: List of all packages and versions your project needs
+PyPI: Python Package Index - central repository for Python packages
+pip: Package installer for Python (pip installs packages)
+Wheel: Built package format for faster installation
+Source Distribution: Package source code that needs to be built
+
+=== Essential pip Commands ===
+Install package:
+  pip install package_name
+
+Install specific version:
+  pip install package_name==1.2.3
+
+Install minimum version:
+  pip install package_name>=1.2.0
+
+Install compatible version:
+  pip install package_name~=1.2.0
+
+Install from requirements:
+  pip install -r requirements.txt
+
+Upgrade package:
+  pip install --upgrade package_name
+
+Uninstall package:
+  pip uninstall package_name
+
+List installed packages:
+  pip list
+
+Show package info:
+  pip show package_name
+
+Search packages:
+  pip search search_term
+
+Check for outdated:
+  pip list --outdated
+
+Create requirements:
+  pip freeze > requirements.txt
+
+Install in dev mode:
+  pip install -e .
+
+Install from git:
+  pip install git+https://github.com/user/repo.git
+
+=== Version Specifiers ===
+Specifier format: package_name[specifier]
+
+==1.2.3 : Exactly version 1.2.3
+>=1.2.3 : Version 1.2.3 or higher
+<=1.2.3 : Version 1.2.3 or lower
+>1.2.3 : Higher than 1.2.3 (exclusive)
+<1.2.3 : Lower than 1.2.3 (exclusive)
+~=1.2.3 : Compatible version (>=1.2.3, <1.3.0)
+!=1.2.3 : Any version except 1.2.3
+>=1.2,<2.0 : Multiple conditions
+* : Any version (not recommended for production)
+
+=== Requirements.txt Management ===
+Basic requirements.txt:
+# Basic requirements.txt example
+requests==2.28.2
+pandas>=1.5.0
+matplotlib~=3.6.0
+numpy>=1.21.0,<2.0.0
+python-dateutil>=2.8.0
+
+# Optional: Comments for clarity
+beautifulsoup4==4.12.2  # Web scraping
+Pillow>=9.0.0          # Image processing
+
+
+Advanced requirements.txt:
+# Advanced requirements.txt features
+
+# Development dependencies
+-r requirements-dev.txt
+
+# Install from git repository
+git+https://github.com/user/custom-package.git@v1.0.0
+
+# Install local package in development mode
+-e .
+
+# Install from specific index
+--index-url https://pypi.org/simple/
+--extra-index-url https://custom-pypi.company.com/
+
+# Install with extras
+requests[socks,security]>=2.28.0
+
+# Platform-specific dependencies
+pywin32>=227; sys_platform == "win32"
+readline>=6.2; sys_platform == "linux"
+
+# Python version specific
+typing>=3.7.0; python_version < "3.8"
+
+
+=== Multiple Requirements Files ===
+requirements.txt: Production dependencies only
+requirements-dev.txt: Development tools (testing, linting, etc.)
+requirements-test.txt: Testing specific dependencies
+requirements-docs.txt: Documentation building tools
+
+Development requirements example:
+# requirements-dev.txt
+-r requirements.txt  # Include production requirements
+
+# Testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+
+# Code quality
+black>=22.0.0        # Code formatting
+flake8>=5.0.0        # Linting
+mypy>=1.0.0          # Type checking
+isort>=5.12.0        # Import sorting
+
+# Development tools
+ipython>=8.0.0       # Interactive shell
+jupyter>=1.0.0       # Notebooks
+pre-commit>=2.20.0   # Git hooks
+
+
+=== Package Installation Workflows ===
+1. Fresh Project Setup:
+  mkdir my_project && cd my_project
+  python -m venv venv
+  source venv/bin/activate  # or venv\\Scripts\\activate on Windows
+  pip install --upgrade pip
+  pip install package1 package2 package3
+  pip freeze > requirements.txt
+  git init && git add requirements.txt
+
+2. Setting up Existing Project:
+  git clone https://github.com/user/project.git
+  cd project
+  python -m venv venv
+  source venv/bin/activate
+  pip install --upgrade pip
+  pip install -r requirements.txt
+  # Optional: pip install -r requirements-dev.txt
+
+3. Updating Dependencies:
+  pip list --outdated
+  pip install --upgrade package_name
+  pip freeze > requirements.txt
+  # Test your application
+  git add requirements.txt && git commit -m 'Update dependencies'
+
+=== Dependency Conflict Resolution ===
+Common conflict scenarios:
+1. Two packages require different versions of the same dependency
+2. Package requires Python version not available
+3. Circular dependencies between packages
+4. Platform-specific packages on wrong OS
+5. Outdated package repositories
+
+Resolution strategies:
+1. Use pip check to identify conflicts
+2. Create separate virtual environments for conflicting projects
+3. Use compatible version specifiers (~=) instead of exact versions
+4. Update to latest compatible versions
+5. Use pip-tools for dependency resolution
+6. Consider alternative packages with compatible dependencies
+7. Use conda instead of pip for complex scientific packages
+
+=== Simulated Conflict Detection ===
+Running: pip check
+Output:
+  ✓ No broken requirements found.
+
+If conflicts exist, you might see:
+  package-a 1.0.0 requires package-b>=2.0.0
+  package-c 1.5.0 requires package-b<2.0.0
+  ERROR: Conflict detected!`,
+        tips: [
+          "Pin exact versions in production, use ranges in development",
+          "Separate requirements files by environment (dev, test, prod)",
+          "Run pip check regularly to detect dependency conflicts",
+          "Use pip freeze to capture exact working environment"
+        ]
+      },
+      {
+        id: "project-structure",
+        title: "Organizing Python Project Structure",
+        content: "Learn to structure Python projects professionally with proper organization, configuration files, and development workflows.",
+        code: `# Python Project Structure Guide
+import os
+
+print("=== Professional Python Project Structure ===")
+
+# Standard project layout
+def show_project_structure():
+    """Display recommended Python project structure."""
+    print("\\n=== Recommended Project Structure ===")
+    
+    structure = '''
+myproject/
+│
+├── README.md                   # Project documentation
+├── requirements.txt            # Production dependencies
+├── requirements-dev.txt        # Development dependencies
+├── setup.py                   # Package installation script
+├── .gitignore                 # Git ignore rules
+├── .env                       # Environment variables (don't commit!)
+│
+├── myproject/                 # Main package directory
+│   ├── __init__.py           # Makes it a Python package
+│   ├── main.py               # Application entry point
+│   ├── config.py             # Configuration settings
+│   ├── models/               # Data models
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   └── product.py
+│   ├── views/                # User interface/API endpoints
+│   │   ├── __init__.py
+│   │   ├── api.py
+│   │   └── web.py
+│   ├── utils/                # Utility functions
+│   │   ├── __init__.py
+│   │   ├── helpers.py
+│   │   └── validators.py
+│   └── services/             # Business logic
+│       ├── __init__.py
+│       ├── auth.py
+│       └── email.py
+│
+├── tests/                    # Test files
+│   ├── __init__.py
+│   ├── test_models.py
+│   ├── test_views.py
+│   ├── test_utils.py
+│   └── fixtures/             # Test data
+│       └── sample_data.json
+│
+├── docs/                     # Documentation
+│   ├── api.md
+│   ├── installation.md
+│   └── user_guide.md
+│
+├── scripts/                  # Utility scripts
+│   ├── deploy.py
+│   ├── backup.py
+│   └── migrate.py
+│
+├── data/                     # Data files
+│   ├── raw/                  # Raw data
+│   ├── processed/            # Processed data
+│   └── external/             # External data sources
+│
+└── logs/                     # Log files
+    ├── app.log
+    └── error.log
+'''
+    
+    print(structure)
+
+show_project_structure()
+
+# Configuration management
+def configuration_examples():
+    """Show different ways to handle configuration."""
+    print("\\n=== Configuration Management ===")
+    
+    # config.py example
+    config_py = '''# config.py - Configuration file example
+import os
+from typing import Dict, Any
+
+class Config:
+    """Base configuration class."""
+    # Database settings
+    DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
+    
+    # Security settings
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key')
+    DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+    
+    # API settings
+    API_HOST = os.environ.get('API_HOST', 'localhost')
+    API_PORT = int(os.environ.get('API_PORT', 5000))
+    
+    # Email settings
+    SMTP_SERVER = os.environ.get('SMTP_SERVER', 'localhost')
+    SMTP_PORT = int(os.environ.get('SMTP_PORT', 587))
+    
+    @classmethod
+    def get_settings(cls) -> Dict[str, Any]:
+        """Get all configuration settings."""
+        return {
+            'database_url': cls.DATABASE_URL,
+            'debug': cls.DEBUG,
+            'api_host': cls.API_HOST,
+            'api_port': cls.API_PORT
+        }
+
+class DevelopmentConfig(Config):
+    """Development configuration."""
+    DEBUG = True
+    DATABASE_URL = 'sqlite:///dev.db'
+
+class ProductionConfig(Config):
+    """Production configuration."""
+    DEBUG = False
+    # Production settings override here
+
+class TestingConfig(Config):
+    """Testing configuration."""
+    TESTING = True
+    DATABASE_URL = 'sqlite:///:memory:'
+
+# Configuration factory
+config_by_name = {
+    'development': DevelopmentConfig,
+    'production': ProductionConfig,
+    'testing': TestingConfig,
+    'default': DevelopmentConfig
+}
+'''
+    
+    print("Configuration file (config.py):")
+    print(config_py)
+    
+    # .env file example
+    env_example = '''# .env file example (don't commit to git!)
+DEBUG=true
+SECRET_KEY=your-secret-key-here
+DATABASE_URL=postgresql://user:password@localhost:5432/mydb
+API_KEY=your-api-key
+SMTP_USERNAME=your-email@example.com
+SMTP_PASSWORD=your-email-password
+'''
+    
+    print("\\nEnvironment file (.env):")
+    print(env_example)
+    
+    # Using configuration
+    usage_example = '''# Using configuration in your app
+from myproject.config import config_by_name
+import os
+
+# Get configuration based on environment
+env = os.environ.get('FLASK_ENV', 'default')
+config = config_by_name[env]
+
+# Use configuration
+print(f"Debug mode: {config.DEBUG}")
+print(f"Database: {config.DATABASE_URL}")
+'''
+    
+    print("\\nUsing configuration:")
+    print(usage_example)
+
+configuration_examples()
+
+# Package initialization
+def package_init_examples():
+    """Show proper package initialization."""
+    print("\\n=== Package Initialization ===")
+    
+    # Main package __init__.py
+    main_init = '''# myproject/__init__.py - Main package initialization
+"""
+MyProject - A sample Python application
+"""
+
+__version__ = "1.0.0"
+__author__ = "Your Name"
+__email__ = "your.email@example.com"
+
+# Import main components for easy access
+from .main import main
+from .config import Config
+
+# Package-level constants
+DEFAULT_CONFIG = Config()
+
+def get_version():
+    """Get package version."""
+    return __version__
+
+# Optional: Initialize logging when package is imported
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.info(f"MyProject v{__version__} initialized")
+'''
+    
+    print("Main package __init__.py:")
+    print(main_init)
+    
+    # Subpackage __init__.py
+    sub_init = '''# myproject/models/__init__.py - Subpackage initialization
+"""
+Data models for MyProject
+"""
+
+# Import all models for easy access
+from .user import User
+from .product import Product
+
+# Make models available at package level
+__all__ = ['User', 'Product']
+
+# Optional: Model registry
+MODELS = {
+    'user': User,
+    'product': Product
+}
+
+def get_model(name: str):
+    """Get model class by name."""
+    return MODELS.get(name.lower())
+'''
+    
+    print("\\nSubpackage __init__.py:")
+    print(sub_init)
+
+package_init_examples()
+
+# Development tools configuration
+def development_tools():
+    """Show development tools configuration."""
+    print("\\n=== Development Tools Configuration ===")
+    
+    # .gitignore for Python
+    gitignore = '''# .gitignore for Python projects
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+*.sqlite3
+
+# Cache
+.cache/
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+'''
+    
+    print(".gitignore example:")
+    print(gitignore[:500] + "...")
+    
+    # setup.py for package distribution
+    setup_py = '''# setup.py - Package installation configuration
+from setuptools import setup, find_packages
+import os
+
+# Read README for long description
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
+# Read requirements
+with open("requirements.txt", "r", encoding="utf-8") as fh:
+    requirements = [line.strip() for line in fh if line.strip()]
+
+setup(
+    name="myproject",
+    version="1.0.0",
+    author="Your Name",
+    author_email="your.email@example.com",
+    description="A sample Python project",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/yourusername/myproject",
+    packages=find_packages(),
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+    ],
+    python_requires=">=3.8",
+    install_requires=requirements,
+    extras_require={
+        "dev": ["pytest", "black", "flake8"],
+        "test": ["pytest", "pytest-cov"],
+    },
+    entry_points={
+        "console_scripts": [
+            "myproject=myproject.main:main",
+        ],
+    },
+    include_package_data=True,
+    zip_safe=False,
+)
+'''
+    
+    print("\\nsetup.py example:")
+    print(setup_py)
+
+development_tools()
+
+# Best practices summary
+def best_practices():
+    """Project organization best practices."""
+    print("\\n=== Project Organization Best Practices ===")
+    
+    practices = [
+        "Use descriptive package and module names",
+        "Keep modules focused on single responsibility",
+        "Use __init__.py to control package exports",
+        "Separate configuration from code",
+        "Use environment variables for sensitive data",
+        "Organize tests parallel to source code structure",
+        "Include comprehensive documentation",
+        "Use virtual environments for each project",
+        "Pin dependency versions in requirements.txt",
+        "Use semantic versioning for releases",
+        "Include proper logging configuration",
+        "Set up continuous integration/deployment",
+        "Use type hints for better code clarity",
+        "Follow PEP 8 style guidelines",
+        "Write unit tests from the beginning"
+    ]
+    
+    for i, practice in enumerate(practices, 1):
+        print(str(i) + ". " + practice)
+    
+    print("\\n=== Quick Start Commands ===")
+    quick_start = [
+        "mkdir myproject && cd myproject",
+        "python -m venv venv",
+        "source venv/bin/activate",
+        "pip install --upgrade pip",
+        "touch README.md requirements.txt .gitignore",
+        "mkdir myproject tests docs",
+        "touch myproject/__init__.py",
+        "git init && git add . && git commit -m 'Initial commit'"
+    ]
+    
+    for command in quick_start:
+        print("$ " + command)
+
+best_practices()`,
+        output: `=== Professional Python Project Structure ===
+
+=== Recommended Project Structure ===
+
+myproject/
+│
+├── README.md                   # Project documentation
+├── requirements.txt            # Production dependencies
+├── requirements-dev.txt        # Development dependencies
+├── setup.py                   # Package installation script
+├── .gitignore                 # Git ignore rules
+├── .env                       # Environment variables (don't commit!)
+│
+├── myproject/                 # Main package directory
+│   ├── __init__.py           # Makes it a Python package
+│   ├── main.py               # Application entry point
+│   ├── config.py             # Configuration settings
+│   ├── models/               # Data models
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   └── product.py
+│   ├── views/                # User interface/API endpoints
+│   │   ├── __init__.py
+│   │   ├── api.py
+│   │   └── web.py
+│   ├── utils/                # Utility functions
+│   │   ├── __init__.py
+│   │   ├── helpers.py
+│   │   └── validators.py
+│   └── services/             # Business logic
+│       ├── __init__.py
+│       ├── auth.py
+│       └── email.py
+│
+├── tests/                    # Test files
+│   ├── __init__.py
+│   ├── test_models.py
+│   ├── test_views.py
+│   ├── test_utils.py
+│   └── fixtures/             # Test data
+│       └── sample_data.json
+│
+├── docs/                     # Documentation
+│   ├── api.md
+│   ├── installation.md
+│   └── user_guide.md
+│
+├── scripts/                  # Utility scripts
+│   ├── deploy.py
+│   ├── backup.py
+│   └── migrate.py
+│
+├── data/                     # Data files
+│   ├── raw/                  # Raw data
+│   ├── processed/            # Processed data
+│   └── external/             # External data sources
+│
+└── logs/                     # Log files
+    ├── app.log
+    └── error.log
+
+=== Configuration Management ===
+Configuration file (config.py):
+# config.py - Configuration file example
+import os
+from typing import Dict, Any
+
+class Config:
+    """Base configuration class."""
+    # Database settings
+    DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
+    
+    # Security settings
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key')
+    DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+    
+    # API settings
+    API_HOST = os.environ.get('API_HOST', 'localhost')
+    API_PORT = int(os.environ.get('API_PORT', 5000))
+    
+    # Email settings
+    SMTP_SERVER = os.environ.get('SMTP_SERVER', 'localhost')
+    SMTP_PORT = int(os.environ.get('SMTP_PORT', 587))
+    
+    @classmethod
+    def get_settings(cls) -> Dict[str, Any]:
+        """Get all configuration settings."""
+        return {
+            'database_url': cls.DATABASE_URL,
+            'debug': cls.DEBUG,
+            'api_host': cls.API_HOST,
+            'api_port': cls.API_PORT
+        }
+
+class DevelopmentConfig(Config):
+    """Development configuration."""
+    DEBUG = True
+    DATABASE_URL = 'sqlite:///dev.db'
+
+class ProductionConfig(Config):
+    """Production configuration."""
+    DEBUG = False
+    # Production settings override here
+
+class TestingConfig(Config):
+    """Testing configuration."""
+    TESTING = True
+    DATABASE_URL = 'sqlite:///:memory:'
+
+# Configuration factory
+config_by_name = {
+    'development': DevelopmentConfig,
+    'production': ProductionConfig,
+    'testing': TestingConfig,
+    'default': DevelopmentConfig
+}
+
+Environment file (.env):
+# .env file example (don't commit to git!)
+DEBUG=true
+SECRET_KEY=your-secret-key-here
+DATABASE_URL=postgresql://user:password@localhost:5432/mydb
+API_KEY=your-api-key
+SMTP_USERNAME=your-email@example.com
+SMTP_PASSWORD=your-email-password
+
+Using configuration:
+# Using configuration in your app
+from myproject.config import config_by_name
+import os
+
+# Get configuration based on environment
+env = os.environ.get('FLASK_ENV', 'default')
+config = config_by_name[env]
+
+# Use configuration
+print(f"Debug mode: {config.DEBUG}")
+print(f"Database: {config.DATABASE_URL}")
+
+=== Package Initialization ===
+Main package __init__.py:
+# myproject/__init__.py - Main package initialization
+"""
+MyProject - A sample Python application
+"""
+
+__version__ = "1.0.0"
+__author__ = "Your Name"
+__email__ = "your.email@example.com"
+
+# Import main components for easy access
+from .main import main
+from .config import Config
+
+# Package-level constants
+DEFAULT_CONFIG = Config()
+
+def get_version():
+    """Get package version."""
+    return __version__
+
+# Optional: Initialize logging when package is imported
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.info(f"MyProject v{__version__} initialized")
+
+Subpackage __init__.py:
+# myproject/models/__init__.py - Subpackage initialization
+"""
+Data models for MyProject
+"""
+
+# Import all models for easy access
+from .user import User
+from .product import Product
+
+# Make models available at package level
+__all__ = ['User', 'Product']
+
+# Optional: Model registry
+MODELS = {
+    'user': User,
+    'product': Product
+}
+
+def get_model(name: str):
+    """Get model class by name."""
+    return MODELS.get(name.lower())
+
+=== Development Tools Configuration ===
+.gitignore example:
+# .gitignore for Python projects
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+*.sqlite3
+
+# Cache
+.cache/
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+...
+
+setup.py example:
+# setup.py - Package installation configuration
+from setuptools import setup, find_packages
+import os
+
+# Read README for long description
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
+# Read requirements
+with open("requirements.txt", "r", encoding="utf-8") as fh:
+    requirements = [line.strip() for line in fh if line.strip()]
+
+setup(
+    name="myproject",
+    version="1.0.0",
+    author="Your Name",
+    author_email="your.email@example.com",
+    description="A sample Python project",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/yourusername/myproject",
+    packages=find_packages(),
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+    ],
+    python_requires=">=3.8",
+    install_requires=requirements,
+    extras_require={
+        "dev": ["pytest", "black", "flake8"],
+        "test": ["pytest", "pytest-cov"],
+    },
+    entry_points={
+        "console_scripts": [
+            "myproject=myproject.main:main",
+        ],
+    },
+    include_package_data=True,
+    zip_safe=False,
+)
+
+=== Project Organization Best Practices ===
+1. Use descriptive package and module names
+2. Keep modules focused on single responsibility
+3. Use __init__.py to control package exports
+4. Separate configuration from code
+5. Use environment variables for sensitive data
+6. Organize tests parallel to source code structure
+7. Include comprehensive documentation
+8. Use virtual environments for each project
+9. Pin dependency versions in requirements.txt
+10. Use semantic versioning for releases
+11. Include proper logging configuration
+12. Set up continuous integration/deployment
+13. Use type hints for better code clarity
+14. Follow PEP 8 style guidelines
+15. Write unit tests from the beginning
+
+=== Quick Start Commands ===
+$ mkdir myproject && cd myproject
+$ python -m venv venv
+$ source venv/bin/activate
+$ pip install --upgrade pip
+$ touch README.md requirements.txt .gitignore
+$ mkdir myproject tests docs
+$ touch myproject/__init__.py
+$ git init && git add . && git commit -m 'Initial commit'`,
+        tips: [
+          "Follow conventional project structure for better maintainability",
+          "Separate configuration from code using environment variables",
+          "Use __init__.py files to control what gets imported",
+          "Keep requirements.txt updated with exact versions for production"
+        ],
+        practice: {
+          challenge: "Create a complete Python project structure with configuration management",
+          starterCode: `# Project Structure Creator
+import os
+
+class ProjectCreator:
+    def __init__(self, project_name):
+        self.project_name = project_name
+        self.base_path = os.path.join(os.getcwd(), project_name)
+    
+    def create_directory_structure(self):
+        """Create the complete directory structure."""
+        # Define all directories needed
+        directories = [
+            # Add all necessary directories here
+        ]
+        
+        # Create directories
+        # Use os.makedirs with exist_ok=True
+        pass
+    
+    def create_config_files(self):
+        """Create configuration files."""
+        # Create requirements.txt
+        # Create .gitignore
+        # Create .env template
+        # Create config.py
+        pass
+    
+    def create_package_files(self):
+        """Create package initialization files."""
+        # Create __init__.py files
+        # Create main.py
+        # Create setup.py
+        pass
+    
+    def create_readme(self):
+        """Create comprehensive README.md."""
+        # Include project description
+        # Installation instructions
+        # Usage examples
+        # Development setup
+        pass
+    
+    def initialize_git(self):
+        """Initialize git repository."""
+        # Run git init
+        # Create initial commit
+        pass
+    
+    def setup_virtual_environment(self):
+        """Create and setup virtual environment."""
+        # Create venv
+        # Create activation instructions
+        pass
+
+# Test your project creator
+# creator = ProjectCreator("my_awesome_project")
+# creator.create_directory_structure()
+# creator.create_config_files()
+# creator.create_package_files()
+# creator.create_readme()
+# print("Project structure created successfully!")`,
+          expectedOutput: "Complete project structure with all configuration files, proper organization, and development setup",
+          hints: [
+            "Use os.makedirs() with exist_ok=True",
+            "Create template files with proper content",
+            "Include both development and production configurations",
+            "Add proper .gitignore patterns for Python projects"
+          ]
+        }
+      }
+    ]
   }
 };
 const validatePythonCode = (code: string, practice: any) => {
