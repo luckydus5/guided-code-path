@@ -55,6 +55,59 @@ interface UserProgress {
   };
 }
 
+// Define a union type for all possible learning resources
+type LearningResource = {
+  type: 'level';
+  title: string;
+  goal: string;
+  duration: string;
+  difficulty: string;
+  description?: string;
+  projectId?: undefined;
+  url?: undefined;
+  stars?: undefined;
+} | {
+  type: 'lesson';
+  title: string;
+  description: string;
+  duration: string;
+  difficulty: string;
+  projectId?: undefined;
+  url?: undefined;
+  stars?: undefined;
+  goal?: undefined;
+} | {
+  type: 'project';
+  title: string;
+  description: string;
+  duration: string;
+  difficulty: string;
+  projectId: number;
+  url?: undefined;
+  stars?: undefined;
+  goal?: undefined;
+} | {
+  type: 'article' | 'documentation' | 'video';
+  title: string;
+  url: string;
+  duration: string;
+  difficulty?: string;
+  description?: string;
+  projectId?: undefined;
+  stars?: undefined;
+  goal?: undefined;
+} | {
+  type: 'github';
+  title: string;
+  url: string;
+  stars: string;
+  difficulty: string;
+  description?: string;
+  projectId?: undefined;
+  duration?: string;
+  goal?: undefined;
+};
+
 export default function Learn() {
   const { language } = useParams();
   const navigate = useNavigate();
@@ -88,15 +141,11 @@ export default function Learn() {
   });
 
   // State for learning content display
-  const [currentLearningContent, setCurrentLearningContent] = useState<{
-    title: string;
-    type: string;
-    difficulty: string;
-    description?: string;
-  } | null>(null);
+  const [currentLearningContent, setCurrentLearningContent] = useState<LearningResource | null>(null);
 
   // Storage key for current learning content
   const learningContentStorageKey = `currentLearningContent_${language || 'web-fundamentals'}`;
+
 
   // Load saved learning content state on component mount
   useEffect(() => {
@@ -118,6 +167,101 @@ export default function Learn() {
       localStorage.removeItem(learningContentStorageKey);
     }
   }, [currentLearningContent, learningContentStorageKey]);
+
+  // Handle lesson/project starting with error checking
+  const handleStartLesson = (resource: LearningResource) => {
+    try {
+      // Check if this is one of the project lessons that need special handling
+      const isProjectLesson = resource.type === 'project';
+      const isSpecialProject = resource.title.includes('CLI to-do list') || 
+                              resource.title.includes('basic calculator') ||
+                              resource.title.includes('weather app') ||
+                              resource.title.includes('note manager');
+
+      if (isProjectLesson && isSpecialProject) {
+        // Validate prerequisites for project lessons
+        const currentLang = language || 'python';
+        const progress = userProgress[currentLang];
+        
+        // Check if user has completed prerequisite lessons
+        if (resource.title.includes('CLI to-do list') || resource.title.includes('basic calculator')) {
+          // Beginner project - check basic concepts
+          const requiredLessons = ['Basic Input/Output', 'Functions', 'Data Structures', 'Control Structures'];
+          const completedLessons = progress?.completedLessons || [];
+          const missingLessons = requiredLessons.filter(lesson => 
+            !completedLessons.some(completed => completed.toLowerCase().includes(lesson.toLowerCase()))
+          );
+          
+          if (missingLessons.length > 0) {
+            toast({
+              title: "Prerequisites Required",
+              description: `Please complete these lessons first: ${missingLessons.join(', ')}`,
+              variant: "destructive"
+            });
+            return;
+          }
+        }
+        
+        if (resource.title.includes('weather app') || resource.title.includes('note manager')) {
+          // Intermediate project - check advanced concepts
+          const requiredLessons = ['OOP (Object-Oriented Programming)', 'Working with External Libraries', 'Error Handling'];
+          const completedLessons = progress?.completedLessons || [];
+          const missingLessons = requiredLessons.filter(lesson => 
+            !completedLessons.some(completed => completed.toLowerCase().includes(lesson.toLowerCase()))
+          );
+          
+          if (missingLessons.length > 0) {
+            toast({
+              title: "Prerequisites Required",
+              description: `Please complete these lessons first: ${missingLessons.join(', ')}`,
+              variant: "destructive"
+            });
+            return;
+          }
+        }
+      }
+
+      // Validate resource data
+      if (!resource.title || !resource.type || !resource.difficulty) {
+        toast({
+          title: "Invalid Lesson Data",
+          description: "This lesson appears to be incomplete. Please try refreshing the page.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Check if lesson content exists in LearningContent component
+      if (isProjectLesson && isSpecialProject) {
+        // For now, show a coming soon message for these specific projects
+        // since they're not yet implemented in the LearningContent component
+        toast({
+          title: "Project Coming Soon",
+          description: "This project is being developed. Please check back soon for full implementation!",
+          variant: "default"
+        });
+        return;
+      }
+
+      // Set the learning content if all checks pass
+      setCurrentLearningContent(resource);
+
+      // Show success message
+      toast({
+        title: isProjectLesson ? "Project Started" : "Lesson Started",
+        description: `You've started: ${resource.title}`,
+        variant: "default"
+      });
+
+    } catch (error) {
+      console.error('Error starting lesson:', error);
+      toast({
+        title: "Error Starting Lesson",
+        description: "Something went wrong. Please try again or refresh the page.",
+        variant: "destructive"
+      });
+    }
+  };
 
   const languageChallenges = isWebFundamentals ? [] : (LANGUAGE_CHALLENGES[language || 'python'] || LANGUAGE_CHALLENGES.python);
   
@@ -179,7 +323,7 @@ export default function Learn() {
     Math.round((overallProgress * 0.7) + (currentLanguageProgress.skillsEarned?.length || 0) * 2);
 
   // Helper function to extract skills from resource content
-  const getSkillsFromResource = (resource: any) => {
+  const getSkillsFromResource = (resource: LearningResource) => {
     const skillsMap: { [key: string]: string[] } = {
       'Python Syntax & Variables': ['Variables', 'Data Types', 'Print Statements', 'Comments'],
       'Data Types & Type Casting': ['Type Conversion', 'int()', 'float()', 'str()', 'bool()'],
@@ -219,8 +363,8 @@ export default function Learn() {
   };
 
   // Comprehensive learning resources for each language
-  const getLanguageLearningResources = (language: string) => {
-    const resourcesByLanguage = {
+  const getLanguageLearningResources = (language: string): LearningResource[] => {
+    const resourcesByLanguage: { [key: string]: LearningResource[] } = {
       'web-fundamentals': [
         // HTML Learning Resources
         { type: "article", title: "HTML Basics - MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/HTML_basics", duration: "30 min", difficulty: "Beginner", description: "Complete introduction to HTML fundamentals from Mozilla" },
@@ -324,8 +468,9 @@ export default function Learn() {
         // Error Handling
         { type: "lesson", title: "Error Handling", description: "try, except, finally", duration: "40 min", difficulty: "Beginner" },
         
-        // Beginner Project
-        { type: "project", title: "🔧 Project: Build a CLI to-do list or basic calculator", description: "Apply beginner concepts in a real project", duration: "4-6 hours", difficulty: "Beginner" },
+        // Beginner Projects
+        { type: "project", title: "🔧 Project: Build a CLI To-Do List", description: "Apply beginner concepts by building a command-line to-do list manager.", duration: "4-6 hours", difficulty: "Beginner", projectId: 542 },
+        { type: "project", title: "🔧 Project: Build a Basic Calculator", description: "Apply beginner concepts by building a functional calculator.", duration: "3-5 hours", difficulty: "Beginner", projectId: 3 },
 
         // ⚙️ Intermediate Level (Core Dev Skills)
         { type: "level", title: "⚙️ Intermediate Level (Core Dev Skills)", goal: "Write reusable, modular, and real-world Python code", duration: "6-8 weeks", difficulty: "Intermediate" },
@@ -354,8 +499,9 @@ export default function Learn() {
         // Data Handling
         { type: "lesson", title: "Data Handling", description: "Use pandas and numpy for structured data", duration: "85 min", difficulty: "Intermediate" },
         
-        // Intermediate Project
-        { type: "project", title: "🔧 Project: Build a weather app using an API, or a command-line note manager", description: "Create real-world applications with APIs", duration: "8-12 hours", difficulty: "Intermediate" },
+        // Intermediate Projects
+        { type: "project", title: "🔧 Project: Build a Weather App using an API", description: "Create a real-world application that fetches and displays weather data from an API.", duration: "8-12 hours", difficulty: "Intermediate", projectId: 544 },
+        { type: "project", title: "🔧 Project: Build a Command-Line Note Manager", description: "Develop a tool to create, read, update, and delete notes from the command line.", duration: "6-10 hours", difficulty: "Intermediate", projectId: 545 },
 
         // 🧠 Advanced Level (Real Engineering)
         { type: "level", title: "🧠 Advanced Level (Real Engineering)", goal: "Write production-grade, efficient, and scalable Python code", duration: "8-10 weeks", difficulty: "Advanced" },
@@ -391,7 +537,7 @@ export default function Learn() {
         { type: "lesson", title: "Security & Best Practices", description: "Handle user input safely, sanitize data, secure APIs", duration: "70 min", difficulty: "Advanced" },
         
         // Advanced Project
-        { type: "project", title: "🔧 Project: Build a REST API with Flask/FastAPI, or a machine learning pipeline for a real dataset", description: "Create production-grade applications", duration: "15-20 hours", difficulty: "Advanced" }
+        { type: "project", title: "🔧 Project: Build a REST API with Flask/FastAPI, or a machine learning pipeline for a real dataset", description: "Create production-grade applications", duration: "15-20 hours", difficulty: "Advanced", projectId: 546 }
       ],
       java: [
         { type: "video", title: "Java Fundamentals & OOP Concepts", url: "#", duration: "75 min", difficulty: "Beginner" },
@@ -412,8 +558,8 @@ export default function Learn() {
   };
 
   // Learning resources for each project
-  const getProjectLearningResources = (projectId: number, language: string) => {
-    const projectSpecificResources = {
+  const getProjectLearningResources = (projectId: number, language: string): LearningResource[] => {
+    const projectSpecificResources: { [key: string]: LearningResource[] } = {
       'web-fundamentals': [
         // Project-specific HTML resources
         { type: "article", title: "HTML Structure Best Practices", url: "https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/Document_and_website_structure", duration: "15 min", difficulty: "Beginner" },
@@ -469,18 +615,63 @@ export default function Learn() {
   const totalSteps = 10;
 
   const handleStartProject = (projectId: number) => {
-    startProjectDirectly(projectId);
+    try {
+      // Validate project ID
+      if (!projectId || typeof projectId !== 'number') {
+        toast({
+          title: "Invalid Project",
+          description: "Project ID is invalid. Please try refreshing the page.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Check if user has sufficient progress for advanced projects
+      const currentLang = language || 'python';
+      const progress = userProgress[currentLang];
+      
+      // For project IDs that might correspond to advanced projects, check prerequisites
+      if (projectId > 10) { // Assuming higher IDs are more advanced projects
+        const completedLessons = progress?.completedLessons || [];
+        if (completedLessons.length < 3) {
+          toast({
+            title: "More Learning Needed",
+            description: "Complete at least 3 lessons before starting advanced projects.",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+
+      startProjectDirectly(projectId);
+    } catch (error) {
+      console.error('Error starting project:', error);
+      toast({
+        title: "Error Starting Project",
+        description: "Something went wrong. Please try again or refresh the page.",
+        variant: "destructive"
+      });
+    }
   };
 
   const startProjectDirectly = (projectId: number) => {
-    toast({
-      title: "Project Started!",
-      description: "Opening project environment...",
-    });
-    
-    // Use web-fundamentals as the language parameter for Web Fundamentals projects
-    const projectLanguage = isWebFundamentals ? 'web-fundamentals' : language;
-    navigate(`/learn/${projectLanguage}/project/${projectId}`);
+    try {
+      toast({
+        title: "Project Started!",
+        description: "Opening project environment...",
+      });
+      
+      // Use web-fundamentals as the language parameter for Web Fundamentals projects
+      const projectLanguage = isWebFundamentals ? 'web-fundamentals' : language;
+      navigate(`/learn/${projectLanguage}/project/${projectId}`);
+    } catch (error) {
+      console.error('Error navigating to project:', error);
+      toast({
+        title: "Navigation Error",
+        description: "Unable to open project. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const ResourceIcon = ({ type }: { type: string }) => {
@@ -519,7 +710,7 @@ export default function Learn() {
       <LearningContent
         title={currentLearningContent.title}
         type={currentLearningContent.type}
-        difficulty={currentLearningContent.difficulty}
+        difficulty={currentLearningContent.difficulty || 'Beginner'}
         onComplete={handleLearningComplete}
         onBack={handleBackToResources}
       />
@@ -641,7 +832,7 @@ export default function Learn() {
               {/* Resources Grid - Projects Style */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {getLanguageLearningResources(language || 'python').filter(resource => resource.type !== 'level').map((resource, index) => {
-                  const getDifficultyColor = (difficulty: string) => {
+                  const getDifficultyColor = (difficulty: string | undefined) => {
                     switch (difficulty) {
                       case "Beginner": return "bg-success text-success-foreground";
                       case "Intermediate": return "bg-warning text-warning-foreground";
@@ -650,7 +841,7 @@ export default function Learn() {
                     }
                   };
 
-                  const getDifficultyIcon = (difficulty: string) => {
+                  const getDifficultyIcon = (difficulty: string | undefined) => {
                     switch (difficulty) {
                       case "Beginner": return <Zap className="h-4 w-4" />;
                       case "Intermediate": return <Brain className="h-4 w-4" />;
@@ -688,10 +879,12 @@ export default function Learn() {
                               <ResourceIcon type={resource.type} />
                               <span className="ml-1">{resource.type}</span>
                             </Badge>
-                            <Badge variant="outline" className="text-xs flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              {resource.duration}
-                            </Badge>
+                            {resource.duration && (
+                              <Badge variant="outline" className="text-xs flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                {resource.duration}
+                              </Badge>
+                            )}
                           </div>
                         </div>
 
@@ -719,12 +912,11 @@ export default function Learn() {
                             className="w-full justify-center" 
                             variant={resource.type === 'project' ? 'default' : 'outline'}
                             onClick={() => {
-                              setCurrentLearningContent({
-                                title: resource.title,
-                                type: resource.type,
-                                difficulty: resource.difficulty,
-                                description: resource.description
-                              });
+                              if (resource.type === 'project' && resource.projectId) {
+                                handleStartProject(resource.projectId);
+                              } else {
+                                handleStartLesson(resource);
+                              }
                             }}
                           >
                             {resource.type === 'project' ? (

@@ -48,6 +48,256 @@ interface LessonStep {
 }
 
 const LEARNING_CONTENT = {
+  "Basic Input/Output": {
+    steps: [
+      {
+        id: "python-input",
+        title: "Getting User Input",
+        content: "In Python, you can get input from the user using the `input()` function. This function reads a line from input, converts it into a string, and returns it.\n\nYou can also provide a prompt to display to the user as an argument to the function. This makes it clear to the user what information they need to provide.",
+        code: `# Basic input example
+name = input("Enter your name: ")
+print("Hello, " + name + "!")
+
+# Getting numeric input
+age_str = input("Enter your age: ")
+age = int(age_str)  # Convert string to integer
+print(f"Next year, you will be {age + 1} years old.")
+
+# Alternative way to convert input directly
+height = float(input("Enter your height in meters: "))
+print(f"Your height is {height} meters.")`,
+        output: `Enter your name: Alice
+Hello, Alice!
+Enter your age: 30
+Next year, you will be 31 years old.
+Enter your height in meters: 1.75
+Your height is 1.75 meters.`,
+        tips: [
+          "The `input()` function always returns a string, even if the user types a number.",
+          "To work with numeric input, you need to convert the string to a number using `int()` or `float()`.",
+          "Always include a clear prompt so users know what to enter.",
+          "Use try-except blocks when converting user input to handle invalid entries gracefully."
+        ],
+        practice: {
+          challenge: "Write a program that asks the user for two numbers, then calculates and displays their sum, difference, product, and quotient.",
+          starterCode: `# Get the first number
+num1_str = input("Enter the first number: ")
+num1 = float(num1_str)
+
+# Get the second number
+# Your code here...
+
+# Calculate results
+# Your code here...
+
+# Display results
+# Your code here...`,
+          expectedOutput: `Enter the first number: 10
+Enter the second number: 5
+Sum: 15.0
+Difference: 5.0
+Product: 50.0
+Quotient: 2.0`,
+          hints: [
+            "Remember to convert the input strings to numbers using `float()`.",
+            "The operations you need are: +, -, *, and / for division.",
+            "Use f-strings (f\"...\") for formatted output to make your code cleaner.",
+            "Be careful with division - you might want to add error handling for division by zero."
+          ]
+        }
+      },
+      {
+        id: "python-reading-files",
+        title: "Reading from Files",
+        content: "Files are used for persistent storage of data. Python provides built-in functions for working with files.\n\nTo read a file, you first need to open it using the `open()` function, which returns a file object. The most common mode for opening a file is 'r' (read mode).\n\nAfter working with a file, you should always close it to free up system resources. Python provides several methods to read data from files, including `read()`, `readline()`, and `readlines()`.",
+        code: `# Open a file (assuming 'example.txt' exists)
+file = open('example.txt', 'r')
+
+# Read the entire file as a string
+content = file.read()
+print("Full content:", content)
+
+# Reset file pointer to beginning
+file.seek(0)
+
+# Read file line by line
+print("\\nReading line by line:")
+for line in file:
+    print(f"Line: {line.strip()}")  # strip() removes whitespace, including newline characters
+
+# Close the file
+file.close()
+
+# Using with statement (recommended way)
+print("\\nUsing with statement:")
+with open('example.txt', 'r') as file:
+    # File is automatically closed when the block ends
+    lines = file.readlines()  # reads all lines into a list
+    for i, line in enumerate(lines):
+        print(f"Line {i+1}: {line.strip()}")`,
+        output: `Full content: Hello, world!
+This is an example file.
+It has multiple lines.
+
+Reading line by line:
+Line: Hello, world!
+Line: This is an example file.
+Line: It has multiple lines.
+
+Using with statement:
+Line 1: Hello, world!
+Line 2: This is an example file.
+Line 3: It has multiple lines.`,
+        tips: [
+          "Always use the `with` statement when working with files - it automatically closes the file even if exceptions occur.",
+          "Common file modes: 'r' for reading, 'w' for writing (overwrites existing file), 'a' for appending.",
+          "The `readlines()` method returns a list of all lines in the file, while `readline()` reads one line at a time.",
+          "For large files, reading line by line is more memory-efficient than reading the entire file at once.",
+          "Use `file.seek(0)` to move the file pointer back to the beginning if you need to read the file again."
+        ],
+        practice: {
+          challenge: "Write a program that reads a text file named 'data.txt' and counts the number of words and lines in it. Then display both counts.",
+          starterCode: `# Open the file using the with statement
+with open('data.txt', 'r') as file:
+    # Your code here to count lines and words
+    pass  # Remove this when you write your code
+
+# Display the results
+# Your code here...`,
+          expectedOutput: `The file contains 5 lines and 20 words.`,
+          hints: [
+            "To count lines, use a counter or get the length of file.readlines().",
+            "To count words, split each line using the split() method and sum the length of the resulting lists.",
+            "The split() method with no arguments splits on whitespace, which is perfect for counting words.",
+            "Use a variable to accumulate the word count as you process each line."
+          ]
+        }
+      },
+      {
+        id: "python-writing-files",
+        title: "Writing to Files",
+        content: "Python makes it easy to create new files or modify existing ones. To write to a file, you use the same `open()` function, but with a different mode.\n\nThe most common write modes are:\n- 'w' (write): Creates a new file or overwrites an existing file\n- 'a' (append): Adds content to the end of a file, without overwriting existing content\n- 'x' (exclusive creation): Creates a new file, but raises an error if the file already exists\n\nJust like when reading files, the recommended approach is to use the `with` statement, which automatically closes the file when the block is completed.",
+        code: `# Writing to a file (creates or overwrites)
+with open('output.txt', 'w') as file:
+    file.write("Hello, this is the first line.\\n")
+    file.write("This is the second line.\\n")
+    
+    # You can also write multiple lines at once
+    lines = ["Third line\\n", "Fourth line\\n", "Fifth line\\n"]
+    file.writelines(lines)
+
+# Appending to a file
+with open('output.txt', 'a') as file:
+    file.write("This line is appended to the end.\\n")
+
+# Reading the file we just created
+with open('output.txt', 'r') as file:
+    content = file.read()
+    print(content)`,
+        output: `Hello, this is the first line.
+This is the second line.
+Third line
+Fourth line
+Fifth line
+This line is appended to the end.`,
+        tips: [
+          "Be careful with 'w' mode - it will overwrite the entire file without warning!",
+          "Use 'a' mode when you want to add more content to an existing file.",
+          "The `writelines()` method takes a list of strings, but doesn't add newline characters automatically.",
+          "You can use text modes like 'r+' (read and write) for more complex file operations.",
+          "For binary files (like images), use 'rb', 'wb', or 'ab' modes."
+        ],
+        practice: {
+          challenge: "Create a program that asks the user for their name, age, and favorite color, then writes this information to a file called 'user_info.txt'. Each piece of information should be on a separate line.",
+          starterCode: `# Get user information
+name = input("Enter your name: ")
+# Your code to get age and favorite color
+
+# Write the information to a file
+# Your code here...
+
+print("Information saved to user_info.txt")`,
+          expectedOutput: `Enter your name: Alice
+Enter your age: 30
+Enter your favorite color: Blue
+Information saved to user_info.txt
+
+(And the file user_info.txt should contain:)
+Name: Alice
+Age: 30
+Favorite Color: Blue`,
+          hints: [
+            "Use 'w' mode to create a new file or overwrite an existing one.",
+            "Remember to add newline characters ('\\n') between each piece of information.",
+            "You can format the output using f-strings, like f\"Name: {name}\\n\".",
+            "Don't forget to use the with statement to ensure the file is properly closed."
+          ]
+        }
+      },
+      {
+        id: "python-exception-handling",
+        title: "Handling File Errors",
+        content: "When working with files, many things can go wrong: the file might not exist, you might not have permission to access it, the disk could be full, etc. Python's exception handling system helps you deal with these situations gracefully.\n\nThe `try-except` block is used to catch and handle exceptions. You can add a `finally` clause to run code that should execute regardless of whether an exception occurred.\n\nWhen working with files, it's particularly important to handle `FileNotFoundError`, `PermissionError`, and `IOError` exceptions.",
+        code: `# Example of handling file errors
+def read_file_safely(filename):
+    try:
+        with open(filename, 'r') as file:
+            content = file.read()
+            return content
+    except FileNotFoundError:
+        print(f"Error: The file '{filename}' does not exist.")
+        return None
+    except PermissionError:
+        print(f"Error: You don't have permission to access '{filename}'.")
+        return None
+    except Exception as e:  # Catch any other exceptions
+        print(f"An unexpected error occurred: {e}")
+        return None
+
+# Test with a file that exists
+content = read_file_safely('example.txt')
+if content:
+    print(f"File content (first 50 chars): {content[:50]}...")
+
+# Test with a file that doesn't exist
+content = read_file_safely('nonexistent.txt')  # This will trigger the FileNotFoundError handling`,
+        output: `File content (first 50 chars): Hello, world!
+This is an example file.
+It has...
+Error: The file 'nonexistent.txt' does not exist.`,
+        tips: [
+          "Always use exception handling when working with files or other external resources.",
+          "Be specific with your except clauses - catch only the exceptions you expect and can handle.",
+          "The `as` keyword lets you capture the exception object, which can provide more details about the error.",
+          "The `finally` clause is useful for cleanup operations that must always occur, like closing resources.",
+          "Don't use bare `except:` statements without specifying an exception type - it makes debugging harder."
+        ],
+        practice: {
+          challenge: "Create a function called 'safe_write_to_file' that takes a filename and content as parameters. It should write the content to the file and handle any potential errors (including file not found, permission errors, etc.). The function should return True if successful, False otherwise.",
+          starterCode: `def safe_write_to_file(filename, content):
+    # Your code here...
+    pass
+
+# Test the function
+result = safe_write_to_file('test_output.txt', 'This is a test.')
+print(f"Write successful: {result}")
+
+# Test with a filename that might cause permission errors
+result = safe_write_to_file('/system/protected/test.txt', 'This should fail.')
+print(f"Write successful: {result}")`,
+          expectedOutput: `Write successful: True
+Write successful: False`,
+          hints: [
+            "Use a try-except block to catch potential exceptions.",
+            "Handle at least FileNotFoundError, PermissionError, and a generic Exception.",
+            "Return True inside the try block after successfully writing.",
+            "Return False in the except blocks after printing an appropriate error message.",
+            "Remember to use the with statement to ensure the file is properly closed."
+          ]
+        }
+      }
+    ]
+  },
   "HTML Basics - MDN Web Docs": {
     steps: [
       {

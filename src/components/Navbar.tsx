@@ -63,11 +63,11 @@ export default function Navbar({ user, profile, onSignOut, onSettingsClick }: Na
           {/* Logo */}
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-gradient-primary/20">
-              <Code className="h-6 w-6 text-primary" />
+              <img src="/icon.png" alt="BuildStack" className="h-6 w-6" />
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                CodeLearner
+                BuildStack
               </h1>
               <p className="text-xs text-muted-foreground">Learn. Code. Level Up.</p>
             </div>

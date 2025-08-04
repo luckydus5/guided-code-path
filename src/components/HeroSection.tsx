@@ -47,11 +47,11 @@ export default function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur-lg opacity-50"></div>
               <div className="relative p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl">
-                <Code className="h-6 w-6 text-white" />
+                <img src="/icon.png" alt="BuildStack" className="h-6 w-6" />
               </div>
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              CodeLearner
+              BuildStack
             </span>
           </div>
           
@@ -77,7 +77,7 @@ export default function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-lg opacity-50"></div>
                   <div className="relative p-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl">
-                    <Code className="h-10 w-10 text-white" />
+                    <img src="/icon.png" alt="BuildStack" className="h-10 w-10" />
                   </div>
                 </div>
                 <div className="text-left">

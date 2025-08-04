@@ -61,7 +61,7 @@ export default function AuthForm({ onAuthSuccess, onGoBack }: AuthFormProps) {
       } else {
         toast({
           title: "Account Created!",
-          description: "Welcome to CodeLearner! You can now start your coding journey.",
+          description: "Welcome to BuildStack! You can now start your coding journey.",
         });
         onAuthSuccess();
       }
@@ -142,12 +142,12 @@ export default function AuthForm({ onAuthSuccess, onGoBack }: AuthFormProps) {
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-lg opacity-50"></div>
                   <div className="relative p-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl">
-                    <Code className="h-8 w-8 text-white" />
+                    <img src="/icon.png" alt="BuildStack" className="h-8 w-8" />
                   </div>
                 </div>
                 <div>
                   <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    Join CodeLearner
+                    Join BuildStack
                   </h1>
                   <p className="text-xl text-muted-foreground">
                     Where coding dreams become reality
@@ -230,14 +230,14 @@ export default function AuthForm({ onAuthSuccess, onGoBack }: AuthFormProps) {
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-lg opacity-50"></div>
                     <div className="relative p-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl">
-                      <Code className="h-8 w-8 text-white mx-auto" />
+                      <img src="/icon.png" alt="BuildStack" className="h-8 w-8 mx-auto" />
                     </div>
                   </div>
                 </div>
                 
                 <div className="space-y-2">
                   <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    Welcome to CodeLearner
+                    Welcome to BuildStack
                   </CardTitle>
                   <CardDescription className="text-base">
                     Start your coding journey with gamified learning
