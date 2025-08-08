@@ -6778,6 +6778,9 @@ export default function LearningContent({
   // Load saved state from localStorage on component mount
   React.useEffect(() => {
     try {
+      // Guard when content is not available for this title
+      if (!content || !content.steps) return;
+
       const savedCurrentStep = localStorage.getItem(storageKeys.currentStep);
       const savedCompletedSteps = localStorage.getItem(storageKeys.completedSteps);
       const savedPracticeCode = localStorage.getItem(storageKeys.practiceCode);
@@ -6817,7 +6820,7 @@ export default function LearningContent({
     } catch (error) {
       console.error('Error loading saved learning state:', error);
     }
-  }, [title, content.steps.length]);
+  }, [title, content?.steps?.length]);
 
   // Auto-save state to localStorage whenever it changes
   React.useEffect(() => {
@@ -6892,7 +6895,7 @@ export default function LearningContent({
     });
     
     // Clear step-specific practice code for all steps
-    content.steps.forEach(step => {
+    content?.steps?.forEach(step => {
       const stepSpecificKey = `learning_${title}_step_${step.id}_practiceCode`;
       localStorage.removeItem(stepSpecificKey);
     });
@@ -6906,8 +6909,8 @@ export default function LearningContent({
     setHasRestoredState(false);
     
     // Initialize practice code for first step
-    const firstStep = content.steps[0] as LessonStep;
-    if (firstStep.practice) {
+    const firstStep = content?.steps?.[0] as LessonStep | undefined;
+    if (firstStep?.practice) {
       setPracticeCode(firstStep.practice.starterCode);
     }
   };
