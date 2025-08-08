@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, BookOpen, Target, Trophy, Maximize, Minimize, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
 import CodeEnvironment from "@/components/CodeEnvironment";
+import PythonEnvironment from "@/components/PythonEnvironment";
 import { useToast } from "@/hooks/use-toast";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { ImperativePanelHandle } from "react-resizable-panels";
@@ -616,21 +617,43 @@ export default function ProjectEnvironment({ user, profile }: ProjectEnvironment
                   </Badge>
                 </div>
               )}
-              <CodeEnvironment
-                projectId={projectId}
-                initialFiles={project.initialFiles}
-                onSave={handleSaveProject}
-              />
+{language === 'python' ? (
+                <PythonEnvironment 
+                  projectId={projectId}
+                  projectTitle={project.title}
+                  onSave={(code) => {
+                    toast({ title: 'Project Saved', description: 'Your progress has been saved successfully!' });
+                    console.log('Python code saved:', code);
+                  }}
+                />
+              ) : (
+                <CodeEnvironment
+                  projectId={projectId}
+                  initialFiles={project.initialFiles}
+                  onSave={handleSaveProject}
+                />
+              )}
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>
       ) : (
         <div className="h-[calc(100vh-200px)]">
-          <CodeEnvironment
-            projectId={projectId}
-            initialFiles={project.initialFiles}
-            onSave={handleSaveProject}
-          />
+{language === 'python' ? (
+            <PythonEnvironment 
+              projectId={projectId}
+              projectTitle={project.title}
+              onSave={(code) => {
+                toast({ title: 'Project Saved', description: 'Your progress has been saved successfully!' });
+                console.log('Python code saved:', code);
+              }}
+            />
+          ) : (
+            <CodeEnvironment
+              projectId={projectId}
+              initialFiles={project.initialFiles}
+              onSave={handleSaveProject}
+            />
+          )}
         </div>
       )}
     </div>
