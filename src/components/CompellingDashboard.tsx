@@ -364,12 +364,11 @@ export default function CompellingDashboard({ user, profile, onProfileUpdate, sh
         onCloseProfileEdit();
       }
       
-      // Call the update callback if provided, otherwise refresh the page
+      // Call the update callback if provided
       if (onProfileUpdate) {
         onProfileUpdate();
-      } else {
-        window.location.reload();
       }
+      // Removed window.location.reload() - not needed as state updates automatically
 
     } catch (error: any) {
       console.error('Error updating profile:', error);
