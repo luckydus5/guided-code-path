@@ -21,7 +21,443 @@ export interface PythonProject {
 export const PYTHON_PROJECTS: PythonProject[] = [
   {
     id: 1,
-    title: "Personal Finance Calculator",
+    title: "African Mobile Money System",
+    description: "Build a comprehensive mobile money transfer system inspired by M-Pesa and other African fintech solutions. Learn Python while creating real African financial technology.",
+    difficulty: "Beginner",
+    estimatedTime: "2 weeks",
+    technologies: ["Python", "File I/O", "JSON", "Data Validation"],
+    skills: ["Object-Oriented Programming", "File Operations", "Data Structures", "Error Handling"],
+    category: "African Fintech",
+    languages: ["python"],
+    requirements: [
+      "User registration and authentication system",
+      "Send and receive money functionality",
+      "Transaction history tracking",
+      "Balance management and verification",
+      "Agent network simulation",
+      "SMS-like notifications system"
+    ],
+    learningObjectives: [
+      "Master Python classes and object-oriented design",
+      "Implement secure data handling practices",
+      "Learn file-based database operations",
+      "Practice input validation and error handling",
+      "Understand African fintech ecosystem"
+    ],
+    initialFiles: [
+      {
+        id: '1',
+        name: 'main.py',
+        content: `# African Mobile Money System
+# A comprehensive mobile money platform inspired by M-Pesa
+
+import json
+import datetime
+import uuid
+import os
+from typing import Dict, List, Optional
+
+class User:
+    """Represents a mobile money user."""
+    
+    def __init__(self, phone_number: str, name: str, pin: str):
+        self.phone_number = phone_number
+        self.name = name
+        self.pin = pin
+        self.balance = 0.0
+        self.account_id = str(uuid.uuid4())[:8]
+        self.created_at = datetime.datetime.now().isoformat()
+        self.is_active = True
+        
+    def to_dict(self):
+        return {
+            'phone_number': self.phone_number,
+            'name': self.name,
+            'pin': self.pin,
+            'balance': self.balance,
+            'account_id': self.account_id,
+            'created_at': self.created_at,
+            'is_active': self.is_active
+        }
+
+class Transaction:
+    """Represents a mobile money transaction."""
+    
+    def __init__(self, sender_phone: str, receiver_phone: str, amount: float, transaction_type: str):
+        self.transaction_id = str(uuid.uuid4())[:12]
+        self.sender_phone = sender_phone
+        self.receiver_phone = receiver_phone
+        self.amount = amount
+        self.transaction_type = transaction_type  # 'send', 'receive', 'deposit', 'withdraw'
+        self.timestamp = datetime.datetime.now().isoformat()
+        self.status = 'completed'
+        
+    def to_dict(self):
+        return {
+            'transaction_id': self.transaction_id,
+            'sender_phone': self.sender_phone,
+            'receiver_phone': self.receiver_phone,
+            'amount': self.amount,
+            'transaction_type': self.transaction_type,
+            'timestamp': self.timestamp,
+            'status': self.status
+        }
+
+class MobileMoneySystem:
+    """Main mobile money system class."""
+    
+    def __init__(self):
+        self.users: Dict[str, User] = {}
+        self.transactions: List[Transaction] = []
+        self.agents: List[str] = ["Agent001", "Agent002", "Agent003"]  # Simplified agent system
+        self.load_data()
+        
+    def load_data(self):
+        """Load user and transaction data from files."""
+        try:
+            # Load users
+            if os.path.exists('users.json'):
+                with open('users.json', 'r') as f:
+                    users_data = json.load(f)
+                    for phone, user_data in users_data.items():
+                        user = User(user_data['phone_number'], user_data['name'], user_data['pin'])
+                        user.balance = user_data['balance']
+                        user.account_id = user_data['account_id']
+                        user.created_at = user_data['created_at']
+                        user.is_active = user_data['is_active']
+                        self.users[phone] = user
+            
+            # Load transactions
+            if os.path.exists('transactions.json'):
+                with open('transactions.json', 'r') as f:
+                    transactions_data = json.load(f)
+                    for trans_data in transactions_data:
+                        transaction = Transaction(
+                            trans_data['sender_phone'],
+                            trans_data['receiver_phone'],
+                            trans_data['amount'],
+                            trans_data['transaction_type']
+                        )
+                        transaction.transaction_id = trans_data['transaction_id']
+                        transaction.timestamp = trans_data['timestamp']
+                        transaction.status = trans_data['status']
+                        self.transactions.append(transaction)
+                        
+        except Exception as e:
+            print(f"Error loading data: {e}")
+    
+    def save_data(self):
+        """Save user and transaction data to files."""
+        try:
+            # Save users
+            users_data = {phone: user.to_dict() for phone, user in self.users.items()}
+            with open('users.json', 'w') as f:
+                json.dump(users_data, f, indent=2)
+            
+            # Save transactions
+            transactions_data = [trans.to_dict() for trans in self.transactions]
+            with open('transactions.json', 'w') as f:
+                json.dump(transactions_data, f, indent=2)
+                
+        except Exception as e:
+            print(f"Error saving data: {e}")
+    
+    def register_user(self, phone_number: str, name: str, pin: str) -> bool:
+        """Register a new user."""
+        if phone_number in self.users:
+            print("❌ Phone number already registered!")
+            return False
+        
+        if len(pin) != 4 or not pin.isdigit():
+            print("❌ PIN must be exactly 4 digits!")
+            return False
+        
+        user = User(phone_number, name, pin)
+        self.users[phone_number] = user
+        self.save_data()
+        print(f"✅ User {name} registered successfully!")
+        print(f"📱 Account ID: {user.account_id}")
+        return True
+    
+    def authenticate_user(self, phone_number: str, pin: str) -> Optional[User]:
+        """Authenticate user with phone and PIN."""
+        if phone_number not in self.users:
+            print("❌ Phone number not found!")
+            return None
+        
+        user = self.users[phone_number]
+        if user.pin != pin:
+            print("❌ Invalid PIN!")
+            return None
+        
+        if not user.is_active:
+            print("❌ Account is deactivated!")
+            return None
+        
+        return user
+    
+    def send_money(self, sender_phone: str, sender_pin: str, receiver_phone: str, amount: float) -> bool:
+        """Send money from one user to another."""
+        # Authenticate sender
+        sender = self.authenticate_user(sender_phone, sender_pin)
+        if not sender:
+            return False
+        
+        # Check if receiver exists
+        if receiver_phone not in self.users:
+            print("❌ Receiver phone number not found!")
+            return False
+        
+        receiver = self.users[receiver_phone]
+        
+        # Validate amount
+        if amount <= 0:
+            print("❌ Amount must be greater than 0!")
+            return False
+        
+        if sender.balance < amount:
+            print("❌ Insufficient balance!")
+            return False
+        
+        # Process transaction
+        sender.balance -= amount
+        receiver.balance += amount
+        
+        # Record transaction
+        transaction = Transaction(sender_phone, receiver_phone, amount, 'send')
+        self.transactions.append(transaction)
+        
+        self.save_data()
+        
+        print(f"✅ Money sent successfully!")
+        print(f"💸 Sent: KSH {amount:,.2f} to {receiver.name}")
+        print(f"💰 New balance: KSH {sender.balance:,.2f}")
+        print(f"📱 Transaction ID: {transaction.transaction_id}")
+        
+        # Simulate SMS notifications
+        self.send_notification(sender_phone, f"You sent KSH {amount:,.2f} to {receiver.name}. New balance: KSH {sender.balance:,.2f}")
+        self.send_notification(receiver_phone, f"You received KSH {amount:,.2f} from {sender.name}. New balance: KSH {receiver.balance:,.2f}")
+        
+        return True
+    
+    def deposit_money(self, phone_number: str, pin: str, amount: float, agent_code: str) -> bool:
+        """Deposit money through an agent."""
+        user = self.authenticate_user(phone_number, pin)
+        if not user:
+            return False
+        
+        if agent_code not in self.agents:
+            print("❌ Invalid agent code!")
+            return False
+        
+        if amount <= 0:
+            print("❌ Amount must be greater than 0!")
+            return False
+        
+        user.balance += amount
+        
+        # Record transaction
+        transaction = Transaction(agent_code, phone_number, amount, 'deposit')
+        self.transactions.append(transaction)
+        
+        self.save_data()
+        
+        print(f"✅ Money deposited successfully!")
+        print(f"💰 Deposited: KSH {amount:,.2f}")
+        print(f"💰 New balance: KSH {user.balance:,.2f}")
+        print(f"🏪 Agent: {agent_code}")
+        
+        self.send_notification(phone_number, f"You deposited KSH {amount:,.2f} via {agent_code}. New balance: KSH {user.balance:,.2f}")
+        
+        return True
+    
+    def withdraw_money(self, phone_number: str, pin: str, amount: float, agent_code: str) -> bool:
+        """Withdraw money through an agent."""
+        user = self.authenticate_user(phone_number, pin)
+        if not user:
+            return False
+        
+        if agent_code not in self.agents:
+            print("❌ Invalid agent code!")
+            return False
+        
+        if amount <= 0:
+            print("❌ Amount must be greater than 0!")
+            return False
+        
+        if user.balance < amount:
+            print("❌ Insufficient balance!")
+            return False
+        
+        user.balance -= amount
+        
+        # Record transaction
+        transaction = Transaction(phone_number, agent_code, amount, 'withdraw')
+        self.transactions.append(transaction)
+        
+        self.save_data()
+        
+        print(f"✅ Money withdrawn successfully!")
+        print(f"💸 Withdrawn: KSH {amount:,.2f}")
+        print(f"💰 New balance: KSH {user.balance:,.2f}")
+        print(f"🏪 Agent: {agent_code}")
+        
+        self.send_notification(phone_number, f"You withdrew KSH {amount:,.2f} via {agent_code}. New balance: KSH {user.balance:,.2f}")
+        
+        return True
+    
+    def check_balance(self, phone_number: str, pin: str) -> Optional[float]:
+        """Check user balance."""
+        user = self.authenticate_user(phone_number, pin)
+        if not user:
+            return None
+        
+        print(f"💰 Account Balance: KSH {user.balance:,.2f}")
+        print(f"📱 Account ID: {user.account_id}")
+        return user.balance
+    
+    def get_transaction_history(self, phone_number: str, pin: str, limit: int = 10) -> List[Transaction]:
+        """Get user transaction history."""
+        user = self.authenticate_user(phone_number, pin)
+        if not user:
+            return []
+        
+        user_transactions = [
+            trans for trans in self.transactions 
+            if trans.sender_phone == phone_number or trans.receiver_phone == phone_number
+        ]
+        
+        # Sort by timestamp (newest first)
+        user_transactions.sort(key=lambda x: x.timestamp, reverse=True)
+        
+        print(f"\\n📊 Transaction History (Last {min(limit, len(user_transactions))} transactions):")
+        print("-" * 60)
+        
+        for i, trans in enumerate(user_transactions[:limit], 1):
+            timestamp = datetime.datetime.fromisoformat(trans.timestamp).strftime("%Y-%m-%d %H:%M")
+            if trans.transaction_type == 'send' and trans.sender_phone == phone_number:
+                print(f"{i}. 💸 SENT KSH {trans.amount:,.2f} to {trans.receiver_phone}")
+            elif trans.transaction_type == 'send' and trans.receiver_phone == phone_number:
+                print(f"{i}. 💰 RECEIVED KSH {trans.amount:,.2f} from {trans.sender_phone}")
+            elif trans.transaction_type == 'deposit':
+                print(f"{i}. 📥 DEPOSITED KSH {trans.amount:,.2f} via {trans.sender_phone}")
+            elif trans.transaction_type == 'withdraw':
+                print(f"{i}. 📤 WITHDREW KSH {trans.amount:,.2f} via {trans.receiver_phone}")
+            
+            print(f"    📅 {timestamp} | ID: {trans.transaction_id}")
+            print()
+        
+        return user_transactions[:limit]
+    
+    def send_notification(self, phone_number: str, message: str):
+        """Simulate SMS notification."""
+        print(f"\\n📱 SMS to {phone_number}: {message}")
+    
+    def show_agents(self):
+        """Display available agents."""
+        print("\\n🏪 Available Agents:")
+        for agent in self.agents:
+            print(f"   • {agent}")
+
+def main():
+    """Main application interface."""
+    system = MobileMoneySystem()
+    
+    print("🌍 Welcome to African Mobile Money System")
+    print("=" * 50)
+    print("💡 Inspired by M-Pesa and African Fintech Innovation")
+    
+    while True:
+        print("\\n📱 Mobile Money Services:")
+        print("1. 👤 Register New User")
+        print("2. 💸 Send Money")
+        print("3. 📥 Deposit Money")
+        print("4. 📤 Withdraw Money")
+        print("5. 💰 Check Balance")
+        print("6. 📊 Transaction History")
+        print("7. 🏪 View Agents")
+        print("8. 🚪 Exit")
+        
+        choice = input("\\nSelect service (1-8): ").strip()
+        
+        if choice == "1":
+            print("\\n👤 User Registration")
+            name = input("Enter full name: ")
+            phone = input("Enter phone number (e.g., +254712345678): ")
+            pin = input("Create 4-digit PIN: ")
+            system.register_user(phone, name, pin)
+            
+        elif choice == "2":
+            print("\\n💸 Send Money")
+            sender_phone = input("Your phone number: ")
+            sender_pin = input("Your PIN: ")
+            receiver_phone = input("Recipient phone number: ")
+            try:
+                amount = float(input("Amount to send (KSH): "))
+                system.send_money(sender_phone, sender_pin, receiver_phone, amount)
+            except ValueError:
+                print("❌ Invalid amount!")
+                
+        elif choice == "3":
+            print("\\n📥 Deposit Money")
+            system.show_agents()
+            phone = input("Your phone number: ")
+            pin = input("Your PIN: ")
+            agent = input("Agent code: ")
+            try:
+                amount = float(input("Amount to deposit (KSH): "))
+                system.deposit_money(phone, pin, amount, agent)
+            except ValueError:
+                print("❌ Invalid amount!")
+                
+        elif choice == "4":
+            print("\\n📤 Withdraw Money")
+            system.show_agents()
+            phone = input("Your phone number: ")
+            pin = input("Your PIN: ")
+            agent = input("Agent code: ")
+            try:
+                amount = float(input("Amount to withdraw (KSH): "))
+                system.withdraw_money(phone, pin, amount, agent)
+            except ValueError:
+                print("❌ Invalid amount!")
+                
+        elif choice == "5":
+            print("\\n💰 Balance Inquiry")
+            phone = input("Your phone number: ")
+            pin = input("Your PIN: ")
+            system.check_balance(phone, pin)
+            
+        elif choice == "6":
+            print("\\n📊 Transaction History")
+            phone = input("Your phone number: ")
+            pin = input("Your PIN: ")
+            try:
+                limit = int(input("Number of transactions to show (default 10): ") or "10")
+                system.get_transaction_history(phone, pin, limit)
+            except ValueError:
+                system.get_transaction_history(phone, pin)
+                
+        elif choice == "7":
+            system.show_agents()
+            
+        elif choice == "8":
+            print("\\n🌍 Thank you for using African Mobile Money!")
+            print("💡 Keep building the future of African fintech!")
+            break
+            
+        else:
+            print("❌ Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()`,
+        type: 'file'
+      }
+    ]
+  },
+  {
+    id: 2,
+    title: "African Weather & Climate Data Analyzer",
     description: "Build a comprehensive personal finance calculator with compound interest, loan payments, and savings goals. Learn Python fundamentals while creating practical financial tools.",
     difficulty: "Beginner",
     estimatedTime: "1 week",
