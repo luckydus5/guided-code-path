@@ -115,8 +115,84 @@ export default function ProjectEnvironment({ user, profile }: ProjectEnvironment
   }, []);
 
   const loadProject = useCallback(() => {
-    // Mock project data - in real app, fetch from API
-    const projects = {
+    // Check if this is a Python project
+    if (language === 'python') {
+      // Load Python-specific project data
+      const pythonProjects = {
+        '1': {
+          id: '1',
+          title: 'African Mobile Money System',
+          description: 'Build a comprehensive mobile money transfer system inspired by M-Pesa and other African fintech solutions.',
+          difficulty: 'Beginner',
+          objectives: [
+            'Master Python classes and object-oriented design',
+            'Implement secure data handling practices',
+            'Learn file-based database operations',
+            'Practice input validation and error handling',
+            'Understand African fintech ecosystem'
+          ],
+          requirements: [
+            'User registration and authentication system',
+            'Send and receive money functionality',
+            'Transaction history tracking',
+            'Balance management and verification',
+            'Agent network simulation',
+            'SMS-like notifications system'
+          ]
+        },
+        '2': {
+          id: '2',
+          title: 'African Language Translator',
+          description: 'Create a translation system for major African languages (Swahili, Hausa, Yoruba, Amharic).',
+          difficulty: 'Intermediate',
+          objectives: [
+            'Learn API integration and web services',
+            'Understand natural language processing basics',
+            'Practice data parsing and manipulation',
+            'Develop cultural awareness in technology'
+          ],
+          requirements: [
+            'Support for 5+ African languages',
+            'Basic phrase translation capabilities',
+            'Cultural context preservation',
+            'Audio pronunciation guides',
+            'Offline translation support'
+          ]
+        },
+        '3': {
+          id: '3',
+          title: 'African Agriculture Management System',
+          description: 'Build a farm management system for African farmers with crop planning and weather integration.',
+          difficulty: 'Intermediate',
+          objectives: [
+            'Master data analysis with Python',
+            'Learn to work with external APIs',
+            'Understand agricultural cycles and planning',
+            'Practice building real-world applications'
+          ],
+          requirements: [
+            'Crop planning and scheduling system',
+            'Weather data integration',
+            'Market price tracking',
+            'Harvest prediction algorithms',
+            'Resource management tools'
+          ]
+        }
+      };
+
+      const pythonProject = pythonProjects[projectId as keyof typeof pythonProjects];
+      
+      if (pythonProject) {
+        setProject({
+          ...pythonProject,
+          initialFiles: [] // Python projects don't use initial files in the same way
+        });
+        return;
+      }
+    }
+
+    // Fallback for other languages or unknown projects
+    const webProjects = {
       '1': {
         id: '1',
         title: 'Interactive Landing Page',
@@ -136,257 +212,59 @@ export default function ProjectEnvironment({ user, profile }: ProjectEnvironment
           'Include form validation with JavaScript',
           'Optimize for accessibility'
         ]
-      },
-      '2': {
-        id: '2',
-        title: 'Interactive To-Do App',
-        description: 'Create a fully functional task management application with local storage.',
-        difficulty: 'Beginner',
-        objectives: [
-          'Build dynamic UI with JavaScript',
-          'Implement CRUD operations for tasks',
-          'Add task filtering and search',
-          'Store data in localStorage',
-          'Create smooth animations for interactions'
-        ],
-        requirements: [
-          'Add, edit, delete, and complete tasks',
-          'Filter tasks by status (all, active, completed)',
-          'Persist data using localStorage',
-          'Implement keyboard shortcuts',
-          'Add task statistics and counters'
-        ]
-      },
-      '3': {
-        id: '3',
-        title: 'Portfolio Website',
-        description: 'Design and build a professional portfolio website showcasing your skills.',
-        difficulty: 'Intermediate',
-        objectives: [
-          'Create a multi-section portfolio layout',
-          'Implement smooth scrolling and navigation',
-          'Add project showcase with modal views',
-          'Create animated skill progress bars',
-          'Build a working contact form'
-        ],
-        requirements: [
-          'Responsive design for all devices',
-          'SEO-optimized structure',
-          'Performance optimized images',
-          'Social media integration',
-          'Print-friendly CSS'
-        ]
-      },
-      '4': {
-        id: '4',
-        title: 'Weather Dashboard',
-        description: 'Build a weather application using APIs with dynamic data visualization.',
-        difficulty: 'Intermediate',
-        objectives: [
-          'Fetch data from weather APIs',
-          'Display current weather and forecasts',
-          'Create interactive weather charts',
-          'Implement location-based services',
-          'Add weather alerts and notifications'
-        ],
-        requirements: [
-          'Use Fetch API for data retrieval',
-          'Handle API errors gracefully',
-          'Implement loading states',
-          'Cache data for offline viewing',
-          'Add geolocation features'
-        ]
-      },
-      '5': {
-        id: '5',
-        title: 'E-commerce Product Page',
-        description: 'Create an interactive product page with shopping cart functionality.',
-        difficulty: 'Intermediate',
-        objectives: [
-          'Build product image gallery with zoom',
-          'Implement quantity selectors and variants',
-          'Create shopping cart with calculations',
-          'Add product reviews and ratings',
-          'Design responsive product layout'
-        ],
-        requirements: [
-          'Image zoom and gallery navigation',
-          'Cart persistence with localStorage',
-          'Price calculations with taxes/shipping',
-          'Product variant selection',
-          'Customer review system'
-        ]
-      },
-      '6': {
-        id: '6',
-        title: 'Music Player Interface',
-        description: 'Design an interactive music player with playlist management.',
-        difficulty: 'Advanced',
-        objectives: [
-          'Create audio player with custom controls',
-          'Build playlist management system',
-          'Add visualizations and animations',
-          'Implement shuffle and repeat modes',
-          'Design responsive media controls'
-        ],
-        requirements: [
-          'Custom audio controls (play, pause, seek)',
-          'Playlist creation and management',
-          'Progress bars and time displays',
-          'Volume control with visualization',
-          'Keyboard media key support'
-        ]
-      },
-      '7': {
-        id: '7',
-        title: 'Interactive Quiz Game',
-        description: 'Build an engaging quiz application with scoring and timer features.',
-        difficulty: 'Intermediate',
-        objectives: [
-          'Create dynamic question display',
-          'Implement timer and scoring system',
-          'Add multiple question types',
-          'Build results and analytics page',
-          'Create progress tracking'
-        ],
-        requirements: [
-          'Multiple choice and true/false questions',
-          'Timer with visual countdown',
-          'Score calculation and leaderboard',
-          'Question shuffling and randomization',
-          'Results sharing functionality'
-        ]
-      },
-      '8': {
-        id: '8',
-        title: 'Restaurant Menu & Ordering',
-        description: 'Create an interactive restaurant menu with order management.',
-        difficulty: 'Advanced',
-        objectives: [
-          'Build categorized menu display',
-          'Implement order cart system',
-          'Add menu item customization',
-          'Create order summary and checkout',
-          'Design tablet-friendly interface'
-        ],
-        requirements: [
-          'Menu filtering by category/dietary needs',
-          'Item customization (size, extras)',
-          'Order total with taxes and tips',
-          'Table number and special requests',
-          'Print-friendly order receipts'
-        ]
-      },
-      '9': {
-        id: '9',
-        title: 'Photo Gallery & Editor',
-        description: 'Build an interactive photo gallery with basic editing capabilities.',
-        difficulty: 'Advanced',
-        objectives: [
-          'Create responsive photo grid layout',
-          'Implement lightbox with navigation',
-          'Add basic photo editing tools',
-          'Build photo upload and organization',
-          'Create slideshow functionality'
-        ],
-        requirements: [
-          'Masonry/grid layout for photos',
-          'Canvas-based image editing',
-          'Photo filtering and effects',
-          'Drag & drop file uploads',
-          'EXIF data display'
-        ]
-      },
-      '10': {
-        id: '10',
-        title: 'Calendar & Event Manager',
-        description: 'Design a functional calendar application with event management.',
-        difficulty: 'Advanced',
-        objectives: [
-          'Build interactive calendar grid',
-          'Implement event creation and editing',
-          'Add different calendar views',
-          'Create event notifications',
-          'Design recurring event system'
-        ],
-        requirements: [
-          'Month, week, and day views',
-          'Event CRUD operations',
-          'Event categories and colors',
-          'Import/export calendar data',
-          'Reminder notifications'
-        ]
-      },
-      '11': {
-        id: '11',
-        title: 'Expense Tracker Dashboard',
-        description: 'Create a comprehensive expense tracking application with charts.',
-        difficulty: 'Advanced',
-        objectives: [
-          'Build expense entry and categorization',
-          'Create data visualization charts',
-          'Implement budget tracking',
-          'Add expense analysis and reports',
-          'Design responsive dashboard layout'
-        ],
-        requirements: [
-          'Multiple chart types (pie, bar, line)',
-          'Category-based expense tracking',
-          'Budget alerts and notifications',
-          'Data export functionality',
-          'Monthly/yearly reporting'
-        ]
-      },
-      '12': {
-        id: '12',
-        title: 'Interactive Learning Platform',
-        description: 'Build a mini learning platform with courses and progress tracking.',
-        difficulty: 'Advanced',
-        objectives: [
-          'Create course catalog and navigation',
-          'Implement lesson progress tracking',
-          'Add interactive coding exercises',
-          'Build quiz and assessment system',
-          'Design student dashboard'
-        ],
-        requirements: [
-          'Course enrollment and progress',
-          'Interactive code editor integration',
-          'Progress bars and achievements',
-          'Certificate generation',
-          'Discussion forums or comments'
-        ]
       }
+      // ... other web projects would go here
     };
 
-    const projectData = projects[projectId as keyof typeof projects];
+    const webProject = webProjects[projectId as keyof typeof webProjects];
     
-    if (projectData) {
+    if (webProject) {
       setProject({
-        ...projectData,
+        ...webProject,
         initialFiles: getInitialFiles(projectId)
       });
     } else {
-      // Default project
-      setProject({
-        id: projectId,
-        title: `${language?.toUpperCase()} Project ${projectId}`,
-        description: `Build an interactive ${language} application with HTML, CSS, and JavaScript.`,
-        difficulty: "Beginner",
-        objectives: [
-          "Create a responsive HTML structure",
-          "Style with modern CSS techniques",
-          "Add interactive JavaScript functionality",
-          "Implement user feedback and animations"
-        ],
-        initialFiles: getInitialFiles(projectId),
-        requirements: [
-          "Use semantic HTML elements",
-          "Implement responsive design",
-          "Add at least 3 interactive features",
-          "Include proper error handling"
-        ]
-      });
+      // Default project based on language
+      if (language === 'python') {
+        setProject({
+          id: projectId,
+          title: `Python Project ${projectId}`,
+          description: `Build a Python application solving real-world African problems.`,
+          difficulty: "Beginner",
+          objectives: [
+            "Learn Python fundamentals and syntax",
+            "Practice object-oriented programming",
+            "Implement file I/O operations",
+            "Build real-world problem-solving skills"
+          ],
+          requirements: [
+            "Use Python best practices",
+            "Implement proper error handling",
+            "Create user-friendly interfaces",
+            "Document your code properly"
+          ]
+        });
+      } else {
+        setProject({
+          id: projectId,
+          title: `${language?.toUpperCase()} Project ${projectId}`,
+          description: `Build an interactive ${language} application with HTML, CSS, and JavaScript.`,
+          difficulty: "Beginner",
+          objectives: [
+            "Create a responsive HTML structure",
+            "Style with modern CSS techniques",
+            "Add interactive JavaScript functionality",
+            "Implement user feedback and animations"
+          ],
+          initialFiles: getInitialFiles(projectId),
+          requirements: [
+            "Use semantic HTML elements",
+            "Implement responsive design",
+            "Add at least 3 interactive features",
+            "Include proper error handling"
+          ]
+        });
+      }
     }
   }, [projectId, language]);
 

@@ -13,25 +13,35 @@ export function usePyodide({ onStdout, onStderr }: UsePyodideOptions = {}) {
     let cancelled = false;
 
     async function load() {
-      try {
-        // Dynamically import Pyodide from CDN
-        // deno-lint-ignore no-explicit-any
-        const pyodideMod: any = await import(
-          "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.mjs"
-        );
+      // First, load the Pyodide script from CDN
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js';
+      script.async = true;
+      
+      script.onload = async () => {
+        try {
+          // Load from different CDN version that's more stable
+          const pyodide = await (window as any).loadPyodide({
+            indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.2/full/",
+            stdout: (text: string) => onStdout?.(text),
+            stderr: (text: string) => onStderr?.(text),
+          });
 
-        const py = await pyodideMod.loadPyodide({
-          stdout: (text: string) => onStdout?.(text),
-          stderr: (text: string) => onStderr?.(text),
-        });
-
-        if (cancelled) return;
-        pyodideRef.current = py;
-        setReady(true);
-      } catch (e) {
-        console.error("Failed to load Pyodide:", e);
+          if (cancelled) return;
+          pyodideRef.current = pyodide;
+          setReady(true);
+        } catch (e) {
+          console.error("Failed to load Pyodide:", e);
+          onStderr?.("Failed to load Python runtime. Check your network and try again.\n");
+        }
+      };
+      
+      script.onerror = () => {
+        console.error("Failed to load Pyodide script");
         onStderr?.("Failed to load Python runtime. Check your network and try again.\n");
-      }
+      };
+      
+      document.head.appendChild(script);
     }
 
     load();
