@@ -35,6 +35,7 @@ import { useToast } from "@/hooks/use-toast";
 import { LANGUAGE_CHALLENGES } from "@/data/challenges";
 import { HANDS_ON_PROJECTS, getProjectsByLanguage, getWebFundamentalsProjects, getCapstoneProjects, getProjectsByDifficulty } from "@/data/projects";
 import { REAL_PYTHON_PROJECTS } from "@/data/realPythonProjects";
+import { PYTHON_PROJECTS } from "@/data/pythonProjects";
 
 interface UserProgress {
   [language: string]: {
@@ -286,7 +287,7 @@ export default function Learn() {
 
   // Get projects based on whether it's Web Fundamentals or other languages
   const languageProjects = isWebFundamentals ? getWebFundamentalsProjects() : 
-    (language === 'python' ? REAL_PYTHON_PROJECTS : getProjectsByLanguage(language || 'python'));
+    (language === 'python' ? PYTHON_PROJECTS : getProjectsByLanguage(language || 'python'));
   const beginnerProjects = languageProjects.filter(p => p.difficulty === 'Beginner');
   const intermediateProjects = languageProjects.filter(p => p.difficulty === 'Intermediate');
   const advancedProjects = languageProjects.filter(p => p.difficulty === 'Advanced');
