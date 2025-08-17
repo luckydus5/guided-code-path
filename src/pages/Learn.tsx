@@ -31,11 +31,11 @@ import {
   SkipForward,
   Github
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { LANGUAGE_CHALLENGES } from "@/data/challenges";
 import { HANDS_ON_PROJECTS, getProjectsByLanguage, getWebFundamentalsProjects, getCapstoneProjects, getProjectsByDifficulty } from "@/data/projects";
 import { REAL_PYTHON_PROJECTS } from "@/data/realPythonProjects";
 import { PYTHON_PROJECTS } from "@/data/pythonProjects";
+import { useProjectCompletion } from "@/hooks/useProjectCompletion";
 
 interface UserProgress {
   [language: string]: {
@@ -114,7 +114,42 @@ export default function Learn() {
   const { language } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [achievements, setAchievements] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
+  const { isProjectCompleted } = useProjectCompletion(user);
+  
+  // Get user data
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      
+      if (user) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+        
+        setProfile(profileData);
+
+        const { data: achievementData } = await supabase
+          .from('user_achievements')
+          .select(`*, achievements (*)`)
+          .eq('user_id', user.id);
+        
+        setAchievements(achievementData || []);
+      }
+      
+      setIsLoading(false);
+    };
+
+    getUser();
+  }, []);
+
   // Ensure we have a valid language parameter, handle navigation on refresh
   useEffect(() => {
     if (!language) {
@@ -957,51 +992,72 @@ export default function Learn() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {beginnerProjects.slice(0, 15).map((project) => (
-                  <Card key={project.id} className="p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer">
-                    <div className="flex items-start justify-between mb-4">
-                      <Badge variant="outline" className="text-success border-success">
-                        {project.difficulty}
-                      </Badge>
-                      <div className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {project.estimatedTime}
-                      </div>
-                    </div>
-                    
-                    <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
-                      {project.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      {project.description}
-                    </p>
-                    
-                    <div className="space-y-3">
-                      <div className="flex flex-wrap gap-1">
-                        {project.technologies.slice(0, 3).map((tech) => (
-                          <Badge key={tech} variant="secondary" className="text-xs">
-                            {tech}
+                {beginnerProjects.slice(0, 15).map((project) => {
+                  const isCompleted = isProjectCompleted(String(project.id));
+                  return (
+                    <Card key={project.id} className={`p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer relative ${isCompleted ? 'ring-2 ring-success/50 bg-success/5' : ''}`}>
+                      {isCompleted && (
+                        <div className="absolute top-2 right-2 z-10">
+                          <Badge variant="default" className="bg-success text-success-foreground">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Completed
                           </Badge>
-                        ))}
-                        {project.technologies.length > 3 && (
-                          <Badge variant="secondary" className="text-xs">
-                            +{project.technologies.length - 3}
-                          </Badge>
-                        )}
+                        </div>
+                      )}
+                      
+                      <div className="flex items-start justify-between mb-4">
+                        <Badge variant="outline" className="text-success border-success">
+                          {project.difficulty}
+                        </Badge>
+                        <div className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {project.estimatedTime}
+                        </div>
                       </div>
                       
-                      <Button 
-                        size="sm" 
-                        className="w-full" 
-                        variant="outline"
-                        onClick={() => handleStartProject(project.id)}
-                      >
-                        <Play className="h-3 w-3 mr-2" />
-                        Start Project
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
+                      <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
+                        {project.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        {project.description}
+                      </p>
+                      
+                      <div className="space-y-3">
+                        <div className="flex flex-wrap gap-1">
+                          {project.technologies.slice(0, 3).map((tech) => (
+                            <Badge key={tech} variant="secondary" className="text-xs">
+                              {tech}
+                            </Badge>
+                          ))}
+                          {project.technologies.length > 3 && (
+                            <Badge variant="secondary" className="text-xs">
+                              +{project.technologies.length - 3}
+                            </Badge>
+                          )}
+                        </div>
+                        
+                        <Button 
+                          size="sm" 
+                          className="w-full" 
+                          variant={isCompleted ? "secondary" : "outline"}
+                          onClick={() => handleStartProject(project.id)}
+                        >
+                          {isCompleted ? (
+                            <>
+                              <CheckCircle className="h-3 w-3 mr-2" />
+                              Review Project
+                            </>
+                          ) : (
+                            <>
+                              <Play className="h-3 w-3 mr-2" />
+                              Start Project
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
 
@@ -1081,54 +1137,76 @@ export default function Learn() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {advancedProjects.slice(0, 8).map((project) => (
-                  <Card key={project.id} className="p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer border-2 border-destructive/20">
-                    <div className="flex items-start justify-between mb-4">
-                      <Badge variant="destructive">
-                        {project.difficulty}
-                      </Badge>
-                      <div className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {project.estimatedTime}
-                      </div>
-                    </div>
-                    
-                    <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
-                      {project.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      {project.description}
-                    </p>
-                    
-                    <div className="space-y-3">
-                      <div className="flex flex-wrap gap-1">
-                        {project.technologies.slice(0, 4).map((tech) => (
-                          <Badge key={tech} variant="secondary" className="text-xs">
-                            {tech}
+                {advancedProjects.slice(0, 8).map((project) => {
+                  const isCompleted = isProjectCompleted(String(project.id));
+                  return (
+                    <Card key={project.id} className={`p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer border-2 border-destructive/20 relative ${isCompleted ? 'ring-2 ring-destructive/50 bg-destructive/5' : ''}`}>
+                      {isCompleted && (
+                        <div className="absolute top-2 right-2 z-10">
+                          <Badge variant="default" className="bg-success text-success-foreground">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Completed
                           </Badge>
-                        ))}
-                        {project.technologies.length > 4 && (
-                          <Badge variant="secondary" className="text-xs">
-                            +{project.technologies.length - 4}
-                          </Badge>
-                        )}
+                        </div>
+                      )}
+                      
+                      <div className="flex items-start justify-between mb-4">
+                        <Badge variant="destructive">
+                          {project.difficulty}
+                        </Badge>
+                        <div className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {project.estimatedTime}
+                        </div>
                       </div>
                       
-                      <div className="text-xs text-muted-foreground mb-2">
-                        Skills: {project.skills.slice(0, 3).join(", ")}
-                      </div>
+                      <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
+                        {project.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        {project.description}
+                      </p>
                       
-                      <Button 
-                        size="sm" 
-                        className="w-full"
-                        onClick={() => handleStartProject(project.id)}
-                      >
-                        <Rocket className="h-3 w-3 mr-2" />
-                        Start Capstone
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
+                      <div className="space-y-3">
+                        <div className="flex flex-wrap gap-1">
+                          {project.technologies.slice(0, 4).map((tech) => (
+                            <Badge key={tech} variant="secondary" className="text-xs">
+                              {tech}
+                            </Badge>
+                          ))}
+                          {project.technologies.length > 4 && (
+                            <Badge variant="secondary" className="text-xs">
+                              +{project.technologies.length - 4}
+                            </Badge>
+                          )}
+                        </div>
+                        
+                        <div className="text-xs text-muted-foreground mb-2">
+                          Skills: {project.skills.slice(0, 3).join(", ")}
+                        </div>
+                        
+                        <Button 
+                          size="sm" 
+                          className="w-full"
+                          variant={isCompleted ? "secondary" : "default"}
+                          onClick={() => handleStartProject(project.id)}
+                        >
+                          {isCompleted ? (
+                            <>
+                              <CheckCircle className="h-3 w-3 mr-2" />
+                              Review Capstone
+                            </>
+                          ) : (
+                            <>
+                              <Rocket className="h-3 w-3 mr-2" />
+                              Start Capstone
+                            </>
+                           )}
+                        </Button>
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
           </TabsContent>

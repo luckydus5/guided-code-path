@@ -263,10 +263,15 @@ Good testing practices lead to robust applications.`
         description: "Congratulations! Your achievement has been recorded. Redirecting...",
       });
 
-      // Redirect to preview dashboard
+      // Notify parent component about completion and redirect
+      toast({
+        title: "🎉 Project Completed!",
+        description: "Great job! Your progress has been saved.",
+      });
+      
       setTimeout(() => {
         navigate(`/learn/${language}/project/${projectId}/preview`);
-      }, 2000);
+      }, 1500);
 
     } catch (error) {
       console.error('Error completing project:', error);
