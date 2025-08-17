@@ -132,13 +132,17 @@ export default function Learn() {
       setUser(user);
       
       if (user) {
-        const { data: profileData } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
         
-        setProfile(profileData);
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+        } else {
+          setProfile(profileData);
+        }
 
         const { data: achievementData } = await supabase
           .from('user_achievements')

@@ -326,11 +326,16 @@ Good testing practices lead to robust applications.`
 
       // Award badges
       for (const badgeName of badges) {
-        const { data: badge } = await supabase
+        const { data: badge, error: badgeError } = await supabase
           .from('project_badges')
           .select('id')
           .eq('name', badgeName)
-          .single();
+          .maybeSingle();
+
+        if (badgeError) {
+          console.error('Error fetching badge:', badgeError);
+          continue;
+        }
 
         if (badge) {
           await supabase

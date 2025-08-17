@@ -30,7 +30,7 @@ export const useProjectProgress = (userId: string | undefined, projectId: string
         .eq('user_id', userId)
         .eq('lesson_id', projectId)
         .eq('language', language)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
         throw error;

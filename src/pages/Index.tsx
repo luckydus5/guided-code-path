@@ -116,7 +116,7 @@ const Index = () => {
             streak: 0
           })
           .select()
-          .single();
+          .maybeSingle();
 
         if (createError) {
           console.error('Error creating profile:', createError);
