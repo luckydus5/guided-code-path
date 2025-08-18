@@ -21,10 +21,12 @@ import {
   XCircle,
   Lightbulb,
   Trophy,
-  Target
+  Target,
+  Terminal
 } from "lucide-react";
 import { usePyodide } from "@/hooks/usePyodide";
 import { useToast } from "@/hooks/use-toast";
+import AdvancedTerminal from "./AdvancedTerminal";
 
 interface PythonLearningEnvironmentProps {
   projectId?: string;
@@ -159,6 +161,7 @@ export default function PythonLearningEnvironment({
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
   const [showHints, setShowHints] = useState(false);
   const [activeTab, setActiveTab] = useState<'lessons' | 'playground'>('lessons');
+  const [showTerminal, setShowTerminal] = useState(false);
 
   const { toast } = useToast();
 
@@ -267,6 +270,15 @@ export default function PythonLearningEnvironment({
         </div>
         
         <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setShowTerminal(!showTerminal)}
+            className={showTerminal ? 'bg-primary/10 text-primary' : ''}
+          >
+            <Terminal className="h-4 w-4 mr-2" />
+            Terminal
+          </Button>
           <Button variant="outline" size="sm" onClick={toggleTheme}>
             {theme === 'vs-dark' ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
             {theme === 'vs-dark' ? 'Light' : 'Dark'}
@@ -403,59 +415,66 @@ export default function PythonLearningEnvironment({
             </div>
           )}
 
-          {/* Editor and Console */}
-          <div className="flex-1 grid grid-rows-2">
+          {/* Editor and Console/Terminal */}
+          <div className="flex-1 flex flex-col">
             {/* Editor */}
-            <div className="border-b">
-              <div className="h-full">
-                <Editor
-                  height="100%"
-                  language="python"
-                  value={code}
-                  onChange={(val) => setCode(val || '')}
-                  theme={theme}
-                  options={{
-                    fontSize: 14,
-                    fontFamily: 'JetBrains Mono, Fira Code, Monaco, Consolas, monospace',
-                    wordWrap: 'on',
-                    minimap: { enabled: false },
-                    scrollBeyondLastLine: false,
-                    automaticLayout: true,
-                    tabSize: 4,
-                    insertSpaces: true,
-                    detectIndentation: false,
-                    renderWhitespace: 'selection',
-                    bracketPairColorization: { enabled: true },
-                    guides: { bracketPairs: true, indentation: true },
-                    suggest: { snippetsPreventQuickSuggestions: false },
-                  }}
-                />
-              </div>
+            <div className="flex-1 border-b">
+              <Editor
+                height="100%"
+                language="python"
+                value={code}
+                onChange={(val) => setCode(val || '')}
+                theme={theme}
+                options={{
+                  fontSize: 14,
+                  fontFamily: 'JetBrains Mono, Fira Code, Monaco, Consolas, monospace',
+                  wordWrap: 'on',
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                  automaticLayout: true,
+                  tabSize: 4,
+                  insertSpaces: true,
+                  detectIndentation: false,
+                  renderWhitespace: 'selection',
+                  bracketPairColorization: { enabled: true },
+                  guides: { bracketPairs: true, indentation: true },
+                  suggest: { snippetsPreventQuickSuggestions: false },
+                }}
+              />
             </div>
 
-            {/* Console */}
-            <div className="flex flex-col">
-              <div className="flex items-center justify-between p-2 border-b bg-card">
-                <div className="flex items-center gap-2">
-                  <TerminalSquare className="h-4 w-4" />
-                  <span className="font-medium text-sm">Output Console</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {!ready && (
-                    <div className="w-32">
-                      <Progress value={60} className="h-2" />
+            {/* Console/Terminal */}
+            <div className="h-80">
+              {showTerminal ? (
+                <AdvancedTerminal 
+                  onPythonExecution={runPython}
+                  className="h-full"
+                />
+              ) : (
+                <div className="h-full flex flex-col">
+                  <div className="flex items-center justify-between p-2 border-b bg-card">
+                    <div className="flex items-center gap-2">
+                      <TerminalSquare className="h-4 w-4" />
+                      <span className="font-medium text-sm">Output Console</span>
                     </div>
-                  )}
-                  <Button variant="ghost" size="sm" onClick={handleClearOutput} className="h-7 px-2 text-xs">
-                    Clear
-                  </Button>
+                    <div className="flex items-center gap-2">
+                      {!ready && (
+                        <div className="w-32">
+                          <Progress value={60} className="h-2" />
+                        </div>
+                      )}
+                      <Button variant="ghost" size="sm" onClick={handleClearOutput} className="h-7 px-2 text-xs">
+                        Clear
+                      </Button>
+                    </div>
+                  </div>
+                  <ScrollArea className="flex-1 p-3 bg-muted/30 font-mono text-sm">
+                    <div className="whitespace-pre-wrap">
+                      {output || (ready ? 'Ready to run Python code! Click "Run Code" or press Ctrl+Enter.' : 'Loading Python environment...')}
+                    </div>
+                  </ScrollArea>
                 </div>
-              </div>
-              <ScrollArea className="flex-1 p-3 bg-muted/30 font-mono text-sm">
-                <div className="whitespace-pre-wrap">
-                  {output || (ready ? 'Ready to run Python code! Click "Run Code" or press Ctrl+Enter.' : 'Loading Python environment...')}
-                </div>
-              </ScrollArea>
+              )}
             </div>
           </div>
         </div>
