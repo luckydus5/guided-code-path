@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, BookOpen, Target, Trophy, Maximize, Minimize, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
 import CodeEnvironment from "@/components/CodeEnvironment";
 import PythonEnvironment from "@/components/PythonEnvironment";
+import PythonLearningEnvironment from "@/components/PythonLearningEnvironment";
 import PythonStudio from "@/components/PythonStudio";
 import { useToast } from "@/hooks/use-toast";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
@@ -497,12 +498,15 @@ export default function ProjectEnvironment({ user, profile }: ProjectEnvironment
                 </div>
               )}
 {language === 'python' ? (
-                <PythonStudio 
+                <PythonLearningEnvironment 
                   projectId={projectId}
                   projectTitle={project.title}
-                  onSave={(files) => {
+                  onSave={(code) => {
                     toast({ title: 'Project Saved', description: 'Your progress has been saved successfully!' });
-                    console.log('Python files saved:', files);
+                    console.log('Python code saved:', code);
+                  }}
+                  onComplete={() => {
+                    completeProject();
                   }}
                 />
               ) : (
@@ -518,12 +522,15 @@ export default function ProjectEnvironment({ user, profile }: ProjectEnvironment
       ) : (
         <div className="h-[calc(100vh-200px)]">
 {language === 'python' ? (
-            <PythonStudio 
+            <PythonLearningEnvironment 
               projectId={projectId}
               projectTitle={project.title}
-              onSave={(files) => {
+              onSave={(code) => {
                 toast({ title: 'Project Saved', description: 'Your progress has been saved successfully!' });
-                console.log('Python files saved:', files);
+                console.log('Python code saved:', code);
+              }}
+              onComplete={() => {
+                completeProject();
               }}
             />
           ) : (
