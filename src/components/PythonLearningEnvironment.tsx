@@ -27,6 +27,8 @@ import {
 import { usePyodide } from "@/hooks/usePyodide";
 import { useToast } from "@/hooks/use-toast";
 import AdvancedTerminal from "./AdvancedTerminal";
+import AILearningAssistant from "./AILearningAssistant";
+import LearningAnalytics from "./LearningAnalytics";
 
 interface PythonLearningEnvironmentProps {
   projectId?: string;
@@ -305,15 +307,23 @@ export default function PythonLearningEnvironment({
       <div className="flex-1 flex">
         {/* Sidebar */}
         <div className="w-80 border-r bg-card/50">
-          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'lessons' | 'playground')} className="h-full">
-            <TabsList className="grid w-full grid-cols-2 m-2">
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'lessons' | 'playground' | 'ai-tutor' | 'analytics')} className="h-full">
+            <TabsList className="grid w-full grid-cols-4 m-2">
               <TabsTrigger value="lessons" className="text-xs">
                 <Target className="h-3 w-3 mr-1" />
                 Lessons
               </TabsTrigger>
               <TabsTrigger value="playground" className="text-xs">
                 <Code className="h-3 w-3 mr-1" />
-                Playground
+                Code
+              </TabsTrigger>
+              <TabsTrigger value="ai-tutor" className="text-xs">
+                <Brain className="h-3 w-3 mr-1" />
+                AI Tutor
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="text-xs">
+                <BarChart3 className="h-3 w-3 mr-1" />
+                Analytics
               </TabsTrigger>
             </TabsList>
             
@@ -365,6 +375,22 @@ export default function PythonLearningEnvironment({
                     Write and experiment with your own Python code here. Try combining concepts from the lessons!
                   </CardContent>
                 </Card>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="ai-tutor" className="m-0 h-full">
+              <div className="h-full p-1">
+                <AILearningAssistant 
+                  currentCode={code}
+                  currentLesson={currentLesson.title}
+                  onCodeSuggestion={(suggestedCode) => setCode(suggestedCode)}
+                />
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="analytics" className="m-0 h-full">
+              <div className="h-full">
+                <LearningAnalytics />
               </div>
             </TabsContent>
           </Tabs>
