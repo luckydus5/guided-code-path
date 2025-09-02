@@ -22,7 +22,9 @@ import {
   Lightbulb,
   Trophy,
   Target,
-  Terminal
+  Terminal,
+  Brain,
+  BarChart3
 } from "lucide-react";
 import { usePyodide } from "@/hooks/usePyodide";
 import { useToast } from "@/hooks/use-toast";
@@ -162,7 +164,7 @@ export default function PythonLearningEnvironment({
   const [currentLessonId, setCurrentLessonId] = useState(pythonLessons[0].id);
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
   const [showHints, setShowHints] = useState(false);
-  const [activeTab, setActiveTab] = useState<'lessons' | 'playground'>('lessons');
+  const [activeTab, setActiveTab] = useState<'lessons' | 'playground' | 'ai-tutor' | 'analytics'>('lessons');
   const [showTerminal, setShowTerminal] = useState(false);
 
   const { toast } = useToast();
@@ -307,7 +309,7 @@ export default function PythonLearningEnvironment({
       <div className="flex-1 flex">
         {/* Sidebar */}
         <div className="w-80 border-r bg-card/50">
-          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'lessons' | 'playground' | 'ai-tutor' | 'analytics')} className="h-full">
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'lessons' | 'playground' | 'ai-tutor' | 'analytics')} className="h-full">
             <TabsList className="grid w-full grid-cols-4 m-2">
               <TabsTrigger value="lessons" className="text-xs">
                 <Target className="h-3 w-3 mr-1" />
