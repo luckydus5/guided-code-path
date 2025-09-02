@@ -33,7 +33,15 @@ import {
   Flame,
   Cpu,
   Database,
-  Smartphone
+  Smartphone,
+  PlayCircle,
+  MessageSquare,
+  Headphones,
+  Gamepad2,
+  Timer,
+  Repeat,
+  BarChart3,
+  Calendar
 } from "lucide-react";
 
 interface HeroSectionProps {
@@ -43,304 +51,258 @@ interface HeroSectionProps {
 
 export default function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps) {
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-background via-background/95 to-muted/10 overflow-hidden">
-      {/* African-inspired Background with Tech Elements */}
+    <div className="relative min-h-screen bg-gradient-to-br from-background via-muted/30 to-background overflow-hidden">
+      {/* Background Elements */}
       <div className="absolute inset-0">
-        {/* Continental silhouette effect */}
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-amber-600/8 via-orange-600/6 to-red-600/8" />
-        
-        {/* Tech innovation glow */}
-        <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-emerald-500/15 to-cyan-500/15 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-r from-orange-500/15 to-amber-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-to-r from-green-500/8 to-blue-500/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-        
-        {/* Circuit pattern overlay */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-10 left-10 w-32 h-32 border border-primary/30 rounded-lg"></div>
-          <div className="absolute top-40 right-20 w-24 h-24 border border-secondary/30 rounded-full"></div>
-          <div className="absolute bottom-32 left-32 w-40 h-40 border border-accent/30 rounded-lg"></div>
-        </div>
+        {/* Floating geometric shapes */}
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl rotate-12 animate-float"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-accent/20 to-primary/20 rounded-full animate-float" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 left-20 w-40 h-40 bg-gradient-to-br from-secondary/20 to-accent/20 rounded-2xl rotate-45 animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-40 right-10 w-28 h-28 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full animate-float" style={{ animationDelay: '0.5s' }}></div>
       </div>
 
-      {/* Top Navigation Bar */}
-      {onSignIn && (
-        <div className="relative z-20 flex justify-between items-center p-6">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur-lg opacity-50"></div>
-              <div className="relative p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl">
-                <img src="/icon.png" alt="BuildStack" className="h-6 w-6" />
-              </div>
+      {/* Header Navigation */}
+      <nav className="relative z-20 flex justify-between items-center p-4 md:p-6">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="p-3 bg-gradient-to-br from-primary to-secondary rounded-2xl shadow-lg">
+              <Code className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-orange-600 bg-clip-text text-transparent">
-              AfriCode Academy
-            </span>
           </div>
-          
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              CodePath Academy
+            </h1>
+            <p className="text-xs text-muted-foreground hidden sm:block">Learn. Build. Succeed.</p>
+          </div>
+        </div>
+        
+        {onSignIn && (
           <Button 
             variant="outline"
-            size="lg"
             onClick={onSignIn}
-            className="border-2 border-white/20 hover:border-white/40 hover:bg-white/10 backdrop-blur-sm transition-all duration-300 group"
+            className="border-2 hover:bg-primary hover:text-white transition-all duration-300"
           >
             <Users className="mr-2 h-4 w-4" />
-            Sign In
+            <span className="hidden sm:inline">Sign In</span>
           </Button>
-        </div>
-      )}
+        )}
+      </nav>
       
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Hero Content */}
-        <div className="flex-1 flex flex-col items-center justify-center px-6 py-20">
-          <div className="text-center max-w-7xl mx-auto">
-            {/* Mission Statement */}
-            <div className="mb-12 animate-fade-in">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <MapPin className="h-8 w-8 text-orange-600" />
-                <Badge className="bg-gradient-to-r from-emerald-600 to-orange-600 text-white px-4 py-2 text-lg font-semibold">
-                  Made in Africa, For Africa
+        <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-6 py-12 md:py-20">
+          <div className="text-center max-w-6xl mx-auto">
+            {/* Hero Badge */}
+            <div className="mb-6 md:mb-8 animate-fade-in">
+              <Badge className="bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 text-sm md:text-base font-semibold shadow-lg">
+                <Sparkles className="h-4 w-4 mr-2" />
+                Your Coding Journey Starts Here
+              </Badge>
+            </div>
+            
+            {/* Main Headline */}
+            <div className="mb-8 md:mb-12 animate-fade-in">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4 md:mb-6">
+                <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                  Master Coding
+                </span>
+                <br />
+                <span className="text-foreground">
+                  Build Your Future
+                </span>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6 md:mb-8">
+                Join thousands of students learning to code with our interactive, hands-on platform. 
+                From beginner to professional, we'll guide you every step of the way.
+              </p>
+              
+              {/* Feature Highlights */}
+              <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-8">
+                <Badge variant="secondary" className="bg-success/10 text-success border-success/20">
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  Interactive Learning
                 </Badge>
-              </div>
-              
-              <div className="text-center mb-8">
-                <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-emerald-600 via-orange-600 to-red-600 bg-clip-text text-transparent leading-tight mb-4">
-                  Innovating Africa's
-                </h1>
-                <h2 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent mb-6">
-                  Tech Future
-                </h2>
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-orange-600 rounded-2xl blur-lg opacity-30"></div>
-                  <div className="relative p-6 bg-gradient-to-r from-emerald-500/10 to-orange-600/10 rounded-2xl border border-emerald-500/20 backdrop-blur-sm">
-                    <p className="text-xl md:text-2xl font-bold text-foreground mb-2">
-                      🚀 My Mission: Solve Real African Problems Through Technology
-                    </p>
-                    <p className="text-lg text-muted-foreground">
-                      Building meaningful solutions that transform communities across the continent
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Vision Statement */}
-              <div className="mb-8">
-                <p className="text-lg md:text-xl text-muted-foreground max-w-5xl mx-auto leading-relaxed mb-6">
-                  I'm on a mission to become a <span className="text-emerald-600 font-semibold">creative force in Africa's tech ecosystem</span>, 
-                  developing innovative solutions that address our continent's most pressing challenges. Through 
-                  <span className="text-orange-600 font-semibold mx-1">hands-on coding</span>, 
-                  <span className="text-amber-600 font-semibold mx-1">real-world projects</span>, and 
-                  <span className="text-red-600 font-semibold mx-1">community impact</span>, 
-                  I'm building the skills to shape Africa's digital transformation.
-                </p>
-              </div>
-
-              {/* Five Year Vision */}
-              <div className="mb-8">
-                <Card className="bg-gradient-to-r from-emerald-500/10 via-orange-500/10 to-amber-500/10 border border-emerald-500/20 shadow-xl backdrop-blur-sm max-w-4xl mx-auto">
-                  <CardContent className="p-8">
-                    <div className="flex items-center justify-center mb-4">
-                      <Rocket className="h-8 w-8 text-orange-600 mr-3" />
-                      <h3 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-orange-600 bg-clip-text text-transparent">
-                        My 5-Year Vision for Africa
-                      </h3>
-                    </div>
-                    <div className="grid md:grid-cols-3 gap-6">
-                      <div className="text-center p-4 bg-emerald-500/5 rounded-xl border border-emerald-500/10">
-                        <Building className="h-8 w-8 text-emerald-600 mx-auto mb-2" />
-                        <h4 className="font-semibold text-emerald-700 mb-1">Tech Innovation Hubs</h4>
-                        <p className="text-sm text-muted-foreground">Establish coding academies in 5 African cities</p>
-                      </div>
-                      <div className="text-center p-4 bg-orange-500/5 rounded-xl border border-orange-500/10">
-                        <Smartphone className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                        <h4 className="font-semibold text-orange-700 mb-1">Mobile-First Solutions</h4>
-                        <p className="text-sm text-muted-foreground">Create 10+ apps solving African problems</p>
-                      </div>
-                      <div className="text-center p-4 bg-amber-500/5 rounded-xl border border-amber-500/10">
-                        <Users className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-                        <h4 className="font-semibold text-amber-700 mb-1">Community Impact</h4>
-                        <p className="text-sm text-muted-foreground">Train 1000+ African developers</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                  <Trophy className="h-3 w-3 mr-1" />
+                  Gamified Progress
+                </Badge>
+                <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
+                  <Users className="h-3 w-3 mr-1" />
+                  Community Support
+                </Badge>
               </div>
             </div>
 
-            {/* Enhanced CTA Button */}
-            <div className="flex flex-col items-center gap-4 mb-16 animate-slide-up">
+            {/* CTA Button */}
+            <div className="mb-12 md:mb-16 animate-slide-up">
               <Button 
                 size="lg" 
-                className="text-xl px-12 py-7 bg-gradient-to-r from-emerald-600 to-orange-600 hover:from-emerald-700 hover:to-orange-700 shadow-2xl hover:shadow-3xl transition-all duration-300 group transform hover:scale-105"
+                className="text-lg md:text-xl px-8 md:px-12 py-6 md:py-8 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-2xl hover:shadow-3xl transition-all duration-300 group transform hover:scale-105"
                 onClick={onGetStarted}
               >
-                <Flame className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform" />
-                Join the African Tech Revolution
-                <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
+                <PlayCircle className="mr-3 h-5 w-5 md:h-6 md:w-6 group-hover:scale-110 transition-transform" />
+                Start Learning for Free
+                <ArrowRight className="ml-3 h-5 w-5 md:h-6 md:w-6 group-hover:translate-x-2 transition-transform" />
               </Button>
-              <p className="text-sm text-muted-foreground font-medium">
-                🌍 Building Africa's digital future, one developer at a time
+              <p className="text-sm text-muted-foreground mt-4">
+                No credit card required • Join 50,000+ students worldwide
               </p>
             </div>
 
-            {/* African Tech Focus Areas */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <Card className="p-8 bg-gradient-to-br from-emerald-500/5 to-green-500/5 backdrop-blur-sm border-emerald-200/20 hover:border-emerald-400/50 transition-all duration-300 group transform hover:scale-105 hover:shadow-xl">
+            {/* Learning Features Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+              <Card className="p-6 md:p-8 bg-gradient-to-br from-primary/5 to-primary/10 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all duration-300 group transform hover:scale-105 hover:shadow-xl">
                 <div className="mb-6">
-                  <div className="p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl w-fit mx-auto group-hover:from-emerald-600 group-hover:to-emerald-700 transition-all shadow-lg">
-                    <Smartphone className="h-8 w-8 text-white" />
+                  <div className="p-4 bg-gradient-to-r from-primary to-primary/80 rounded-2xl w-fit mx-auto group-hover:from-primary group-hover:to-primary transition-all shadow-lg">
+                    <Code className="h-8 w-8 text-white" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-foreground">Mobile-First Solutions</h3>
+                <h3 className="text-xl md:text-2xl font-bold mb-4 text-foreground">Interactive Coding</h3>
                 <p className="text-muted-foreground leading-relaxed mb-4">
-                  Building apps that work seamlessly across Africa's diverse mobile ecosystem and connectivity challenges.
+                  Learn by doing with our interactive code editor. Practice real programming with instant feedback and guidance.
                 </p>
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600">
-                    <Smartphone className="h-3 w-3 mr-1" />
-                    Mobile
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
+                    <Zap className="h-3 w-3 mr-1" />
+                    Real-time
                   </Badge>
-                  <Badge variant="secondary" className="bg-green-500/10 text-green-600">
+                  <Badge variant="secondary" className="bg-success/10 text-success text-xs">
                     <CheckCircle className="h-3 w-3 mr-1" />
-                    Accessible
+                    Guided
                   </Badge>
                 </div>
               </Card>
 
-              <Card className="p-8 bg-gradient-to-br from-orange-500/5 to-amber-500/5 backdrop-blur-sm border-orange-200/20 hover:border-orange-400/50 transition-all duration-300 group transform hover:scale-105 hover:shadow-xl">
+              <Card className="p-6 md:p-8 bg-gradient-to-br from-secondary/5 to-secondary/10 backdrop-blur-sm border-secondary/20 hover:border-secondary/40 transition-all duration-300 group transform hover:scale-105 hover:shadow-xl">
                 <div className="mb-6">
-                  <div className="p-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl w-fit mx-auto group-hover:from-orange-600 group-hover:to-orange-700 transition-all shadow-lg">
-                    <Database className="h-8 w-8 text-white" />
+                  <div className="p-4 bg-gradient-to-r from-secondary to-secondary/80 rounded-2xl w-fit mx-auto group-hover:from-secondary group-hover:to-secondary transition-all shadow-lg">
+                    <Gamepad2 className="h-8 w-8 text-white" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-foreground">Data-Driven Impact</h3>
+                <h3 className="text-xl md:text-2xl font-bold mb-4 text-foreground">Gamified Learning</h3>
                 <p className="text-muted-foreground leading-relaxed mb-4">
-                  Leveraging Africa's growing data landscape to create insights that drive economic and social progress.
+                  Earn XP, unlock achievements, and level up your skills. Make learning addictive and fun with game mechanics.
                 </p>
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="bg-orange-500/10 text-orange-600">
-                    <Database className="h-3 w-3 mr-1" />
-                    Analytics
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary" className="bg-secondary/10 text-secondary text-xs">
+                    <Trophy className="h-3 w-3 mr-1" />
+                    Achievements
                   </Badge>
-                  <Badge variant="secondary" className="bg-amber-500/10 text-amber-600">
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                    Growth
+                  <Badge variant="secondary" className="bg-accent/10 text-accent text-xs">
+                    <Star className="h-3 w-3 mr-1" />
+                    Leaderboards
                   </Badge>
                 </div>
               </Card>
 
-              <Card className="p-8 bg-gradient-to-br from-red-500/5 to-pink-500/5 backdrop-blur-sm border-red-200/20 hover:border-red-400/50 transition-all duration-300 group transform hover:scale-105 hover:shadow-xl">
+              <Card className="p-6 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 backdrop-blur-sm border-accent/20 hover:border-accent/40 transition-all duration-300 group transform hover:scale-105 hover:shadow-xl">
                 <div className="mb-6">
-                  <div className="p-4 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl w-fit mx-auto group-hover:from-red-600 group-hover:to-red-700 transition-all shadow-lg">
-                    <Cpu className="h-8 w-8 text-white" />
+                  <div className="p-4 bg-gradient-to-r from-accent to-accent/80 rounded-2xl w-fit mx-auto group-hover:from-accent group-hover:to-accent transition-all shadow-lg">
+                    <Users className="h-8 w-8 text-white" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-foreground">AI for Africa</h3>
+                <h3 className="text-xl md:text-2xl font-bold mb-4 text-foreground">Community Driven</h3>
                 <p className="text-muted-foreground leading-relaxed mb-4">
-                  Implementing artificial intelligence solutions tailored to African languages, cultures, and challenges.
+                  Join a supportive community of learners. Get help, share projects, and collaborate with fellow students.
                 </p>
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="bg-red-500/10 text-red-600">
-                    <Brain className="h-3 w-3 mr-1" />
-                    AI/ML
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary" className="bg-accent/10 text-accent text-xs">
+                    <MessageSquare className="h-3 w-3 mr-1" />
+                    Forums
                   </Badge>
-                  <Badge variant="secondary" className="bg-pink-500/10 text-pink-600">
-                    <Globe className="h-3 w-3 mr-1" />
-                    Localized
+                  <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
+                    <Headphones className="h-3 w-3 mr-1" />
+                    Mentorship
                   </Badge>
                 </div>
               </Card>
             </div>
 
-            {/* Impact Projects Showcase */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16 animate-slide-up" style={{ animationDelay: '0.4s' }}>
-              <Card className="p-6 bg-gradient-to-br from-emerald-500/5 to-cyan-500/5 backdrop-blur-sm border-emerald-200/20 hover:border-emerald-400/50 transition-all duration-300 group">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl">
-                    <GraduationCap className="h-6 w-6 text-white" />
+            {/* Learning Path Preview */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-16 animate-slide-up" style={{ animationDelay: '0.4s' }}>
+              <Card className="p-4 md:p-6 bg-gradient-to-br from-success/5 to-success/10 backdrop-blur-sm border-success/20 hover:border-success/40 transition-all duration-300 group">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gradient-to-r from-success to-success/80 rounded-xl">
+                    <BookOpen className="h-5 w-5 md:h-6 md:w-6 text-white" />
                   </div>
-                  <div>
-                    <h4 className="text-xl font-semibold mb-2">Education Tech</h4>
-                    <p className="text-muted-foreground">Building learning platforms that work offline and in low-bandwidth environments across Africa.</p>
+                  <div className="flex-1">
+                    <h4 className="font-semibold mb-1">Learn Fundamentals</h4>
+                    <p className="text-sm text-muted-foreground">Master the basics with interactive lessons</p>
                   </div>
                 </div>
               </Card>
 
-              <Card className="p-6 bg-gradient-to-br from-orange-500/5 to-red-500/5 backdrop-blur-sm border-orange-200/20 hover:border-orange-400/50 transition-all duration-300 group">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl">
-                    <Briefcase className="h-6 w-6 text-white" />
+              <Card className="p-4 md:p-6 bg-gradient-to-br from-primary/5 to-primary/10 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all duration-300 group">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gradient-to-r from-primary to-primary/80 rounded-xl">
+                    <Cpu className="h-5 w-5 md:h-6 md:w-6 text-white" />
                   </div>
-                  <div>
-                    <h4 className="text-xl font-semibold mb-2">Economic Empowerment</h4>
-                    <p className="text-muted-foreground">Creating fintech and marketplace solutions that boost local economies and entrepreneurship.</p>
+                  <div className="flex-1">
+                    <h4 className="font-semibold mb-1">Build Projects</h4>
+                    <p className="text-sm text-muted-foreground">Apply skills in real-world scenarios</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-4 md:p-6 bg-gradient-to-br from-secondary/5 to-secondary/10 backdrop-blur-sm border-secondary/20 hover:border-secondary/40 transition-all duration-300 group">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gradient-to-r from-secondary to-secondary/80 rounded-xl">
+                    <Trophy className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold mb-1">Earn Certificates</h4>
+                    <p className="text-sm text-muted-foreground">Get recognized for your achievements</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-4 md:p-6 bg-gradient-to-br from-accent/5 to-accent/10 backdrop-blur-sm border-accent/20 hover:border-accent/40 transition-all duration-300 group">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gradient-to-r from-accent to-accent/80 rounded-xl">
+                    <Briefcase className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold mb-1">Land Jobs</h4>
+                    <p className="text-sm text-muted-foreground">Get career support and job placement</p>
                   </div>
                 </div>
               </Card>
             </div>
 
-            {/* African Tech Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto animate-fade-in" style={{ animationDelay: '0.6s' }}>
-              <div className="text-center p-6 bg-gradient-to-br from-emerald-500/10 to-emerald-600/10 rounded-2xl backdrop-blur-sm border border-emerald-200/20">
+            {/* Stats Section */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+              <div className="text-center p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl backdrop-blur-sm border border-primary/20">
                 <div className="flex items-center justify-center mb-3">
-                  <MapPin className="h-6 w-6 text-emerald-600 mr-2" />
-                  <div className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">54</div>
+                  <Users className="h-6 w-6 text-primary mr-2" />
+                  <div className="text-3xl md:text-4xl font-bold text-primary">50K+</div>
+                </div>
+                <div className="text-sm font-medium text-muted-foreground">Active Students</div>
+              </div>
+              
+              <div className="text-center p-6 bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl backdrop-blur-sm border border-secondary/20">
+                <div className="flex items-center justify-center mb-3">
+                  <Award className="h-6 w-6 text-secondary mr-2" />
+                  <div className="text-3xl md:text-4xl font-bold text-secondary">95%</div>
+                </div>
+                <div className="text-sm font-medium text-muted-foreground">Success Rate</div>
+              </div>
+              
+              <div className="text-center p-6 bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl backdrop-blur-sm border border-accent/20">
+                <div className="flex items-center justify-center mb-3">
+                  <Clock className="h-6 w-6 text-accent mr-2" />
+                  <div className="text-3xl md:text-4xl font-bold text-accent">24/7</div>
+                </div>
+                <div className="text-sm font-medium text-muted-foreground">Support</div>
+              </div>
+              
+              <div className="text-center p-6 bg-gradient-to-br from-success/10 to-success/5 rounded-2xl backdrop-blur-sm border border-success/20">
+                <div className="flex items-center justify-center mb-3">
+                  <Globe className="h-6 w-6 text-success mr-2" />
+                  <div className="text-3xl md:text-4xl font-bold text-success">180+</div>
                 </div>
                 <div className="text-sm font-medium text-muted-foreground">Countries</div>
-                <div className="text-xs text-muted-foreground mt-1">Across the African continent</div>
-              </div>
-              
-              <div className="text-center p-6 bg-gradient-to-br from-orange-500/10 to-orange-600/10 rounded-2xl backdrop-blur-sm border border-orange-200/20">
-                <div className="flex items-center justify-center mb-3">
-                  <Layers className="h-6 w-6 text-orange-600 mr-2" />
-                  <div className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-orange-700 bg-clip-text text-transparent">10+</div>
-                </div>
-                <div className="text-sm font-medium text-muted-foreground">Real Projects</div>
-                <div className="text-xs text-muted-foreground mt-1">Solving African problems</div>
-              </div>
-              
-              <div className="text-center p-6 bg-gradient-to-br from-amber-500/10 to-amber-600/10 rounded-2xl backdrop-blur-sm border border-amber-200/20">
-                <div className="flex items-center justify-center mb-3">
-                  <Users className="h-6 w-6 text-amber-600 mr-2" />
-                  <div className="text-4xl font-bold bg-gradient-to-r from-amber-600 to-amber-700 bg-clip-text text-transparent">1M+</div>
-                </div>
-                <div className="text-sm font-medium text-muted-foreground">Lives Impacted</div>
-                <div className="text-xs text-muted-foreground mt-1">Our target by 2029</div>
-              </div>
-              
-              <div className="text-center p-6 bg-gradient-to-br from-red-500/10 to-red-600/10 rounded-2xl backdrop-blur-sm border border-red-200/20">
-                <div className="flex items-center justify-center mb-3">
-                  <Flame className="h-6 w-6 text-red-600 mr-2" />
-                  <div className="text-4xl font-bold bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">100%</div>
-                </div>
-                <div className="text-sm font-medium text-muted-foreground">African-Focused</div>
-                <div className="text-xs text-muted-foreground mt-1">Built for local impact</div>
-              </div>
-            </div>
-
-            {/* Call to Action */}
-            <div className="mt-20 animate-fade-in" style={{ animationDelay: '0.8s' }}>
-              <h3 className="text-3xl font-bold mb-8 bg-gradient-to-r from-emerald-600 to-orange-600 bg-clip-text text-transparent">
-                Be Part of Africa's Tech Renaissance
-              </h3>
-              <div className="max-w-3xl mx-auto mb-8">
-                <p className="text-lg text-muted-foreground mb-6">
-                  This is more than just learning to code - it's about joining a movement of African innovators who are 
-                  reshaping our continent's future through technology, creativity, and determination.
-                </p>
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div className="flex items-center gap-3 p-4 bg-emerald-500/5 rounded-xl border border-emerald-500/10">
-                    <CheckCircle className="h-6 w-6 text-emerald-600 flex-shrink-0" />
-                    <span className="font-medium text-emerald-700">Scholar-Ready Portfolio</span>
-                  </div>
-                  <div className="flex items-center gap-3 p-4 bg-orange-500/5 rounded-xl border border-orange-500/10">
-                    <CheckCircle className="h-6 w-6 text-orange-600 flex-shrink-0" />
-                    <span className="font-medium text-orange-700">Real Impact Projects</span>
-                  </div>
-                  <div className="flex items-center gap-3 p-4 bg-amber-500/5 rounded-xl border border-amber-500/10">
-                    <CheckCircle className="h-6 w-6 text-amber-600 flex-shrink-0" />
-                    <span className="font-medium text-amber-700">Community Leadership</span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

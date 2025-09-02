@@ -8,67 +8,57 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* CodeMentor.AI - Modern Coding Platform Design System */
-    --background: 222 47% 4%;
-    --foreground: 210 40% 98%;
+    /* Student-Friendly Learning Platform Design System */
+    --background: 220 25% 97%;
+    --foreground: 220 15% 15%;
 
-    --card: 230 35% 7%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 15%;
 
-    --popover: 230 35% 7%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 15%;
 
-    /* Electric Blue - Primary coding theme */
-    --primary: 217 92% 65%;
-    --primary-foreground: 222 47% 4%;
-    --primary-glow: 217 92% 75%;
+    /* Vibrant Learning - Primary theme */
+    --primary: 262 85% 58%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 262 85% 68%;
 
-    /* Purple accent - Secondary theme */
-    --secondary: 271 80% 65%;
-    --secondary-foreground: 222 47% 4%;
+    /* Success Green - Secondary theme */
+    --secondary: 142 76% 36%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 225 25% 15%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 220 13% 91%;
+    --muted-foreground: 220 8% 46%;
 
-    --accent: 271 80% 65%;
-    --accent-foreground: 222 47% 4%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 225 25% 20%;
-    --input: 225 25% 15%;
-    --ring: 217 92% 65%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 262 85% 58%;
 
     --radius: 0.75rem;
 
-    /* Code syntax highlighting colors */
-    --syntax-keyword: 317 100% 74%;
-    --syntax-string: 158 64% 52%;
-    --syntax-number: 217 92% 65%;
-    --syntax-comment: 215 20% 65%;
-    --syntax-function: 47 96% 53%;
-    --syntax-variable: 271 80% 75%;
-
-    /* Code editor theme */
-    --editor-background: 222 47% 4%;
-    --editor-selection: 217 92% 25%;
-    --editor-line-number: 215 20% 45%;
-    --editor-cursor: 217 92% 65%;
-
-    /* Progress colors */
-    --success: 158 64% 52%;
-    --warning: 47 96% 53%;
+    /* Student Learning Colors */
+    --learning: 262 85% 58%;
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
     --info: 217 92% 65%;
+    --achievement: 295 85% 58%;
 
-    /* Glassmorphism effects */
-    --glass-bg: 230 35% 7% / 0.8;
-    --glass-border: 217 92% 65% / 0.3;
+    /* Modern gradients for student engagement */
+    --gradient-primary: linear-gradient(135deg, hsl(262 85% 58%), hsl(295 85% 58%));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(158 64% 52%));
+    --gradient-learning: linear-gradient(135deg, hsl(217 92% 65%), hsl(262 85% 58%));
+    --gradient-hero: linear-gradient(135deg, hsl(262 85% 58%), hsl(217 92% 65%), hsl(142 76% 36%));
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217 92% 65%), hsl(271 80% 65%));
-    --gradient-secondary: linear-gradient(135deg, hsl(222 47% 4%), hsl(230 35% 7%));
-    --gradient-glow: radial-gradient(circle, hsl(217 92% 65% / 0.4), transparent 70%);
+    /* Mobile-optimized spacing */
+    --mobile-padding: 1rem;
+    --tablet-padding: 2rem;
+    --desktop-padding: 3rem;
 
     --sidebar-background: 225 25% 12%;
     --sidebar-foreground: 210 40% 90%;
@@ -81,34 +71,34 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* Keep same theme for consistency - CodeMentor.AI is dark by design */
-    --background: 222 47% 4%;
-    --foreground: 210 40% 98%;
+    /* Dark mode for evening study sessions */
+    --background: 220 25% 8%;
+    --foreground: 220 25% 95%;
 
-    --card: 230 35% 7%;
-    --card-foreground: 210 40% 98%;
+    --card: 220 25% 10%;
+    --card-foreground: 220 25% 95%;
 
-    --popover: 230 35% 7%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 220 25% 10%;
+    --popover-foreground: 220 25% 95%;
 
-    --primary: 217 92% 65%;
-    --primary-foreground: 222 47% 4%;
+    --primary: 262 85% 68%;
+    --primary-foreground: 220 25% 8%;
 
-    --secondary: 271 80% 65%;
-    --secondary-foreground: 222 47% 4%;
+    --secondary: 142 76% 46%;
+    --secondary-foreground: 220 25% 8%;
 
-    --muted: 225 25% 15%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 220 25% 15%;
+    --muted-foreground: 220 15% 65%;
 
-    --accent: 271 80% 65%;
-    --accent-foreground: 222 47% 4%;
+    --accent: 38 92% 60%;
+    --accent-foreground: 220 25% 8%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 220 25% 95%;
 
-    --border: 225 25% 20%;
-    --input: 225 25% 15%;
-    --ring: 217 92% 65%;
+    --border: 220 25% 18%;
+    --input: 220 25% 15%;
+    --ring: 262 85% 68%;
   }
 }
 
