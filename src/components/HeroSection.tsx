@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { 
   Code, 
   Sparkles, 
@@ -55,6 +56,7 @@ export default function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps
         </div>
         
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           {onSignIn && (
             <>
               <Button 
@@ -83,12 +85,6 @@ export default function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps
         {/* Hero Content */}
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 md:py-16">
           <div className="text-center max-w-4xl mx-auto">
-            {/* Large Logo/Icon */}
-            <div className="mb-6 animate-fade-in">
-              <div className="w-24 h-24 md:w-32 md:h-32 mx-auto bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl flex items-center justify-center mb-4">
-                <Code className="w-12 h-12 md:w-16 md:h-16 text-primary" />
-              </div>
-            </div>
             
             {/* Main Headline */}
             <div className="mb-8 animate-fade-in">

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { User, LogOut, Settings, Trophy, Code, Zap, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -96,6 +97,8 @@ export default function Navbar({ user, profile, onSignOut, onSettingsClick }: Na
                 )}
               </div>
 
+              <ThemeToggle />
+
               {/* User Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -157,6 +160,9 @@ export default function Navbar({ user, profile, onSignOut, onSettingsClick }: Na
               </DropdownMenu>
             </div>
           )}
+
+          {/* Show theme toggle for non-logged in users */}
+          {!user && <ThemeToggle />}
         </div>
       </div>
     </nav>
