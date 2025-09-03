@@ -62,14 +62,14 @@ export default function Navbar({ user, profile, onSignOut, onSettingsClick }: Na
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-gradient-primary/20">
-              <img src="/icon.png" alt="BuildStack" className="h-6 w-6" />
+            <div className="p-2 rounded-lg bg-gradient-to-br from-primary to-secondary">
+              <Code className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                BuildStack
+              <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                CodePath Academy
               </h1>
-              <p className="text-xs text-muted-foreground">Learn. Code. Level Up.</p>
+              <p className="text-xs text-muted-foreground">Learn. Build. Succeed.</p>
             </div>
           </div>
 

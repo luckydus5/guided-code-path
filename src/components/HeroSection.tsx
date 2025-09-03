@@ -1,47 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   Code, 
   Sparkles, 
-  Target, 
   Users, 
-  Zap, 
-  ChevronRight, 
-  Rocket,
-  Brain,
-  Heart,
-  Trophy,
-  Star,
-  Clock,
-  BookOpen,
-  Award,
-  Coffee,
-  GitBranch,
-  Lightbulb,
-  TrendingUp,
-  Shield,
-  Globe,
-  MapPin,
-  Layers,
-  Building,
-  GraduationCap,
-  Briefcase,
-  PlusCircle,
+  PlayCircle,
   ArrowRight,
   CheckCircle,
-  Flame,
-  Cpu,
-  Database,
-  Smartphone,
-  PlayCircle,
-  MessageSquare,
-  Headphones,
+  Trophy,
+  Star,
   Gamepad2,
-  Timer,
-  Repeat,
-  BarChart3,
-  Calendar
+  MessageSquare,
+  LogIn,
+  UserPlus
 } from "lucide-react";
 
 interface HeroSectionProps {
@@ -51,258 +22,178 @@ interface HeroSectionProps {
 
 export default function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps) {
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-background via-muted/30 to-background overflow-hidden">
+    <div className="relative min-h-screen bg-background overflow-hidden">
+      {/* Decorative wavy border */}
+      <div className="absolute top-0 left-0 w-full h-32 overflow-hidden">
+        <svg viewBox="0 0 1200 120" className="absolute top-0 left-0 w-full h-full">
+          <path d="M0,60 Q300,120 600,60 T1200,60 L1200,0 L0,0 Z" fill="hsl(var(--destructive))" opacity="0.8"/>
+        </svg>
+      </div>
+
       {/* Background Elements */}
-      <div className="absolute inset-0">
-        {/* Floating geometric shapes */}
-        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl rotate-12 animate-float"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-accent/20 to-primary/20 rounded-full animate-float" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-20 left-20 w-40 h-40 bg-gradient-to-br from-secondary/20 to-accent/20 rounded-2xl rotate-45 animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-40 right-10 w-28 h-28 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full animate-float" style={{ animationDelay: '0.5s' }}></div>
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-8 w-20 h-20 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl rotate-12 animate-float"></div>
+        <div className="absolute top-1/3 right-8 w-16 h-16 bg-gradient-to-br from-accent/20 to-primary/20 rounded-full animate-float" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-1/4 left-12 w-24 h-24 bg-gradient-to-br from-secondary/20 to-accent/20 rounded-xl rotate-45 animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-1/3 right-12 w-18 h-18 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full animate-float" style={{ animationDelay: '0.5s' }}></div>
       </div>
 
       {/* Header Navigation */}
-      <nav className="relative z-20 flex justify-between items-center p-4 md:p-6">
+      <nav className="relative z-20 flex justify-between items-center px-4 py-6 md:px-6">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="p-3 bg-gradient-to-br from-primary to-secondary rounded-2xl shadow-lg">
-              <Code className="h-6 w-6 text-white" />
+            <div className="p-2.5 bg-gradient-to-br from-primary to-secondary rounded-xl shadow-lg">
+              <Code className="h-5 w-5 text-white" />
             </div>
           </div>
           <div>
-            <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <h1 className="text-lg md:text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               CodePath Academy
             </h1>
-            <p className="text-xs text-muted-foreground hidden sm:block">Learn. Build. Succeed.</p>
+            <p className="text-xs text-muted-foreground">Learn. Build. Succeed.</p>
           </div>
         </div>
         
-        {onSignIn && (
-          <Button 
-            variant="outline"
-            onClick={onSignIn}
-            className="border-2 hover:bg-primary hover:text-white transition-all duration-300"
-          >
-            <Users className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Sign In</span>
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {onSignIn && (
+            <>
+              <Button 
+                variant="ghost"
+                size="sm"
+                onClick={onSignIn}
+                className="text-sm hover:bg-primary/10 hover:text-primary"
+              >
+                <LogIn className="mr-1.5 h-4 w-4" />
+                Sign In
+              </Button>
+              <Button 
+                size="sm"
+                onClick={onSignIn}
+                className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white"
+              >
+                <UserPlus className="mr-1.5 h-4 w-4" />
+                Sign Up
+              </Button>
+            </>
+          )}
+        </div>
       </nav>
       
-      <div className="relative z-10 min-h-screen flex flex-col">
+      <div className="relative z-10 flex-1 flex flex-col">
         {/* Hero Content */}
-        <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-6 py-12 md:py-20">
-          <div className="text-center max-w-6xl mx-auto">
-            {/* Hero Badge */}
-            <div className="mb-6 md:mb-8 animate-fade-in">
-              <Badge className="bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 text-sm md:text-base font-semibold shadow-lg">
-                <Sparkles className="h-4 w-4 mr-2" />
-                Your Coding Journey Starts Here
-              </Badge>
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 md:py-16">
+          <div className="text-center max-w-4xl mx-auto">
+            {/* Large Logo/Icon */}
+            <div className="mb-6 animate-fade-in">
+              <div className="w-24 h-24 md:w-32 md:h-32 mx-auto bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl flex items-center justify-center mb-4">
+                <Code className="w-12 h-12 md:w-16 md:h-16 text-primary" />
+              </div>
             </div>
             
             {/* Main Headline */}
-            <div className="mb-8 md:mb-12 animate-fade-in">
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4 md:mb-6">
+            <div className="mb-8 animate-fade-in">
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">
                 <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
                   Master Coding
                 </span>
-                <br />
-                <span className="text-foreground">
-                  Build Your Future
-                </span>
               </h1>
               
-              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6 md:mb-8">
-                Join thousands of students learning to code with our interactive, hands-on platform. 
-                From beginner to professional, we'll guide you every step of the way.
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-6">
+                Interactive learning platform designed for students. Learn to code with hands-on projects and real-world challenges.
               </p>
               
               {/* Feature Highlights */}
-              <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-8">
-                <Badge variant="secondary" className="bg-success/10 text-success border-success/20">
+              <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-8">
+                <Badge variant="secondary" className="bg-success/10 text-success border-success/20 text-xs">
                   <CheckCircle className="h-3 w-3 mr-1" />
-                  Interactive Learning
+                  Interactive
                 </Badge>
-                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-xs">
                   <Trophy className="h-3 w-3 mr-1" />
-                  Gamified Progress
+                  Gamified
                 </Badge>
-                <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
+                <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20 text-xs">
                   <Users className="h-3 w-3 mr-1" />
-                  Community Support
+                  Community
                 </Badge>
               </div>
             </div>
 
             {/* CTA Button */}
-            <div className="mb-12 md:mb-16 animate-slide-up">
+            <div className="mb-12 animate-slide-up">
               <Button 
                 size="lg" 
-                className="text-lg md:text-xl px-8 md:px-12 py-6 md:py-8 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-2xl hover:shadow-3xl transition-all duration-300 group transform hover:scale-105"
+                className="text-base md:text-lg px-8 py-4 md:px-10 md:py-5 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-xl hover:shadow-2xl transition-all duration-300 group transform hover:scale-105 rounded-full"
                 onClick={onGetStarted}
               >
-                <PlayCircle className="mr-3 h-5 w-5 md:h-6 md:w-6 group-hover:scale-110 transition-transform" />
-                Start Learning for Free
-                <ArrowRight className="ml-3 h-5 w-5 md:h-6 md:w-6 group-hover:translate-x-2 transition-transform" />
+                <Sparkles className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                Your Coding Journey Starts Here
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <p className="text-sm text-muted-foreground mt-4">
-                No credit card required • Join 50,000+ students worldwide
+              <p className="text-xs md:text-sm text-muted-foreground mt-3">
+                Free to start • No credit card required
               </p>
             </div>
 
             {/* Learning Features Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-16 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <Card className="p-6 md:p-8 bg-gradient-to-br from-primary/5 to-primary/10 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all duration-300 group transform hover:scale-105 hover:shadow-xl">
-                <div className="mb-6">
-                  <div className="p-4 bg-gradient-to-r from-primary to-primary/80 rounded-2xl w-fit mx-auto group-hover:from-primary group-hover:to-primary transition-all shadow-lg">
-                    <Code className="h-8 w-8 text-white" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+              <div className="p-4 md:p-6 bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-2xl hover:border-primary/40 transition-all duration-300 group">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 bg-gradient-to-r from-primary to-primary/80 rounded-xl">
+                    <Code className="h-5 w-5 text-white" />
                   </div>
+                  <h3 className="font-semibold text-foreground">Interactive Coding</h3>
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold mb-4 text-foreground">Interactive Coding</h3>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  Learn by doing with our interactive code editor. Practice real programming with instant feedback and guidance.
+                <p className="text-sm text-muted-foreground">
+                  Learn by doing with real-time feedback and guidance.
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
-                    <Zap className="h-3 w-3 mr-1" />
-                    Real-time
-                  </Badge>
-                  <Badge variant="secondary" className="bg-success/10 text-success text-xs">
-                    <CheckCircle className="h-3 w-3 mr-1" />
-                    Guided
-                  </Badge>
-                </div>
-              </Card>
+              </div>
 
-              <Card className="p-6 md:p-8 bg-gradient-to-br from-secondary/5 to-secondary/10 backdrop-blur-sm border-secondary/20 hover:border-secondary/40 transition-all duration-300 group transform hover:scale-105 hover:shadow-xl">
-                <div className="mb-6">
-                  <div className="p-4 bg-gradient-to-r from-secondary to-secondary/80 rounded-2xl w-fit mx-auto group-hover:from-secondary group-hover:to-secondary transition-all shadow-lg">
-                    <Gamepad2 className="h-8 w-8 text-white" />
+              <div className="p-4 md:p-6 bg-gradient-to-br from-secondary/5 to-secondary/10 border border-secondary/20 rounded-2xl hover:border-secondary/40 transition-all duration-300 group">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 bg-gradient-to-r from-secondary to-secondary/80 rounded-xl">
+                    <Gamepad2 className="h-5 w-5 text-white" />
                   </div>
+                  <h3 className="font-semibold text-foreground">Gamified Learning</h3>
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold mb-4 text-foreground">Gamified Learning</h3>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  Earn XP, unlock achievements, and level up your skills. Make learning addictive and fun with game mechanics.
+                <p className="text-sm text-muted-foreground">
+                  Earn XP, unlock achievements, and level up your skills.
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary" className="bg-secondary/10 text-secondary text-xs">
-                    <Trophy className="h-3 w-3 mr-1" />
-                    Achievements
-                  </Badge>
-                  <Badge variant="secondary" className="bg-accent/10 text-accent text-xs">
-                    <Star className="h-3 w-3 mr-1" />
-                    Leaderboards
-                  </Badge>
-                </div>
-              </Card>
+              </div>
 
-              <Card className="p-6 md:p-8 bg-gradient-to-br from-accent/5 to-accent/10 backdrop-blur-sm border-accent/20 hover:border-accent/40 transition-all duration-300 group transform hover:scale-105 hover:shadow-xl">
-                <div className="mb-6">
-                  <div className="p-4 bg-gradient-to-r from-accent to-accent/80 rounded-2xl w-fit mx-auto group-hover:from-accent group-hover:to-accent transition-all shadow-lg">
-                    <Users className="h-8 w-8 text-white" />
+              <div className="p-4 md:p-6 bg-gradient-to-br from-accent/5 to-accent/10 border border-accent/20 rounded-2xl hover:border-accent/40 transition-all duration-300 group">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 bg-gradient-to-r from-accent to-accent/80 rounded-xl">
+                    <Users className="h-5 w-5 text-white" />
                   </div>
+                  <h3 className="font-semibold text-foreground">Community Support</h3>
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold mb-4 text-foreground">Community Driven</h3>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  Join a supportive community of learners. Get help, share projects, and collaborate with fellow students.
+                <p className="text-sm text-muted-foreground">
+                  Join thousands of learners and get help when you need it.
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary" className="bg-accent/10 text-accent text-xs">
-                    <MessageSquare className="h-3 w-3 mr-1" />
-                    Forums
-                  </Badge>
-                  <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
-                    <Headphones className="h-3 w-3 mr-1" />
-                    Mentorship
-                  </Badge>
-                </div>
-              </Card>
-            </div>
-
-            {/* Learning Path Preview */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-16 animate-slide-up" style={{ animationDelay: '0.4s' }}>
-              <Card className="p-4 md:p-6 bg-gradient-to-br from-success/5 to-success/10 backdrop-blur-sm border-success/20 hover:border-success/40 transition-all duration-300 group">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-gradient-to-r from-success to-success/80 rounded-xl">
-                    <BookOpen className="h-5 w-5 md:h-6 md:w-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold mb-1">Learn Fundamentals</h4>
-                    <p className="text-sm text-muted-foreground">Master the basics with interactive lessons</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-4 md:p-6 bg-gradient-to-br from-primary/5 to-primary/10 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all duration-300 group">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-gradient-to-r from-primary to-primary/80 rounded-xl">
-                    <Cpu className="h-5 w-5 md:h-6 md:w-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold mb-1">Build Projects</h4>
-                    <p className="text-sm text-muted-foreground">Apply skills in real-world scenarios</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-4 md:p-6 bg-gradient-to-br from-secondary/5 to-secondary/10 backdrop-blur-sm border-secondary/20 hover:border-secondary/40 transition-all duration-300 group">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-gradient-to-r from-secondary to-secondary/80 rounded-xl">
-                    <Trophy className="h-5 w-5 md:h-6 md:w-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold mb-1">Earn Certificates</h4>
-                    <p className="text-sm text-muted-foreground">Get recognized for your achievements</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-4 md:p-6 bg-gradient-to-br from-accent/5 to-accent/10 backdrop-blur-sm border-accent/20 hover:border-accent/40 transition-all duration-300 group">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-gradient-to-r from-accent to-accent/80 rounded-xl">
-                    <Briefcase className="h-5 w-5 md:h-6 md:w-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold mb-1">Land Jobs</h4>
-                    <p className="text-sm text-muted-foreground">Get career support and job placement</p>
-                  </div>
-                </div>
-              </Card>
+              </div>
             </div>
 
             {/* Stats Section */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 animate-fade-in" style={{ animationDelay: '0.6s' }}>
-              <div className="text-center p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl backdrop-blur-sm border border-primary/20">
-                <div className="flex items-center justify-center mb-3">
-                  <Users className="h-6 w-6 text-primary mr-2" />
-                  <div className="text-3xl md:text-4xl font-bold text-primary">50K+</div>
-                </div>
-                <div className="text-sm font-medium text-muted-foreground">Active Students</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+              <div className="text-center p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl border border-primary/20">
+                <div className="text-2xl md:text-3xl font-bold text-primary mb-1">50K+</div>
+                <div className="text-xs md:text-sm text-muted-foreground">Students</div>
               </div>
               
-              <div className="text-center p-6 bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl backdrop-blur-sm border border-secondary/20">
-                <div className="flex items-center justify-center mb-3">
-                  <Award className="h-6 w-6 text-secondary mr-2" />
-                  <div className="text-3xl md:text-4xl font-bold text-secondary">95%</div>
-                </div>
-                <div className="text-sm font-medium text-muted-foreground">Success Rate</div>
+              <div className="text-center p-4 bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-xl border border-secondary/20">
+                <div className="text-2xl md:text-3xl font-bold text-secondary mb-1">95%</div>
+                <div className="text-xs md:text-sm text-muted-foreground">Success</div>
               </div>
               
-              <div className="text-center p-6 bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl backdrop-blur-sm border border-accent/20">
-                <div className="flex items-center justify-center mb-3">
-                  <Clock className="h-6 w-6 text-accent mr-2" />
-                  <div className="text-3xl md:text-4xl font-bold text-accent">24/7</div>
-                </div>
-                <div className="text-sm font-medium text-muted-foreground">Support</div>
+              <div className="text-center p-4 bg-gradient-to-br from-accent/10 to-accent/5 rounded-xl border border-accent/20">
+                <div className="text-2xl md:text-3xl font-bold text-accent mb-1">24/7</div>
+                <div className="text-xs md:text-sm text-muted-foreground">Support</div>
               </div>
               
-              <div className="text-center p-6 bg-gradient-to-br from-success/10 to-success/5 rounded-2xl backdrop-blur-sm border border-success/20">
-                <div className="flex items-center justify-center mb-3">
-                  <Globe className="h-6 w-6 text-success mr-2" />
-                  <div className="text-3xl md:text-4xl font-bold text-success">180+</div>
-                </div>
-                <div className="text-sm font-medium text-muted-foreground">Countries</div>
+              <div className="text-center p-4 bg-gradient-to-br from-success/10 to-success/5 rounded-xl border border-success/20">
+                <div className="text-2xl md:text-3xl font-bold text-success mb-1">180+</div>
+                <div className="text-xs md:text-sm text-muted-foreground">Countries</div>
               </div>
             </div>
           </div>
