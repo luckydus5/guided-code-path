@@ -108,13 +108,13 @@ export default function LearningDashboard({ user, profile }: LearningDashboardPr
   const startLearningPath = (pathId: string) => {
     const path = learningPaths.find(p => p.id === pathId);
     if (path?.id === "web-fundamentals") {
-      navigate("/learn/web-fundamentals");
+      navigate("/learn");
     } else if (path?.id === "python-mastery") {
-      navigate("/learn/python");
+      navigate("/learn");
     } else if (path?.id === "javascript-advanced") {
-      navigate("/learn/javascript");
+      navigate("/learn");
     } else if (path?.id === "mobile-development") {
-      navigate("/learn/javascript");
+      navigate("/learn");
     }
   };
 
