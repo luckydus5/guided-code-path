@@ -3,116 +3,36 @@ import { useParams, useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import LearningContent from "@/components/LearningContent";
+import { ProjectBasedLearning } from "@/components/ProjectBasedLearning";
 import { 
-  Code, 
-  Play, 
   ArrowLeft,
-  Trophy,
   BookOpen,
   Star,
   TrendingUp,
-  Clock,
-  FolderOpen,
-  Rocket,
-  Crown,
-  GitBranch,
-  Award,
   Target,
-  Zap,
   Brain,
-  GraduationCap,
-  FileText,
-  Video,
-  ExternalLink,
-  SkipForward,
-  Github,
-  CheckCircle
+  Trophy,
+  Clock
 } from "lucide-react";
-import { LANGUAGE_CHALLENGES } from "@/data/challenges";
-import { HANDS_ON_PROJECTS, getProjectsByLanguage, getWebFundamentalsProjects, getCapstoneProjects, getProjectsByDifficulty } from "@/data/projects";
-import { REAL_PYTHON_PROJECTS } from "@/data/realPythonProjects";
-import { PYTHON_PROJECTS } from "@/data/pythonProjects";
-import { useProjectCompletion } from "@/hooks/useProjectCompletion";
 
 interface UserProgress {
   [language: string]: {
-    completedChallenges: number[];
-    currentChallenge: number;
+    completedProjects: number[];
+    currentProject: number;
     totalTimeSpent: number;
     skillLevel: "Beginner" | "Intermediate" | "Advanced" | "Expert";
     achievements: string[];
-    completedProjects: number[];
     completedLessons: string[];
-    currentModule: string;
-    masteryScore: number; // 0-100
-    projectsInProgress: number[];
-    capstoneProjectsCompleted: number[];
-    skillsEarned: string[];
-    certifications: string[];
+    masteryScore: number;
     streakDays: number;
     lastActiveDate: string;
   };
 }
-
-// Define a union type for all possible learning resources
-type LearningResource = {
-  type: 'level';
-  title: string;
-  goal: string;
-  duration: string;
-  difficulty: string;
-  description?: string;
-  projectId?: undefined;
-  url?: undefined;
-  stars?: undefined;
-} | {
-  type: 'lesson';
-  title: string;
-  description: string;
-  duration: string;
-  difficulty: string;
-  projectId?: undefined;
-  url?: undefined;
-  stars?: undefined;
-  goal?: undefined;
-} | {
-  type: 'project';
-  title: string;
-  description: string;
-  duration: string;
-  difficulty: string;
-  projectId: number;
-  url?: undefined;
-  stars?: undefined;
-  goal?: undefined;
-} | {
-  type: 'article' | 'documentation' | 'video';
-  title: string;
-  url: string;
-  duration: string;
-  difficulty?: string;
-  description?: string;
-  projectId?: undefined;
-  stars?: undefined;
-  goal?: undefined;
-} | {
-  type: 'github';
-  title: string;
-  url: string;
-  stars: string;
-  difficulty: string;
-  description?: string;
-  projectId?: undefined;
-  duration?: string;
-  goal?: undefined;
-};
 
 export default function Learn() {
   const { language } = useParams();
@@ -123,8 +43,12 @@ export default function Learn() {
   const [achievements, setAchievements] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  const { isProjectCompleted } = useProjectCompletion(user);
-  
+  // Load user progress from localStorage
+  const [userProgress, setUserProgress] = useState<UserProgress>(() => {
+    const saved = localStorage.getItem('codelearning-progress');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   // Get user data
   useEffect(() => {
     const getUser = async () => {
@@ -158,1074 +82,268 @@ export default function Learn() {
     getUser();
   }, []);
 
-  // Ensure we have a valid language parameter, handle navigation on refresh
+  // Ensure we have a valid language parameter
   useEffect(() => {
     if (!language) {
-      // Check if there's a saved learning path in sessionStorage
-      const savedPath = sessionStorage.getItem('current-learning-path');
-      if (savedPath && savedPath.startsWith('/learn/')) {
-        navigate(savedPath);
-        return;
-      }
-      // If no saved path, redirect to default dashboard
-      navigate('/learn/python');
+      navigate('/learn/html');
       return;
     }
-    
-    // Store current path in sessionStorage to handle refresh
-    sessionStorage.setItem('current-learning-path', window.location.pathname);
   }, [language, navigate]);
-  
-  // Check if this is Web Fundamentals
-  const isWebFundamentals = language === 'web-fundamentals';
-  
-  // Load user progress from localStorage - HOOKS MUST BE CALLED FIRST
-  const [userProgress, setUserProgress] = useState<UserProgress>(() => {
-    const saved = localStorage.getItem('codelearning-progress');
-    return saved ? JSON.parse(saved) : {};
-  });
 
-  // State for learning content display
-  const [currentLearningContent, setCurrentLearningContent] = useState<LearningResource | null>(null);
-
-  // Storage key for current learning content
-  const learningContentStorageKey = `currentLearningContent_${language || 'web-fundamentals'}`;
-
-
-  // Load saved learning content state on component mount
-  useEffect(() => {
-    try {
-      const savedLearningContent = localStorage.getItem(learningContentStorageKey);
-      if (savedLearningContent) {
-        setCurrentLearningContent(JSON.parse(savedLearningContent));
-      }
-    } catch (error) {
-      console.error('Error loading saved learning content state:', error);
-    }
-  }, [learningContentStorageKey]);
-
-  // Auto-save learning content state when it changes
-  useEffect(() => {
-    if (currentLearningContent) {
-      localStorage.setItem(learningContentStorageKey, JSON.stringify(currentLearningContent));
-    } else {
-      localStorage.removeItem(learningContentStorageKey);
-    }
-  }, [currentLearningContent, learningContentStorageKey]);
-
-  // Handle lesson/project starting with error checking
-  const handleStartLesson = (resource: LearningResource) => {
-    try {
-      // Check if this is one of the project lessons that need special handling
-      const isProjectLesson = resource.type === 'project';
-      const isSpecialProject = resource.title.includes('CLI to-do list') || 
-                              resource.title.includes('basic calculator') ||
-                              resource.title.includes('weather app') ||
-                              resource.title.includes('note manager');
-
-      if (isProjectLesson && isSpecialProject) {
-        // Validate prerequisites for project lessons
-        const currentLang = language || 'python';
-        const progress = userProgress[currentLang];
-        
-        // Check if user has completed prerequisite lessons
-        if (resource.title.includes('CLI to-do list') || resource.title.includes('basic calculator')) {
-          // Beginner project - check basic concepts
-          const requiredLessons = ['Basic Input/Output', 'Functions', 'Data Structures', 'Control Structures'];
-          const completedLessons = progress?.completedLessons || [];
-          const missingLessons = requiredLessons.filter(lesson => 
-            !completedLessons.some(completed => completed.toLowerCase().includes(lesson.toLowerCase()))
-          );
-          
-          if (missingLessons.length > 0) {
-            toast({
-              title: "Prerequisites Required",
-              description: `Please complete these lessons first: ${missingLessons.join(', ')}`,
-              variant: "destructive"
-            });
-            return;
-          }
-        }
-        
-        if (resource.title.includes('weather app') || resource.title.includes('note manager')) {
-          // Intermediate project - check advanced concepts
-          const requiredLessons = ['OOP (Object-Oriented Programming)', 'Working with External Libraries', 'Error Handling'];
-          const completedLessons = progress?.completedLessons || [];
-          const missingLessons = requiredLessons.filter(lesson => 
-            !completedLessons.some(completed => completed.toLowerCase().includes(lesson.toLowerCase()))
-          );
-          
-          if (missingLessons.length > 0) {
-            toast({
-              title: "Prerequisites Required",
-              description: `Please complete these lessons first: ${missingLessons.join(', ')}`,
-              variant: "destructive"
-            });
-            return;
-          }
-        }
-      }
-
-      // Validate resource data
-      if (!resource.title || !resource.type || !resource.difficulty) {
-        toast({
-          title: "Invalid Lesson Data",
-          description: "This lesson appears to be incomplete. Please try refreshing the page.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Check if lesson content exists in LearningContent component
-      if (isProjectLesson && isSpecialProject) {
-        // For now, show a coming soon message for these specific projects
-        // since they're not yet implemented in the LearningContent component
-        toast({
-          title: "Project Coming Soon",
-          description: "This project is being developed. Please check back soon for full implementation!",
-          variant: "default"
-        });
-        return;
-      }
-
-      // Set the learning content if all checks pass
-      setCurrentLearningContent(resource);
-
-      // Show success message
-      toast({
-        title: isProjectLesson ? "Project Started" : "Lesson Started",
-        description: `You've started: ${resource.title}`,
-        variant: "default"
-      });
-
-    } catch (error) {
-      console.error('Error starting lesson:', error);
-      toast({
-        title: "Error Starting Lesson",
-        description: "Something went wrong. Please try again or refresh the page.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const languageChallenges = isWebFundamentals ? [] : (LANGUAGE_CHALLENGES[language || 'python'] || LANGUAGE_CHALLENGES.python);
-  
-  const currentLanguageProgress = userProgress[language || 'python'] || {
-    completedChallenges: [],
-    currentChallenge: 0,
+  const currentLanguageProgress = userProgress[language || 'html'] || {
+    completedProjects: [],
+    currentProject: 0,
     totalTimeSpent: 0,
     skillLevel: "Beginner" as const,
     achievements: [],
-    completedProjects: [],
     completedLessons: [],
-    currentModule: "",
     masteryScore: 0,
-    projectsInProgress: [],
-    capstoneProjectsCompleted: [],
-    skillsEarned: [],
-    certifications: [],
     streakDays: 0,
     lastActiveDate: new Date().toISOString()
   };
 
-  // Get projects based on whether it's Web Fundamentals or other languages
-  const languageProjects = isWebFundamentals ? getWebFundamentalsProjects() : 
-    (language === 'python' ? PYTHON_PROJECTS : getProjectsByLanguage(language || 'python'));
-  const beginnerProjects = languageProjects.filter(p => p.difficulty === 'Beginner');
-  const intermediateProjects = languageProjects.filter(p => p.difficulty === 'Intermediate');
-  const advancedProjects = languageProjects.filter(p => p.difficulty === 'Advanced');
-
-  // CodeCraft Learning Platform Progress Calculation (500+ projects per language)
-  const CODECRAFT_PROJECT_TARGETS = {
-    python: { beginner: 200, intermediate: 200, advanced: 100, capstone: 25 },
-    javascript: { beginner: 200, intermediate: 200, advanced: 100, capstone: 25 },
-    java: { beginner: 200, intermediate: 200, advanced: 100, capstone: 25 },
-    html: { beginner: 200, intermediate: 200, advanced: 100, capstone: 20 },
-    css: { beginner: 200, intermediate: 200, advanced: 100, capstone: 20 }
-  };
-
-  const currentTargets = CODECRAFT_PROJECT_TARGETS[language as keyof typeof CODECRAFT_PROJECT_TARGETS] || 
-                        CODECRAFT_PROJECT_TARGETS.python;
-  
-  const totalProjectsTarget = currentTargets.beginner + currentTargets.intermediate + 
-                             currentTargets.advanced + currentTargets.capstone;
-  
-  const totalLessons = languageChallenges.length;
-  const completedLessons = currentLanguageProgress.completedLessons?.length || 
-                          currentLanguageProgress.completedChallenges.length;
-  const totalProjects = languageProjects.length;
-  const completedProjects = currentLanguageProgress.completedProjects?.length || 0;
-  const capstoneCompleted = currentLanguageProgress.capstoneProjectsCompleted?.length || 0;
-  
-  // Advanced progress calculation with weighted scoring
-  const lessonProgress = (completedLessons / totalLessons) * 0.3; // 30% weight
-  const projectProgress = (completedProjects / totalProjectsTarget) * 0.5; // 50% weight  
-  const capstoneProgress = (capstoneCompleted / currentTargets.capstone) * 0.2; // 20% weight
-  
-  const overallProgress = Math.min(100, Math.round((lessonProgress + projectProgress + capstoneProgress) * 100));
-  
-  // Mastery score calculation
-  const masteryScore = currentLanguageProgress.masteryScore || 
-    Math.round((overallProgress * 0.7) + (currentLanguageProgress.skillsEarned?.length || 0) * 2);
-
-  // Helper function to extract skills from resource content
-  const getSkillsFromResource = (resource: LearningResource) => {
-    const skillsMap: { [key: string]: string[] } = {
-      'Python Syntax & Variables': ['Variables', 'Data Types', 'Print Statements', 'Comments'],
-      'Data Types & Type Casting': ['Type Conversion', 'int()', 'float()', 'str()', 'bool()'],
-      'Control Structures': ['Conditionals', 'if/elif/else', 'Boolean Logic', 'Comparison'],
-      'Loops': ['For Loops', 'While Loops', 'range()', 'break/continue'],
-      'Functions': ['Function Definition', 'Parameters', 'Return Values', 'Scope'],
-      'Data Structures': ['Lists', 'Dictionaries', 'Tuples', 'Sets', 'Methods'],
-      'Basic Input/Output': ['File Handling', 'input()', 'Reading Files', 'Writing Files'],
-      'Error Handling': ['try/except', 'Exception Handling', 'finally', 'Debugging'],
-      'OOP (Object-Oriented Programming)': ['Classes', 'Objects', 'Inheritance', 'Polymorphism'],
-      'Modules & Packages': ['Import Statements', 'Module Creation', 'Package Structure'],
-      'Working with External Libraries': ['pip', 'requests', 'json', 'datetime'],
-      'File & Directory Management': ['CSV/JSON', 'Path Operations', 'File Systems'],
-      'Virtual Environments & Dependency Management': ['venv', 'requirements.txt', 'pip freeze'],
-      'Debugging & Logging': ['logging', 'pdb', 'Stack Traces', 'Error Analysis'],
-      'Unit Testing': ['unittest', 'pytest', 'TDD', 'Test Cases'],
-      'Data Handling': ['pandas', 'numpy', 'Data Analysis', 'Data Structures'],
-      'Advanced OOP Concepts': ['Encapsulation', '@property', 'classmethods', 'staticmethods'],
-      'Decorators & Generators': ['yield', '@decorator', 'closures', 'functools'],
-      'Concurrency & Parallelism': ['threading', 'multiprocessing', 'asyncio', 'await'],
-      'Design Patterns': ['Singleton', 'Factory', 'Observer', 'Architecture'],
-      'Data Structures & Algorithms': ['Trees', 'Graphs', 'Recursion', 'Big-O Complexity'],
-      'Advanced Libraries: Web': ['Flask', 'FastAPI', 'Web Development'],
-      'Advanced Libraries: Automation': ['Selenium', 'BeautifulSoup', 'Web Scraping'],
-      'Advanced Libraries: Data Science': ['matplotlib', 'seaborn', 'scikit-learn'],
-      'Packaging & Deployment': ['PyPI', 'Package Building', 'CLI Tools'],
-      'Security & Best Practices': ['Code Security', 'Best Practices', 'Secure Coding']
-    };
-
-    // Check for project type
-    if (resource.type === 'project') {
-      return ['Project Building', 'Real-world Application', 'Problem Solving', 'Integration'];
-    }
-
-    // Return skills based on title
-    return skillsMap[resource.title] || ['Programming Concepts', 'Python Skills', 'Development'];
-  };
-
-  // Comprehensive learning resources for each language
-  const getLanguageLearningResources = (language: string): LearningResource[] => {
-    const resourcesByLanguage: { [key: string]: LearningResource[] } = {
-      'web-fundamentals': [
-        // HTML Learning Resources
-        { type: "article", title: "HTML Basics - MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/HTML_basics", duration: "30 min", difficulty: "Beginner", description: "Complete introduction to HTML fundamentals from Mozilla" },
-        { type: "documentation", title: "HTML5 Semantic Elements Guide", url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element", duration: "45 min", difficulty: "Beginner", description: "Comprehensive reference for HTML5 semantic elements" },
-        { type: "article", title: "HTML Forms and Input Elements", url: "https://developer.mozilla.org/en-US/docs/Learn/Forms", duration: "40 min", difficulty: "Beginner", description: "Master HTML forms and input validation" },
-        { type: "documentation", title: "HTML Accessibility Guidelines", url: "https://developer.mozilla.org/en-US/docs/Learn/Accessibility/HTML", duration: "35 min", difficulty: "Intermediate", description: "Building accessible web content with HTML" },
-        
-        // CSS Learning Resources  
-        { type: "article", title: "CSS Basics - MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/CSS_basics", duration: "35 min", difficulty: "Beginner", description: "Essential CSS concepts and styling fundamentals" },
-        { type: "article", title: "CSS Flexbox Complete Guide", url: "https://css-tricks.com/snippets/css/a-guide-to-flexbox/", duration: "25 min", difficulty: "Beginner", description: "Master CSS Flexbox for modern layouts" },
-        { type: "article", title: "CSS Grid Layout Complete Guide", url: "https://css-tricks.com/snippets/css/complete-guide-grid/", duration: "30 min", difficulty: "Intermediate", description: "Comprehensive guide to CSS Grid layout system" },
-        { type: "documentation", title: "CSS Animations and Transitions", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations", duration: "25 min", difficulty: "Intermediate", description: "Creating smooth animations with CSS" },
-        { type: "article", title: "Responsive Web Design Principles", url: "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Responsive_Design", duration: "40 min", difficulty: "Intermediate", description: "Building responsive websites for all devices" },
-        
-        // JavaScript Learning Resources
-        { type: "article", title: "JavaScript Basics - MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/JavaScript_basics", duration: "35 min", difficulty: "Beginner", description: "JavaScript fundamentals and core concepts" },
-        { type: "documentation", title: "JavaScript DOM Manipulation", url: "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model", duration: "45 min", difficulty: "Beginner", description: "Interacting with HTML elements using JavaScript" },
-        { type: "article", title: "JavaScript Event Handling", url: "https://developer.mozilla.org/en-US/docs/Web/Events", duration: "30 min", difficulty: "Beginner", description: "Handling user interactions and browser events" },
-        { type: "documentation", title: "JavaScript Async Programming", url: "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous", duration: "50 min", difficulty: "Intermediate", description: "Promises, async/await, and asynchronous JavaScript" },
-        { type: "article", title: "Modern JavaScript ES6+ Features", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide", duration: "60 min", difficulty: "Intermediate", description: "Modern JavaScript features and best practices" },
-        { type: "article", title: "Web Performance Optimization", url: "https://developer.mozilla.org/en-US/docs/Learn/Performance", duration: "45 min", difficulty: "Advanced", description: "Optimizing web applications for speed and efficiency" },
-        
-        // GitHub Repositories - Educational Content
-        { type: "github", title: "freeCodeCamp - Web Development Curriculum", url: "https://github.com/freeCodeCamp/freeCodeCamp", stars: "384k", difficulty: "Beginner", description: "Complete interactive web development curriculum with HTML, CSS, and JavaScript projects" },
-        { type: "github", title: "JavaScript30 - 30 Day Vanilla JS Challenge", url: "https://github.com/wesbos/JavaScript30", stars: "26k", difficulty: "Beginner", description: "30-day vanilla JavaScript coding challenge to build real projects without frameworks" },
-        { type: "github", title: "You Don't Know JS Book Series", url: "https://github.com/getify/You-Dont-Know-JS", stars: "177k", difficulty: "Intermediate", description: "Deep dive into JavaScript core mechanisms and advanced concepts" },
-        { type: "github", title: "33 JavaScript Concepts", url: "https://github.com/leonardomso/33-js-concepts", stars: "62k", difficulty: "Intermediate", description: "33 JavaScript concepts every developer should know with examples" },
-        { type: "github", title: "JavaScript Algorithms and Data Structures", url: "https://github.com/trekhleb/javascript-algorithms", stars: "183k", difficulty: "Intermediate", description: "Algorithms and data structures implemented in JavaScript with explanations" },
-        { type: "github", title: "HTML5 Boilerplate", url: "https://github.com/h5bp/html5-boilerplate", stars: "56k", difficulty: "Intermediate", description: "Professional front-end template for building fast, robust web applications" },
-        { type: "github", title: "Animate.css - CSS Animation Library", url: "https://github.com/animate-css/animate.css", stars: "79k", difficulty: "Beginner", description: "Cross-browser CSS animations library ready to use in your projects" },
-        { type: "github", title: "Modern CSS Layout Patterns", url: "https://github.com/una/layout-patterns", stars: "12k", difficulty: "Intermediate", description: "Collection of modern CSS layout patterns and techniques" },
-        { type: "github", title: "Web Development Best Practices", url: "https://github.com/google/WebFundamentals", stars: "13k", difficulty: "Intermediate", description: "Google's web development best practices and performance guidelines" },
-        { type: "github", title: "Frontend Mentor Challenges", url: "https://github.com/frontendmentor-community/html-css-js-challenges", stars: "8k", difficulty: "Beginner", description: "Real-world HTML, CSS, and JavaScript coding challenges" },
-        { type: "github", title: "Clean Code JavaScript", url: "https://github.com/ryanmcdermott/clean-code-javascript", stars: "89k", difficulty: "Intermediate", description: "Clean Code concepts adapted for JavaScript developers" },
-        { type: "github", title: "Awesome CSS Learning", url: "https://github.com/micromata/awesome-css-learning", stars: "3k", difficulty: "Beginner", description: "Curated list of awesome CSS learning resources and tools" }
-      ],
-      html: [
-        { type: "article", title: "HTML5 Semantic Elements Masterclass", url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element", duration: "45 min", difficulty: "Beginner" },
-        { type: "article", title: "Building Accessible Web Forms", url: "https://developer.mozilla.org/en-US/docs/Learn/Forms", duration: "20 min", difficulty: "Beginner" },
-        { type: "documentation", title: "HTML5 API Reference Guide", url: "https://developer.mozilla.org/en-US/docs/Web/API", duration: "30 min", difficulty: "Intermediate" },
-        { type: "article", title: "SEO-Optimized HTML Structure", url: "https://developer.mozilla.org/en-US/docs/Learn/HTML", duration: "35 min", difficulty: "Intermediate" },
-        { type: "article", title: "Progressive Web App HTML Foundation", url: "https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps", duration: "25 min", difficulty: "Advanced" },
-        { type: "article", title: "HTML Performance Optimization", url: "https://developer.mozilla.org/en-US/docs/Learn/Performance", duration: "40 min", difficulty: "Advanced" },
-        // GitHub Repositories
-        { type: "github", title: "freeCodeCamp - Complete Web Development Curriculum", url: "https://github.com/freeCodeCamp/freeCodeCamp", stars: "384k", difficulty: "Beginner", description: "The most comprehensive web development curriculum with interactive HTML challenges and projects" },
-        { type: "github", title: "30 seconds of code - HTML Snippets", url: "https://github.com/30-seconds/30-seconds-of-code", stars: "118k", difficulty: "Beginner", description: "Short HTML code snippets for all your development needs" },
-        { type: "github", title: "HTML5 Boilerplate", url: "https://github.com/h5bp/html5-boilerplate", stars: "56k", difficulty: "Intermediate", description: "Professional front-end template for building web apps and sites" },
-        { type: "github", title: "HEAD - Guide to HTML head elements", url: "https://github.com/joshbuchea/HEAD", stars: "29k", difficulty: "Beginner", description: "Everything you need to know about the HTML head element" }
-      ],
-      css: [
-        { type: "article", title: "CSS Flexbox Complete Course", url: "https://css-tricks.com/snippets/css/a-guide-to-flexbox/", duration: "50 min", difficulty: "Beginner" },
-        { type: "article", title: "CSS Grid Layout Fundamentals", url: "https://css-tricks.com/snippets/css/complete-guide-grid/", duration: "30 min", difficulty: "Beginner" },
-        { type: "documentation", title: "CSS Custom Properties Guide", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties", duration: "20 min", difficulty: "Intermediate" },
-        { type: "article", title: "Advanced CSS Animations", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations", duration: "45 min", difficulty: "Intermediate" },
-        { type: "article", title: "CSS Architecture & Methodologies", url: "https://developer.mozilla.org/en-US/docs/Learn/CSS", duration: "35 min", difficulty: "Advanced" },
-        { type: "article", title: "CSS-in-JS and Modern Styling", url: "https://developer.mozilla.org/en-US/docs/Learn/CSS", duration: "40 min", difficulty: "Advanced" },
-        // GitHub Repositories
-        { type: "github", title: "Animate.css - CSS Animations Library", url: "https://github.com/animate-css/animate.css", stars: "79k", difficulty: "Beginner", description: "Cross-browser CSS animations library ready to use" },
-        { type: "github", title: "CSS Layout Patterns", url: "https://github.com/una/layout-patterns", stars: "12k", difficulty: "Intermediate", description: "Modern CSS layout patterns and techniques" },
-        { type: "github", title: "CSS Guidelines", url: "https://github.com/csswizardry/CSS-Guidelines", stars: "6k", difficulty: "Advanced", description: "High-level advice and guidelines for writing sane CSS" },
-        { type: "github", title: "Flexbox Froggy Solutions", url: "https://github.com/thomaspark/flexboxfroggy", stars: "4k", difficulty: "Beginner", description: "Game for learning CSS flexbox with interactive exercises" }
-      ],
-      javascript: [
-        { type: "article", title: "JavaScript ES6+ Features Deep Dive", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide", duration: "60 min", difficulty: "Beginner" },
-        { type: "article", title: "DOM Manipulation & Event Handling", url: "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model", duration: "25 min", difficulty: "Beginner" },
-        { type: "documentation", title: "Async JavaScript & Promises", url: "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous", duration: "30 min", difficulty: "Intermediate" },
-        { type: "article", title: "JavaScript Design Patterns", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript", duration: "55 min", difficulty: "Intermediate" },
-        { type: "article", title: "Performance Optimization Techniques", url: "https://developer.mozilla.org/en-US/docs/Learn/Performance", duration: "40 min", difficulty: "Advanced" },
-        { type: "article", title: "Node.js & Server-Side JavaScript", url: "https://nodejs.org/en/docs/", duration: "65 min", difficulty: "Advanced" },
-        // GitHub Repositories
-        { type: "github", title: "JavaScript30 - 30 Day Vanilla JS Challenge", url: "https://github.com/wesbos/JavaScript30", stars: "26k", difficulty: "Beginner", description: "30-day vanilla JavaScript coding challenge to build real projects" },
-        { type: "github", title: "33 JS Concepts - JavaScript Fundamentals", url: "https://github.com/leonardomso/33-js-concepts", stars: "62k", difficulty: "Intermediate", description: "33 JavaScript concepts every developer should know" },
-        { type: "github", title: "You Don't Know JS Book Series", url: "https://github.com/getify/You-Dont-Know-JS", stars: "177k", difficulty: "Advanced", description: "Deep dive into JavaScript core mechanisms and advanced concepts" },
-        { type: "github", title: "JavaScript Algorithms and Data Structures", url: "https://github.com/trekhleb/javascript-algorithms", stars: "183k", difficulty: "Intermediate", description: "Algorithms and data structures implemented in JavaScript with explanations" }
-      ],
-      python: [
-        // ✅ Beginner Level (Foundations)
-        { type: "level", title: "✅ Beginner Level (Foundations)", goal: "Understand syntax, data types, and basic problem-solving", duration: "4-6 weeks", difficulty: "Beginner" },
-        
-        // Python Syntax & Variables
-        { type: "lesson", title: "Python Syntax & Variables", description: "print(), indentation, comments - Declaring variables (int, float, string, bool)", duration: "45 min", difficulty: "Beginner" },
-        
-        // Data Types & Type Casting
-        { type: "lesson", title: "Data Types & Type Casting", description: "int(), float(), str(), bool()", duration: "40 min", difficulty: "Beginner" },
-        
-        // Control Structures
-        { type: "lesson", title: "Control Structures", description: "if, elif, else - Logical & comparison operators", duration: "50 min", difficulty: "Beginner" },
-        
-        // Loops
-        { type: "lesson", title: "Loops", description: "for and while loops - break, continue, range()", duration: "55 min", difficulty: "Beginner" },
-        
-        // Functions
-        { type: "lesson", title: "Functions", description: "def, return values, arguments, scope", duration: "60 min", difficulty: "Beginner" },
-        
-        // Data Structures
-        { type: "lesson", title: "Data Structures", description: "Lists, tuples, sets, dictionaries - Basic operations and methods (append, pop, keys())", duration: "70 min", difficulty: "Beginner" },
-        
-        // Basic Input/Output
-        { type: "lesson", title: "Basic Input/Output", description: "input(), file reading/writing (open, read, write, with)", duration: "45 min", difficulty: "Beginner" },
-        
-        // Error Handling
-        { type: "lesson", title: "Error Handling", description: "try, except, finally", duration: "40 min", difficulty: "Beginner" },
-        
-        // Beginner Projects
-        { type: "project", title: "🔧 Project: Build a CLI To-Do List", description: "Apply beginner concepts by building a command-line to-do list manager.", duration: "4-6 hours", difficulty: "Beginner", projectId: 542 },
-        { type: "project", title: "🔧 Project: Build a Basic Calculator", description: "Apply beginner concepts by building a functional calculator.", duration: "3-5 hours", difficulty: "Beginner", projectId: 3 },
-
-        // ⚙️ Intermediate Level (Core Dev Skills)
-        { type: "level", title: "⚙️ Intermediate Level (Core Dev Skills)", goal: "Write reusable, modular, and real-world Python code", duration: "6-8 weeks", difficulty: "Intermediate" },
-        
-        // OOP (Object-Oriented Programming)
-        { type: "lesson", title: "OOP (Object-Oriented Programming)", description: "Classes, objects, __init__, inheritance, polymorphism", duration: "90 min", difficulty: "Intermediate" },
-        
-        // Modules & Packages
-        { type: "lesson", title: "Modules & Packages", description: "import, creating your own modules - __name__ == '__main__' concept", duration: "60 min", difficulty: "Intermediate" },
-        
-        // Working with External Libraries
-        { type: "lesson", title: "Working with External Libraries", description: "pip, using libraries like requests, datetime, os, json", duration: "75 min", difficulty: "Intermediate" },
-        
-        // File & Directory Management
-        { type: "lesson", title: "File & Directory Management", description: "Handling files, working with CSV/JSON, paths", duration: "65 min", difficulty: "Intermediate" },
-        
-        // Virtual Environments & Dependency Management
-        { type: "lesson", title: "Virtual Environments & Dependency Management", description: "venv, pip freeze, requirements.txt", duration: "50 min", difficulty: "Intermediate" },
-        
-        // Debugging & Logging
-        { type: "lesson", title: "Debugging & Logging", description: "logging, pdb, stack traces", duration: "55 min", difficulty: "Intermediate" },
-        
-        // Unit Testing
-        { type: "lesson", title: "Unit Testing", description: "unittest, pytest, TDD basics", duration: "80 min", difficulty: "Intermediate" },
-        
-        // Data Handling
-        { type: "lesson", title: "Data Handling", description: "Use pandas and numpy for structured data", duration: "85 min", difficulty: "Intermediate" },
-        
-        // Intermediate Projects
-        { type: "project", title: "🔧 Project: Build a Weather App using an API", description: "Create a real-world application that fetches and displays weather data from an API.", duration: "8-12 hours", difficulty: "Intermediate", projectId: 544 },
-        { type: "project", title: "🔧 Project: Build a Command-Line Note Manager", description: "Develop a tool to create, read, update, and delete notes from the command line.", duration: "6-10 hours", difficulty: "Intermediate", projectId: 545 },
-
-        // 🧠 Advanced Level (Real Engineering)
-        { type: "level", title: "🧠 Advanced Level (Real Engineering)", goal: "Write production-grade, efficient, and scalable Python code", duration: "8-10 weeks", difficulty: "Advanced" },
-        
-        // Advanced OOP Concepts
-        { type: "lesson", title: "Advanced OOP Concepts", description: "Encapsulation, abstraction, classmethods, staticmethods, @property", duration: "95 min", difficulty: "Advanced" },
-        
-        // Decorators & Generators
-        { type: "lesson", title: "Decorators & Generators", description: "yield, @decorator, closures, functools", duration: "90 min", difficulty: "Advanced" },
-        
-        // Concurrency & Parallelism
-        { type: "lesson", title: "Concurrency & Parallelism", description: "threading, multiprocessing, asyncio, await", duration: "100 min", difficulty: "Advanced" },
-        
-        // Design Patterns
-        { type: "lesson", title: "Design Patterns", description: "Singleton, Factory, Observer, etc.", duration: "85 min", difficulty: "Advanced" },
-        
-        // Data Structures & Algorithms
-        { type: "lesson", title: "Data Structures & Algorithms", description: "Trees, graphs, recursion, search & sort, big-O complexity", duration: "120 min", difficulty: "Advanced" },
-        
-        // Advanced Libraries - Web
-        { type: "lesson", title: "Advanced Libraries: Web", description: "Flask, FastAPI", duration: "95 min", difficulty: "Advanced" },
-        
-        // Advanced Libraries - Automation
-        { type: "lesson", title: "Advanced Libraries: Automation", description: "Selenium, BeautifulSoup", duration: "80 min", difficulty: "Advanced" },
-        
-        // Advanced Libraries - Data Science
-        { type: "lesson", title: "Advanced Libraries: Data Science", description: "pandas, matplotlib, seaborn, scikit-learn", duration: "110 min", difficulty: "Advanced" },
-        
-        // Packaging & Deployment
-        { type: "lesson", title: "Packaging & Deployment", description: "Build Python packages, publish to PyPI, create CLI tools", duration: "75 min", difficulty: "Advanced" },
-        
-        // Security & Best Practices
-        { type: "lesson", title: "Security & Best Practices", description: "Handle user input safely, sanitize data, secure APIs", duration: "70 min", difficulty: "Advanced" },
-        
-        // Advanced Project
-        { type: "project", title: "🔧 Project: Build a REST API with Flask/FastAPI, or a machine learning pipeline for a real dataset", description: "Create production-grade applications", duration: "15-20 hours", difficulty: "Advanced", projectId: 546 }
-      ],
-      java: [
-        { type: "video", title: "Java Fundamentals & OOP Concepts", url: "#", duration: "75 min", difficulty: "Beginner" },
-        { type: "article", title: "Java Collections Framework", url: "#", duration: "40 min", difficulty: "Beginner" },
-        { type: "documentation", title: "Spring Framework Essentials", url: "#", duration: "50 min", difficulty: "Intermediate" },
-        { type: "video", title: "Java Concurrency & Multithreading", url: "#", duration: "60 min", difficulty: "Intermediate" },
-        { type: "article", title: "Microservices with Spring Boot", url: "#", duration: "55 min", difficulty: "Advanced" },
-        { type: "video", title: "Java Performance Tuning", url: "#", duration: "45 min", difficulty: "Advanced" },
-        // GitHub Repositories
-        { type: "github", title: "Java Design Patterns", url: "https://github.com/iluwatar/java-design-patterns", stars: "86k", difficulty: "Intermediate", description: "Design patterns implemented in Java with detailed examples" },
-        { type: "github", title: "Spring Boot Examples", url: "https://github.com/spring-projects/spring-boot", stars: "73k", difficulty: "Intermediate", description: "Official Spring Boot repository with examples and documentation" },
-        { type: "github", title: "Effective Java Examples", url: "https://github.com/jbloch/effective-java-3e-source-code", stars: "4k", difficulty: "Advanced", description: "Source code for the book 'Effective Java' by Joshua Bloch" },
-        { type: "github", title: "Java Programming Practice", url: "https://github.com/TheAlgorithms/Java", stars: "57k", difficulty: "Beginner", description: "All algorithms implemented in Java with explanations" }
-      ]
-    };
-
-    return resourcesByLanguage[language as keyof typeof resourcesByLanguage] || resourcesByLanguage.python;
-  };
-
-  // Learning resources for each project
-  const getProjectLearningResources = (projectId: number, language: string): LearningResource[] => {
-    const projectSpecificResources: { [key: string]: LearningResource[] } = {
-      'web-fundamentals': [
-        // Project-specific HTML resources
-        { type: "article", title: "HTML Structure Best Practices", url: "https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/Document_and_website_structure", duration: "15 min", difficulty: "Beginner" },
-        { type: "documentation", title: "HTML Forms and Validation", url: "https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation", duration: "20 min", difficulty: "Beginner" },
-        { type: "article", title: "CSS Layout Techniques for Projects", url: "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout", duration: "25 min", difficulty: "Intermediate" },
-        { type: "documentation", title: "JavaScript Project Patterns", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects", duration: "18 min", difficulty: "Intermediate" },
-        { type: "article", title: "Responsive Design Implementation", url: "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Responsive_Design", duration: "22 min", difficulty: "Intermediate" },
-        // GitHub repositories for project inspiration
-        { type: "github", title: "Frontend Mentor Projects", url: "https://github.com/frontendmentor-community", stars: "5k", difficulty: "Beginner", description: "Real-world frontend projects with designs and requirements" },
-        { type: "github", title: "JavaScript Project Examples", url: "https://github.com/bradtraversy/50projects50days", stars: "33k", difficulty: "Beginner", description: "50 mini web projects using HTML, CSS & JavaScript" },
-        { type: "github", title: "Responsive Web Design Projects", url: "https://github.com/microsoft/Web-Dev-For-Beginners", stars: "81k", difficulty: "Beginner", description: "Microsoft's web development curriculum with projects" }
-      ],
-      html: [
-        { type: "article", title: "HTML Semantic Elements for This Project", url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element", duration: "10 min" },
-        { type: "article", title: "Building Responsive Layouts", url: "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Responsive_Design", duration: "15 min" },
-        { type: "documentation", title: "HTML5 Best Practices", url: "https://developer.mozilla.org/en-US/docs/Learn/HTML", duration: "8 min" }
-      ],
-      css: [
-        { type: "article", title: "CSS Flexbox for This Project", url: "https://css-tricks.com/snippets/css/a-guide-to-flexbox/", duration: "12 min" },
-        { type: "article", title: "CSS Grid Layout Tutorial", url: "https://css-tricks.com/snippets/css/complete-guide-grid/", duration: "20 min" },
-        { type: "documentation", title: "CSS Animations for This Project", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations", duration: "15 min" }
-      ],
-      javascript: [
-        { type: "article", title: "JavaScript Features for This Project", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide", duration: "15 min" },
-        { type: "article", title: "DOM Manipulation for This Project", url: "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model", duration: "18 min" },
-        { type: "documentation", title: "Async Patterns for This Project", url: "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous", duration: "12 min" }
-      ],
-      python: [
-        { type: "article", title: "Python Libraries for This Project", url: "#", duration: "12 min" },
-        { type: "article", title: "OOP Concepts for This Project", url: "#", duration: "25 min" },
-        { type: "documentation", title: "Python Best Practices", url: "#", duration: "10 min" }
-      ]
-    };
-
-    return projectSpecificResources[language as keyof typeof projectSpecificResources] || [];
-  };
-
-  // Calculate current step based on progress (10 total steps)
-  const getCurrentStep = () => {
-    if (overallProgress <= 10) return 1;
-    if (overallProgress <= 20) return 2;
-    if (overallProgress <= 30) return 3;
-    if (overallProgress <= 40) return 4;
-    if (overallProgress <= 50) return 5;
-    if (overallProgress <= 60) return 6;
-    if (overallProgress <= 70) return 7;
-    if (overallProgress <= 80) return 8;
-    if (overallProgress <= 90) return 9;
-    return 10;
-  };
-
-  const currentStep = getCurrentStep();
-  const totalSteps = 10;
-
-  const handleStartProject = (projectId: number) => {
-    try {
-      // Validate project ID
-      if (!projectId || typeof projectId !== 'number') {
-        toast({
-          title: "Invalid Project",
-          description: "Project ID is invalid. Please try refreshing the page.",
-          variant: "destructive"
-        });
-        return;
+  // Handle progress updates
+  const handleProgressUpdate = (projectId: string, stepIndex: number) => {
+    const currentLang = language || 'html';
+    const updatedProgress = {
+      ...userProgress,
+      [currentLang]: {
+        ...currentLanguageProgress,
+        lastActiveDate: new Date().toISOString(),
+        totalTimeSpent: currentLanguageProgress.totalTimeSpent + 15 // Add 15 minutes per step
       }
-
-      // Check if user has sufficient progress for advanced projects
-      const currentLang = language || 'python';
-      const progress = userProgress[currentLang];
-      
-      // For project IDs that might correspond to advanced projects, check prerequisites
-      if (projectId > 10) { // Assuming higher IDs are more advanced projects
-        const completedLessons = progress?.completedLessons || [];
-        if (completedLessons.length < 3) {
-          toast({
-            title: "More Learning Needed",
-            description: "Complete at least 3 lessons before starting advanced projects.",
-            variant: "destructive"
-          });
-          return;
-        }
-      }
-
-      startProjectDirectly(projectId);
-    } catch (error) {
-      console.error('Error starting project:', error);
-      toast({
-        title: "Error Starting Project",
-        description: "Something went wrong. Please try again or refresh the page.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const startProjectDirectly = (projectId: number) => {
-    try {
-      toast({
-        title: "Project Started!",
-        description: "Opening project environment...",
-      });
-      
-      // Use web-fundamentals as the language parameter for Web Fundamentals projects
-      const projectLanguage = isWebFundamentals ? 'web-fundamentals' : language;
-      navigate(`/learn/${projectLanguage}/project/${projectId}`);
-    } catch (error) {
-      console.error('Error navigating to project:', error);
-      toast({
-        title: "Navigation Error",
-        description: "Unable to open project. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const ResourceIcon = ({ type }: { type: string }) => {
-    switch (type) {
-      case "video": return <Video className="h-4 w-4" />;
-      case "documentation": return <FileText className="h-4 w-4" />;
-      case "github": return <Github className="h-4 w-4" />;
-      case "level": return <Target className="h-4 w-4" />;
-      case "lesson": return <BookOpen className="h-4 w-4" />;
-      case "project": return <Code className="h-4 w-4" />;
-      default: return <BookOpen className="h-4 w-4" />;
-    }
-  };
-
-  // If no language is specified, redirect to Python by default
-  const handleLearningComplete = () => {
+    };
+    
+    setUserProgress(updatedProgress);
+    localStorage.setItem('codelearning-progress', JSON.stringify(updatedProgress));
+    
     toast({
-      title: "Lesson Completed! 🎉",
-      description: "Great job! You've completed this learning module.",
+      title: "Progress Saved",
+      description: `Step ${stepIndex + 1} completed!`,
+      variant: "default"
     });
-    setCurrentLearningContent(null);
   };
 
-  const handleBackToResources = () => {
-    setCurrentLearningContent(null);
+  const completedProjects = currentLanguageProgress.completedProjects?.length || 0;
+  const totalTimeSpent = Math.round(currentLanguageProgress.totalTimeSpent / 60) || 0; // Convert to hours
+  const masteryScore = currentLanguageProgress.masteryScore || 0;
+  const streakDays = currentLanguageProgress.streakDays || 0;
+
+  const getLanguageDisplayName = (lang: string) => {
+    const names: { [key: string]: string } = {
+      'html': 'HTML/CSS',
+      'python': 'Python',
+      'javascript': 'JavaScript',
+      'java': 'Java',
+      'cpp': 'C++',
+      'web-fundamentals': 'Web Fundamentals'
+    };
+    return names[lang] || lang.charAt(0).toUpperCase() + lang.slice(1);
   };
 
-  if (!language) {
-    navigate('/learn/python');
-    return null;
-  }
-
-  // If learning content is selected, show it instead of the main page
-  if (currentLearningContent) {
+  if (isLoading) {
     return (
-      <LearningContent
-        title={currentLearningContent.title}
-        type={currentLearningContent.type}
-        difficulty={currentLearningContent.difficulty || 'Beginner'}
-        onComplete={handleLearningComplete}
-        onBack={handleBackToResources}
-      />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your learning journey...</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Enhanced Header with Progress */}
-      <div className="border-b border-border bg-card/80 backdrop-blur-lg sticky top-0 z-10">
-        <div className="container mx-auto px-6 py-4">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="border-b">
+        <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => navigate("/")}
-                className="hover:bg-muted"
-              >
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" onClick={() => navigate('/')}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
+                Back to Dashboard
               </Button>
-              
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gradient-primary/20">
-                  <Code className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold capitalize">{language} Learning Path</h1>
-                  <p className="text-sm text-muted-foreground">Progress through lessons and projects</p>
-                </div>
+              <div>
+                <h1 className="text-2xl font-bold">
+                  {getLanguageDisplayName(language || 'html')} Learning Path
+                </h1>
+                <p className="text-muted-foreground">
+                  Learn by building real projects step-by-step
+                </p>
               </div>
             </div>
-
-            <div className="flex items-center gap-6">
-              {/* Progress Overview */}
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">
-                      {completedLessons} / {totalLessons} Lessons
-                    </span>
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    Step {currentStep} of {totalSteps} • {overallProgress}% Complete
-                  </div>
-                </div>
-                <div className="w-32">
-                  <Progress value={overallProgress} className="h-2" />
-                </div>
-              </div>
-              
-              <Badge variant="secondary" className="capitalize">
-                {currentLanguageProgress.skillLevel}
+            
+            <div className="flex items-center space-x-4">
+              <Badge variant="outline" className="flex items-center gap-1">
+                <Trophy className="h-3 w-3" />
+                Level: {currentLanguageProgress.skillLevel}
+              </Badge>
+              <Badge variant="outline" className="flex items-center gap-1">
+                <Star className="h-3 w-3" />
+                {masteryScore}% Mastery
               </Badge>
             </div>
+          </div>
+          
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+            <Card className="p-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">{completedProjects}</div>
+                <div className="text-sm text-muted-foreground">Projects Completed</div>
+              </div>
+            </Card>
+            <Card className="p-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">{totalTimeSpent}h</div>
+                <div className="text-sm text-muted-foreground">Time Invested</div>
+              </div>
+            </Card>
+            <Card className="p-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">{currentLanguageProgress.completedLessons?.length || 0}</div>
+                <div className="text-sm text-muted-foreground">Steps Completed</div>
+              </div>
+            </Card>
+            <Card className="p-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-600">{streakDays}</div>
+                <div className="text-sm text-muted-foreground">Day Streak</div>
+              </div>
+            </Card>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8">
-        <Tabs defaultValue="resources" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-8">
-            <TabsTrigger value="resources" className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4" />
-              Learning Resources
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8">
+        <Tabs defaultValue="projects" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="projects">
+              <BookOpen className="h-4 w-4 mr-2" />
+              Learn Projects
             </TabsTrigger>
-            <TabsTrigger value="projects" className="flex items-center gap-2">
-              <FolderOpen className="h-4 w-4" />
-              Projects
-            </TabsTrigger>
-            <TabsTrigger value="capstones" className="flex items-center gap-2">
-              <Crown className="h-4 w-4" />
-              Capstones
-            </TabsTrigger>
-            <TabsTrigger value="progress" className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" />
+            <TabsTrigger value="progress">
+              <TrendingUp className="h-4 w-4 mr-2" />
               Progress
             </TabsTrigger>
-            <TabsTrigger value="achievements" className="flex items-center gap-2">
-              <Trophy className="h-4 w-4" />
-              Achievements
+            <TabsTrigger value="resources">
+              <Target className="h-4 w-4 mr-2" />
+              Resources
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="resources" className="space-y-8">
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 rounded-lg bg-primary/20">
-                  <BookOpen className="h-5 w-5 text-primary" />
-                </div>
+          <TabsContent value="projects" className="mt-6">
+            <ProjectBasedLearning 
+              selectedLanguage={language || 'html'}
+              onProgressUpdate={handleProgressUpdate}
+            />
+          </TabsContent>
+
+          <TabsContent value="progress" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Learning Progress
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold capitalize">{language} Learning Resources</h2>
-                  <p className="text-muted-foreground">Master the fundamentals before diving into projects</p>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium">Overall Mastery</span>
+                    <span className="text-sm text-muted-foreground">{masteryScore}%</span>
+                  </div>
+                  <Progress value={masteryScore} className="h-2" />
                 </div>
-              </div>
-              
-              {/* Level headers stay above the grid */}
-              {getLanguageLearningResources(language || 'python').filter(resource => resource.type === 'level').map((resource, index) => (
-                <div key={index} className="mb-8">
-                  <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-6 rounded-lg border-l-4 border-primary">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 rounded-lg bg-primary/20">
-                        <Target className="h-5 w-5 text-primary" />
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <h4 className="font-medium">Learning Stats</h4>
+                    <div className="space-y-1 text-sm">
+                      <div className="flex justify-between">
+                        <span>Skill Level:</span>
+                        <Badge variant="outline">{currentLanguageProgress.skillLevel}</Badge>
                       </div>
-                      <h2 className="text-xl font-bold">{resource.title}</h2>
-                      <Badge variant="secondary" className="text-xs">
-                        {resource.duration}
-                      </Badge>
+                      <div className="flex justify-between">
+                        <span>Projects Completed:</span>
+                        <span>{completedProjects}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Time Invested:</span>
+                        <span>{totalTimeSpent} hours</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Current Streak:</span>
+                        <span>{streakDays} days</span>
+                      </div>
                     </div>
-                    <p className="text-muted-foreground ml-11">
-                      <strong>Goal:</strong> {(resource as any).goal}
-                    </p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h4 className="font-medium">Recent Achievements</h4>
+                    <div className="space-y-1">
+                      {currentLanguageProgress.achievements?.length > 0 ? (
+                        currentLanguageProgress.achievements.slice(0, 3).map((achievement, index) => (
+                          <div key={index} className="flex items-center gap-2 text-sm">
+                            <Trophy className="h-3 w-3 text-yellow-500" />
+                            <span>{achievement}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          Complete your first project to earn achievements!
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              ))}
-
-              {/* Resources Grid - Projects Style */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {getLanguageLearningResources(language || 'python').filter(resource => resource.type !== 'level').map((resource, index) => {
-                  const getDifficultyColor = (difficulty: string | undefined) => {
-                    switch (difficulty) {
-                      case "Beginner": return "bg-success text-success-foreground";
-                      case "Intermediate": return "bg-warning text-warning-foreground";
-                      case "Advanced": return "bg-destructive text-destructive-foreground";
-                      default: return "bg-muted text-muted-foreground";
-                    }
-                  };
-
-                  const getDifficultyIcon = (difficulty: string | undefined) => {
-                    switch (difficulty) {
-                      case "Beginner": return <Zap className="h-4 w-4" />;
-                      case "Intermediate": return <Brain className="h-4 w-4" />;
-                      case "Advanced": return <Rocket className="h-4 w-4" />;
-                      default: return <BookOpen className="h-4 w-4" />;
-                    }
-                  };
-
-                  return (
-                    <Card key={index} className="group hover:shadow-xl transition-all duration-300 hover:scale-105 bg-card/80 backdrop-blur-sm border-primary/20">
-                      <div className="p-6 space-y-4">
-                        {/* Header */}
-                        <div className="space-y-2">
-                          <div className="flex items-start justify-between">
-                            <h3 className="text-lg font-semibold group-hover:text-primary transition-colors">
-                              {resource.title}
-                            </h3>
-                            <Badge className={getDifficultyColor(resource.difficulty)}>
-                              <div className="flex items-center gap-1">
-                                {getDifficultyIcon(resource.difficulty)}
-                                {resource.difficulty}
-                              </div>
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground line-clamp-3">
-                            {resource.description || "Master essential concepts and build practical skills"}
-                          </p>
-                        </div>
-
-                        {/* Type */}
-                        <div className="space-y-2">
-                          <div className="text-sm font-medium text-foreground">Type:</div>
-                          <div className="flex flex-wrap gap-1">
-                            <Badge variant="secondary" className="text-xs capitalize">
-                              <ResourceIcon type={resource.type} />
-                              <span className="ml-1">{resource.type}</span>
-                            </Badge>
-                            {resource.duration && (
-                              <Badge variant="outline" className="text-xs flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {resource.duration}
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Skills Preview */}
-                        <div className="space-y-2">
-                          <div className="text-sm font-medium text-foreground">Skills You'll Learn:</div>
-                          <div className="flex flex-wrap gap-1">
-                            {getSkillsFromResource(resource).slice(0, 2).map((skill, idx) => (
-                              <Badge key={idx} variant="outline" className="text-xs">
-                                {skill}
-                              </Badge>
-                            ))}
-                            {getSkillsFromResource(resource).length > 2 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{getSkillsFromResource(resource).length - 2} more
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Action Button */}
-                        <div className="pt-2">
-                          <Button 
-                            size="sm" 
-                            className="w-full justify-center" 
-                            variant={resource.type === 'project' ? 'default' : 'outline'}
-                            onClick={() => {
-                              if (resource.type === 'project' && resource.projectId) {
-                                handleStartProject(resource.projectId);
-                              } else {
-                                handleStartLesson(resource);
-                              }
-                            }}
-                          >
-                            {resource.type === 'project' ? (
-                              <>
-                                <Code className="h-4 w-4 mr-2" />
-                                Start Project
-                              </>
-                            ) : (
-                              <>
-                                <BookOpen className="h-4 w-4 mr-2" />
-                                Start Lesson
-                              </>
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  );
-                })}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
-          <TabsContent value="projects" className="space-y-8">
-            {/* Beginner Projects */}
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 rounded-lg bg-success/20">
-                  <Zap className="h-5 w-5 text-success" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold">Beginner Projects</h2>
-                  <p className="text-muted-foreground">Build foundational skills with guided projects</p>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {beginnerProjects.slice(0, 15).map((project) => {
-                  const isCompleted = isProjectCompleted(String(project.id));
-                  return (
-                    <Card key={project.id} className={`p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer relative ${isCompleted ? 'ring-2 ring-success/50 bg-success/5' : ''}`}>
-                      {isCompleted && (
-                        <div className="absolute top-2 right-2 z-10">
-                          <Badge variant="default" className="bg-success text-success-foreground">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Completed
-                          </Badge>
-                        </div>
-                      )}
-                      
-                      <div className="flex items-start justify-between mb-4">
-                        <Badge variant="outline" className="text-success border-success">
-                          {project.difficulty}
-                        </Badge>
-                        <div className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {project.estimatedTime}
-                        </div>
-                      </div>
-                      
-                      <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
-                        {project.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        {project.description}
-                      </p>
-                      
-                      <div className="space-y-3">
-                        <div className="flex flex-wrap gap-1">
-                          {project.technologies.slice(0, 3).map((tech) => (
-                            <Badge key={tech} variant="secondary" className="text-xs">
-                              {tech}
-                            </Badge>
-                          ))}
-                          {project.technologies.length > 3 && (
-                            <Badge variant="secondary" className="text-xs">
-                              +{project.technologies.length - 3}
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        <Button 
-                          size="sm" 
-                          className="w-full" 
-                          variant={isCompleted ? "secondary" : "outline"}
-                          onClick={() => handleStartProject(project.id)}
-                        >
-                          {isCompleted ? (
-                            <>
-                              <CheckCircle className="h-3 w-3 mr-2" />
-                              Review Project
-                            </>
-                          ) : (
-                            <>
-                              <Play className="h-3 w-3 mr-2" />
-                              Start Project
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    </Card>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Intermediate Projects */}
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 rounded-lg bg-warning/20">
-                  <Target className="h-5 w-5 text-warning" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold">Intermediate Projects</h2>
-                  <p className="text-muted-foreground">Challenge yourself with more complex applications</p>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {intermediateProjects.slice(0, 12).map((project) => (
-                  <Card key={project.id} className="p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer">
-                    <div className="flex items-start justify-between mb-4">
-                      <Badge variant="outline" className="text-warning border-warning">
-                        {project.difficulty}
-                      </Badge>
-                      <div className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {project.estimatedTime}
-                      </div>
-                    </div>
-                    
-                    <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
-                      {project.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      {project.description}
+          <TabsContent value="resources" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5" />
+                  Learning Resources
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4">
+                  <div className="p-4 border rounded-lg">
+                    <h4 className="font-medium mb-2">📚 Documentation</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Official documentation and guides for {getLanguageDisplayName(language || 'html')}
                     </p>
-                    
-                    <div className="space-y-3">
-                      <div className="flex flex-wrap gap-1">
-                        {project.technologies.slice(0, 3).map((tech) => (
-                          <Badge key={tech} variant="secondary" className="text-xs">
-                            {tech}
-                          </Badge>
-                        ))}
-                        {project.technologies.length > 3 && (
-                          <Badge variant="secondary" className="text-xs">
-                            +{project.technologies.length - 3}
-                          </Badge>
-                        )}
-                      </div>
-                      
-                      <Button 
-                        size="sm" 
-                        className="w-full" 
-                        variant="outline"
-                        onClick={() => handleStartProject(project.id)}
-                      >
-                        <GitBranch className="h-3 w-3 mr-2" />
-                        Start Project
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </TabsContent>
-
-
-          <TabsContent value="capstones" className="space-y-8">
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 rounded-lg bg-destructive/20">
-                  <Crown className="h-5 w-5 text-destructive" />
+                    <Button variant="outline" size="sm">
+                      View Resources
+                    </Button>
+                  </div>
+                  
+                  <div className="p-4 border rounded-lg">
+                    <h4 className="font-medium mb-2">💡 Tips & Best Practices</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Learn industry best practices and coding standards
+                    </p>
+                    <Button variant="outline" size="sm">
+                      Learn More
+                    </Button>
+                  </div>
+                  
+                  <div className="p-4 border rounded-lg">
+                    <h4 className="font-medium mb-2">🏆 Challenges</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Test your skills with coding challenges and exercises
+                    </p>
+                    <Button variant="outline" size="sm">
+                      Try Challenges
+                    </Button>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-2xl font-bold">Capstone Projects</h2>
-                  <p className="text-muted-foreground">Advanced projects to showcase your mastery</p>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {advancedProjects.slice(0, 8).map((project) => {
-                  const isCompleted = isProjectCompleted(String(project.id));
-                  return (
-                    <Card key={project.id} className={`p-6 hover:shadow-lg transition-all duration-300 group cursor-pointer border-2 border-destructive/20 relative ${isCompleted ? 'ring-2 ring-destructive/50 bg-destructive/5' : ''}`}>
-                      {isCompleted && (
-                        <div className="absolute top-2 right-2 z-10">
-                          <Badge variant="default" className="bg-success text-success-foreground">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Completed
-                          </Badge>
-                        </div>
-                      )}
-                      
-                      <div className="flex items-start justify-between mb-4">
-                        <Badge variant="destructive">
-                          {project.difficulty}
-                        </Badge>
-                        <div className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {project.estimatedTime}
-                        </div>
-                      </div>
-                      
-                      <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
-                        {project.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        {project.description}
-                      </p>
-                      
-                      <div className="space-y-3">
-                        <div className="flex flex-wrap gap-1">
-                          {project.technologies.slice(0, 4).map((tech) => (
-                            <Badge key={tech} variant="secondary" className="text-xs">
-                              {tech}
-                            </Badge>
-                          ))}
-                          {project.technologies.length > 4 && (
-                            <Badge variant="secondary" className="text-xs">
-                              +{project.technologies.length - 4}
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        <div className="text-xs text-muted-foreground mb-2">
-                          Skills: {project.skills.slice(0, 3).join(", ")}
-                        </div>
-                        
-                        <Button 
-                          size="sm" 
-                          className="w-full"
-                          variant={isCompleted ? "secondary" : "default"}
-                          onClick={() => handleStartProject(project.id)}
-                        >
-                          {isCompleted ? (
-                            <>
-                              <CheckCircle className="h-3 w-3 mr-2" />
-                              Review Capstone
-                            </>
-                          ) : (
-                            <>
-                              <Rocket className="h-3 w-3 mr-2" />
-                              Start Capstone
-                            </>
-                           )}
-                        </Button>
-                      </div>
-                    </Card>
-                  );
-                })}
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Rest of tabs content... */}
-          <TabsContent value="progress" className="space-y-8">
-            {/* Progress content will be here */}
-          </TabsContent>
-
-          <TabsContent value="achievements" className="space-y-8">
-            {/* Achievements content will be here */}
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
