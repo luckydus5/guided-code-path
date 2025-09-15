@@ -106,8 +106,8 @@ export const OptimizedLearningDashboard = memo(({ user, profile }: OptimizedLear
 
   // Memoized calculations for performance
   const stats = useMemo(() => {
-    const completedProjects = projects.filter(p => p.completed).length;
-    const totalProjects = projects.length;
+    const completedProjects = (projects || []).filter(p => p.completed).length;
+    const totalProjects = (projects || []).length;
     const progressPercentage = totalProjects > 0 ? (completedProjects / totalProjects) * 100 : 0;
     
     return {
@@ -122,7 +122,7 @@ export const OptimizedLearningDashboard = memo(({ user, profile }: OptimizedLear
 
   // Fast navigation handlers
   const handleStartProject = (projectId: string) => {
-    const project = projects.find(p => p.id === projectId);
+    const project = (projects || []).find(p => p.id === projectId);
     if (project) {
       navigate(`/learn/${project.language}/project/${projectId}`);
     }
@@ -134,7 +134,7 @@ export const OptimizedLearningDashboard = memo(({ user, profile }: OptimizedLear
 
   // Search data for instant search
   const searchData = useMemo(() => {
-    return projects.map(project => ({
+    return (projects || []).map(project => ({
       id: project.id,
       title: project.title,
       description: project.description,

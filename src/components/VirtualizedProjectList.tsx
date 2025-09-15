@@ -134,7 +134,7 @@ export const VirtualizedProjectList = memo(({
 
   // Fast filtering with useMemo
   const filteredProjects = useMemo(() => {
-    return projects.filter(project => {
+    return (projects || []).filter(project => {
       const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            project.description.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesDifficulty = difficultyFilter === 'all' || project.difficulty === difficultyFilter;
