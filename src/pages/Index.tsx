@@ -6,12 +6,8 @@ import HeroSection from "@/components/HeroSection";
 import LanguageSelector from "@/components/LanguageSelector";
 import GameDashboard from "@/components/GameDashboard";
 import LearningDashboard from "@/components/LearningDashboard";
-import OptimizedLearningDashboard from "@/components/OptimizedLearningDashboard";
 import Navbar from "@/components/Navbar";
 import AuthForm from "@/components/AuthForm";
-import { FastNavigation } from "@/components/FastNavigation";
-import { usePerformanceOptimization } from "@/hooks/usePerformanceOptimization";
-import FastLoadingSpinner from "@/components/FastLoadingSpinner";
 
 interface Language {
   id: string;
@@ -46,9 +42,6 @@ const Index = () => {
   const [showAuth, setShowAuth] = useState(false);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const [showProfileSettings, setShowProfileSettings] = useState(false);
-  
-  // Performance optimization hooks
-  const { preloadCriticalData } = usePerformanceOptimization();
 
   useEffect(() => {
     initializeAuth();
@@ -62,14 +55,12 @@ const Index = () => {
           setSession(session);
           setUser(session?.user ?? null);
           
-      if (session?.user) {
-        // Defer profile handling to avoid auth callback deadlock
-        setTimeout(() => {
-          handleUserProfile(session.user.id);
-          // Preload critical data for faster experience
-          preloadCriticalData(session.user.id);
-        }, 0);
-      } else {
+          if (session?.user) {
+            // Defer profile handling to avoid auth callback deadlock
+            setTimeout(() => {
+              handleUserProfile(session.user.id);
+            }, 0);
+          } else {
             setProfile(null);
             setLoading(false);
           }
@@ -197,8 +188,8 @@ const Index = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <FastLoadingSpinner size={48} />
-          <p className="text-muted-foreground animate-pulse">Loading at light speed...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
@@ -213,8 +204,8 @@ const Index = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <FastLoadingSpinner size={48} />
-          <p className="text-muted-foreground animate-pulse">Setting up your profile...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p className="text-muted-foreground">Setting up your profile...</p>
         </div>
       </div>
     );
@@ -222,9 +213,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <FastNavigation 
+      <Navbar 
         user={user} 
+        profile={profile} 
         onSignOut={handleSignOut}
+        onSettingsClick={handleSettingsClick}
       />
       
       {user && profile ? (
@@ -233,9 +226,10 @@ const Index = () => {
             <LanguageSelector onSelect={handleLanguageSelect} onBack={handleBackToDashboard} />
           </div>
         ) : (
-          <div className="space-y-4">
-            <OptimizedLearningDashboard user={user} profile={profile} />
-          </div>
+          <LearningDashboard 
+            user={user} 
+            profile={profile} 
+          />
         )
       ) : (
         <HeroSection onGetStarted={handleGetStarted} onSignIn={handleSignIn} />
