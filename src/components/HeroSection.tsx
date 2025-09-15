@@ -23,61 +23,69 @@ interface HeroSectionProps {
 
 export default function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps) {
   return (
-    <div className="relative min-h-screen bg-background overflow-hidden">
-      {/* Decorative wavy border */}
-      <div className="absolute top-0 left-0 w-full h-32 overflow-hidden">
-        <svg viewBox="0 0 1200 120" className="absolute top-0 left-0 w-full h-full">
-          <path d="M0,60 Q300,120 600,60 T1200,60 L1200,0 L0,0 Z" fill="hsl(var(--destructive))" opacity="0.8"/>
-        </svg>
-      </div>
-
-      {/* Background Elements */}
+    <div className="relative min-h-screen bg-gradient-surface overflow-hidden">
+      {/* Advanced Background Pattern */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-8 w-20 h-20 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl rotate-12 animate-float"></div>
-        <div className="absolute top-1/3 right-8 w-16 h-16 bg-gradient-to-br from-accent/20 to-primary/20 rounded-full animate-float" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-1/4 left-12 w-24 h-24 bg-gradient-to-br from-secondary/20 to-accent/20 rounded-xl rotate-45 animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-1/3 right-12 w-18 h-18 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full animate-float" style={{ animationDelay: '0.5s' }}></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+        <div className="absolute top-1/4 left-8 w-32 h-32 bg-gradient-primary rounded-3xl rotate-12 animate-float opacity-20 blur-xl"></div>
+        <div className="absolute top-1/3 right-8 w-24 h-24 bg-gradient-success rounded-full animate-float opacity-30 blur-lg" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-1/4 left-12 w-40 h-40 bg-gradient-learning rounded-2xl rotate-45 animate-float opacity-15 blur-2xl" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-1/3 right-12 w-28 h-28 bg-gradient-primary rounded-full animate-float opacity-25 blur-lg" style={{ animationDelay: '0.5s' }}></div>
+        
+        {/* Grid Pattern */}
+        <div className="absolute inset-0 opacity-[0.02]">
+          <div className="w-full h-full" style={{ 
+            backgroundImage: `
+              linear-gradient(hsl(var(--foreground)) 1px, transparent 1px),
+              linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px'
+          }}></div>
+        </div>
       </div>
 
       {/* Header Navigation */}
-      <nav className="relative z-20 flex justify-between items-center px-4 py-6 md:px-6">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="p-2.5 bg-gradient-to-br from-primary to-secondary rounded-xl shadow-lg">
-              <Code className="h-5 w-5 text-white" />
+      <nav className="relative z-20 glassmorphism border-0 border-b">
+        <div className="container mx-auto flex justify-between items-center px-4 py-6 md:px-6">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="p-3 bg-gradient-primary rounded-2xl shadow-medium">
+                <Code className="h-6 w-6 text-white" />
+              </div>
+              <div className="absolute -inset-1 bg-gradient-primary rounded-2xl opacity-30 blur-sm -z-10"></div>
+            </div>
+            <div>
+              <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                CodePath Academy
+              </h1>
+              <p className="text-sm text-muted-foreground font-medium">Learn. Build. Succeed.</p>
             </div>
           </div>
-          <div>
-            <h1 className="text-lg md:text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              CodePath Academy
-            </h1>
-            <p className="text-xs text-muted-foreground">Learn. Build. Succeed.</p>
+          
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            {onSignIn && (
+              <>
+                <Button 
+                  variant="ghost"
+                  size="sm"
+                  onClick={onSignIn}
+                  className="text-sm hover:bg-primary/10 hover:text-primary transition-all duration-200 rounded-full px-4"
+                >
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Sign In
+                </Button>
+                <Button 
+                  size="sm"
+                  onClick={onSignIn}
+                  className="bg-gradient-primary hover:opacity-90 text-white shadow-medium hover:shadow-strong transition-all duration-300 rounded-full px-6"
+                >
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Sign Up
+                </Button>
+              </>
+            )}
           </div>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          {onSignIn && (
-            <>
-              <Button 
-                variant="ghost"
-                size="sm"
-                onClick={onSignIn}
-                className="text-sm hover:bg-primary/10 hover:text-primary"
-              >
-                <LogIn className="mr-1.5 h-4 w-4" />
-                Sign In
-              </Button>
-              <Button 
-                size="sm"
-                onClick={onSignIn}
-                className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white"
-              >
-                <UserPlus className="mr-1.5 h-4 w-4" />
-                Sign Up
-              </Button>
-            </>
-          )}
         </div>
       </nav>
       
@@ -116,18 +124,22 @@ export default function HeroSection({ onGetStarted, onSignIn }: HeroSectionProps
             </div>
 
             {/* CTA Button */}
-            <div className="mb-12 animate-slide-up">
-              <Button 
-                size="lg" 
-                className="text-base md:text-lg px-8 py-4 md:px-10 md:py-5 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-xl hover:shadow-2xl transition-all duration-300 group transform hover:scale-105 rounded-full"
-                onClick={onGetStarted}
-              >
-                <Sparkles className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                Your Coding Journey Starts Here
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <p className="text-xs md:text-sm text-muted-foreground mt-3">
-                Free to start • No credit card required
+            <div className="mb-16 animate-slide-up">
+              <div className="relative">
+                <Button 
+                  size="lg" 
+                  className="text-lg px-12 py-6 bg-gradient-primary hover:opacity-90 shadow-strong hover:shadow-glow transition-all duration-500 group transform hover:scale-105 rounded-2xl font-semibold relative z-10"
+                  onClick={onGetStarted}
+                >
+                  <Sparkles className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform animate-glow" />
+                  Your Coding Journey Starts Here
+                  <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform" />
+                </Button>
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-gradient-primary rounded-2xl opacity-50 blur-xl group-hover:opacity-70 transition-opacity duration-500 -z-10"></div>
+              </div>
+              <p className="text-sm text-muted-foreground mt-4 font-medium">
+                🎉 Free to start • No credit card required • Join 50K+ students
               </p>
             </div>
 

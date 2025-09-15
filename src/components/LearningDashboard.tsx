@@ -94,10 +94,19 @@ const learningPaths: LearningPath[] = [
 
 const getDifficultyColor = (difficulty: string) => {
   switch (difficulty) {
-    case 'Beginner': return 'bg-green-500';
-    case 'Intermediate': return 'bg-yellow-500';
-    case 'Advanced': return 'bg-red-500';
-    default: return 'bg-gray-500';
+    case 'Beginner': return 'bg-success';
+    case 'Intermediate': return 'bg-warning';
+    case 'Advanced': return 'bg-destructive';
+    default: return 'bg-muted';
+  }
+};
+
+const getDifficultyGradient = (difficulty: string) => {
+  switch (difficulty) {
+    case 'Beginner': return 'from-success/20 to-success/5';
+    case 'Intermediate': return 'from-warning/20 to-warning/5';
+    case 'Advanced': return 'from-destructive/20 to-destructive/5';
+    default: return 'from-muted/20 to-muted/5';
   }
 };
 
@@ -119,26 +128,35 @@ export default function LearningDashboard({ user, profile }: LearningDashboardPr
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Stats Header */}
-      <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border-b">
-        <div className="container mx-auto px-4 py-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div>
-              <div className="text-2xl md:text-3xl font-bold text-foreground">{profile?.xp || 0}</div>
-              <div className="text-sm text-muted-foreground">Total XP</div>
+    <div className="min-h-screen bg-gradient-surface">
+      {/* Enhanced Stats Header */}
+      <div className="bg-gradient-to-r from-primary/10 via-secondary/5 to-accent/10 border-b border-border/50">
+        <div className="container mx-auto px-4 py-8">
+          {/* Welcome Message */}
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+              Welcome back, {profile?.display_name || 'Learner'}! 👋
+            </h2>
+            <p className="text-muted-foreground">Ready to continue your coding journey?</p>
+          </div>
+          
+          {/* Stats Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-gradient-card rounded-2xl p-6 text-center shadow-soft border border-border/50">
+              <div className="text-3xl md:text-4xl font-bold text-primary mb-1">{profile?.xp || 0}</div>
+              <div className="text-sm text-muted-foreground font-medium">Total XP</div>
             </div>
-            <div>
-              <div className="text-2xl md:text-3xl font-bold text-foreground">0</div>
-              <div className="text-sm text-muted-foreground">Projects</div>
+            <div className="bg-gradient-card rounded-2xl p-6 text-center shadow-soft border border-border/50">
+              <div className="text-3xl md:text-4xl font-bold text-secondary mb-1">0</div>
+              <div className="text-sm text-muted-foreground font-medium">Projects</div>
             </div>
-            <div>
-              <div className="text-2xl md:text-3xl font-bold text-foreground">0</div>
-              <div className="text-sm text-muted-foreground">Lessons</div>
+            <div className="bg-gradient-card rounded-2xl p-6 text-center shadow-soft border border-border/50">
+              <div className="text-3xl md:text-4xl font-bold text-accent mb-1">0</div>
+              <div className="text-sm text-muted-foreground font-medium">Lessons</div>
             </div>
-            <div>
-              <div className="text-2xl md:text-3xl font-bold text-foreground">0 mins</div>
-              <div className="text-sm text-muted-foreground">Time coded</div>
+            <div className="bg-gradient-card rounded-2xl p-6 text-center shadow-soft border border-border/50">
+              <div className="text-3xl md:text-4xl font-bold text-info mb-1">0</div>
+              <div className="text-sm text-muted-foreground font-medium">Minutes</div>
             </div>
           </div>
         </div>
@@ -170,49 +188,60 @@ export default function LearningDashboard({ user, profile }: LearningDashboardPr
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {learningPaths.map((path) => {
                 const IconComponent = path.icon;
                 return (
-                  <Card key={path.id} className="hover:shadow-lg transition-shadow duration-200 bg-card">
-                    <CardHeader className="pb-4">
+                  <Card key={path.id} className="group hover:shadow-strong transition-all duration-300 bg-gradient-card border-border/50 hover:border-primary/30 overflow-hidden relative">
+                    {/* Background gradient */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${getDifficultyGradient(path.difficulty)} opacity-50 group-hover:opacity-70 transition-opacity`}></div>
+                    
+                    <CardHeader className="pb-4 relative z-10">
                       <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className={`p-3 rounded-xl bg-gradient-to-r ${path.color}`}>
-                            <IconComponent className="h-6 w-6 text-white" />
+                        <div className="flex items-center gap-4">
+                          <div className="relative">
+                            <div className={`p-4 rounded-2xl bg-gradient-to-r ${path.color} shadow-medium`}>
+                              <IconComponent className="h-8 w-8 text-white" />
+                            </div>
+                            <div className={`absolute -inset-1 bg-gradient-to-r ${path.color} rounded-2xl opacity-30 blur-sm -z-10`}></div>
                           </div>
                           <div>
-                            <CardTitle className="text-lg font-semibold text-foreground">
+                            <CardTitle className="text-xl font-bold text-foreground mb-2">
                               {path.name}
                             </CardTitle>
-                            <div className="flex items-center gap-2 mt-1">
-                              <div className={`w-2 h-2 rounded-full ${getDifficultyColor(path.difficulty)}`}></div>
-                              <span className="text-sm text-muted-foreground">{path.difficulty}</span>
+                            <div className="flex items-center gap-3">
+                              <div className={`w-3 h-3 rounded-full ${getDifficultyColor(path.difficulty)}`}></div>
+                              <span className="text-sm font-medium text-muted-foreground">{path.difficulty}</span>
+                              <Clock className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">{path.estimatedTime}</span>
                             </div>
                           </div>
-                        </div>
-                        <div className="text-right text-sm text-muted-foreground">
-                          {path.estimatedTime}
                         </div>
                       </div>
                     </CardHeader>
                     
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6 relative z-10">
                       <p className="text-sm text-muted-foreground leading-relaxed">
                         {path.description}
                       </p>
                       
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-foreground">Progress</span>
-                          <span className="text-sm text-muted-foreground">{path.progress}%</span>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-semibold text-foreground">Progress</span>
+                          <span className="text-sm font-medium text-primary">{path.progress}%</span>
                         </div>
-                        <Progress value={path.progress} className="h-2" />
+                        <Progress value={path.progress} className="h-3 rounded-full" />
                       </div>
 
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <span>{path.lessons} lessons</span>
-                        <span>{path.projects} projects</span>
+                      <div className="grid grid-cols-2 gap-4 p-4 bg-muted/30 rounded-xl">
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-foreground">{path.lessons}</div>
+                          <div className="text-xs text-muted-foreground">Lessons</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-foreground">{path.projects}</div>
+                          <div className="text-xs text-muted-foreground">Projects</div>
+                        </div>
                       </div>
 
                       <div className="flex flex-wrap gap-2">
@@ -220,7 +249,7 @@ export default function LearningDashboard({ user, profile }: LearningDashboardPr
                           <Badge 
                             key={index} 
                             variant="secondary" 
-                            className="text-xs bg-secondary/50"
+                            className="text-xs bg-background/50 border border-border/30 font-medium"
                           >
                             {tech}
                           </Badge>
@@ -229,9 +258,10 @@ export default function LearningDashboard({ user, profile }: LearningDashboardPr
 
                       <Button 
                         onClick={() => startLearningPath(path.id)}
-                        className={`w-full bg-gradient-to-r ${path.color} hover:opacity-90 text-white font-medium`}
+                        className={`w-full bg-gradient-to-r ${path.color} hover:opacity-90 text-white font-semibold py-3 rounded-xl shadow-medium hover:shadow-strong transition-all duration-300 group-hover:scale-[1.02]`}
                       >
-                        Start Learning
+                        <Rocket className="mr-2 h-5 w-5" />
+                        Start Learning Journey
                       </Button>
                     </CardContent>
                   </Card>
